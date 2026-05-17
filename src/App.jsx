@@ -6,6 +6,7 @@ import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
 import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX } from 'lucide-react';
 import { audioService } from './services/audioService';
+import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
 
 const INITIAL_STATE = {
   stress: 10,
@@ -239,6 +240,14 @@ function App() {
     }
     updatedState.turnCount += 1;
 
+    // Apply hardcoded stat changes if they exist on the choice object
+    if (choice.stress_change !== undefined) {
+      updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + choice.stress_change));
+      updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + choice.reputation_change));
+      updatedState.cash += (choice.cash_change || 0);
+      updatedState.staffRelations = Math.max(-100, Math.min(100, updatedState.staffRelations + (choice.staff_relations_change || 0)));
+    }
+
     setGameState(updatedState);
     await processTurn(`I choose option ${choice.id}: ${choice.text}`, updatedState);
   };
@@ -246,6 +255,60 @@ function App() {
   const processTurn = async (playerInput, currentState) => {
     setIsLoading(true);
     setErrorMsg('');
+
+    // Check Season End
+    const currentCal = new Date(currentState.currentDate);
+    const endOfSeason = new Date('2026-11-01');
+    if (currentCal >= endOfSeason) {
+      setCurrentScene({
+        scene_title: "Τέλος Σεζόν (1η Νοεμβρίου)",
+        story_text: "Τα καταφέρατε! Το ξενοδοχείο κλείνει για το χειμώνα. Επιβιώσατε μιας ακόμα εξαντλητικής σεζόν χωρίς να απολυθείτε.",
+        choices: [],
+        game_over: true
+      });
+      setGameOver(true);
+      setIsLoading(false);
+      saveScoreToLeaderboard(currentState);
+      return;
+    }
+
+    // Check standard Game Over conditions
+    if (currentState.stress >= 100 || currentState.reputation <= 0 || currentState.alcoholWarnings >= 3) {
+      setCurrentScene({
+        scene_title: "Απόλυση",
+        story_text: "Η κατάσταση βγήκε εκτός ελέγχου (υπερβολικό άγχος, κάκιστη φήμη ή πειθαρχικά παραπτώματα). Η διοίκηση αποφάσισε την άμεση απομάκρυνσή σου.",
+        choices: [],
+        game_over: true
+      });
+      setGameOver(true);
+      setIsLoading(false);
+      saveScoreToLeaderboard(currentState);
+      return;
+    }
+
+    const currentTurn = currentState.turnCount;
+    // AI is used on Turn 0 (Interview) and every 5th turn (5, 10, 15, 25...)
+    const isAITurn = currentTurn === 0 || currentTurn % 5 === 0;
+
+    if (!isAITurn) {
+      // Hardcoded Route
+      let nextScene = null;
+      if (SPECIFIC_EVENTS[currentTurn]) {
+        const alternatives = SPECIFIC_EVENTS[currentTurn];
+        nextScene = alternatives[Math.floor(Math.random() * alternatives.length)];
+      } else {
+        const randomGen = GENERAL_EVENTS[Math.floor(Math.random() * GENERAL_EVENTS.length)];
+        nextScene = { ...randomGen };
+      }
+
+      // Simulate network delay for UI smoothness
+      setTimeout(() => {
+        setCurrentScene(nextScene);
+        setIsLoading(false);
+      }, 500);
+      return;
+    }
+
     try {
       const response = await generateNextState(playerInput, currentState);
       

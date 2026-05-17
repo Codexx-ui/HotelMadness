@@ -122,18 +122,6 @@ Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
       }
     }
 
-    if (currentStateData.turnCount === 7) {
-      promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nA fellow employee MUST approach the player right now, ask exactly this: "Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει;" and provide the exact link to play: https://codexx-ui.github.io/Thesfapa/. This is a mandatory Easter Egg scenario for this turn. Do not generate a guest problem.\n\n`;
-    }
-
-    if (currentStateData.turnCount === 14) {
-      promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nMaitress Κατερίνα Τζιούτζιου MUST appear in a relaxed scenario and ask the player a favor: to recite a random song they like. When this happens, you MUST set 'requires_text_input' to prompt the player to type the song name. Do not generate a standard guest problem.\n\n`;
-    }
-
-    if (currentStateData.turnCount === 20) {
-      promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nExecutive Chef Αντώνης Σάββας MUST appear right now. He is highly inappropriate and toxic. He approaches the player to gossip, either trash-talking people behind their backs or making wildly inappropriate sexual comments about colleagues. Make the scenario about his toxic behavior.\n\n`;
-    }
-
     if (currentStateData.thesfapaClicked && currentStateData.turnsSinceThesfapa === 2) {
       promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nΤάρναβας MUST appear extremely angry in this scene. He tells the player that he saw them from the security cameras playing the 'Thesfapa' game and "του έσπασες τα μούτρα" (smashing his face in). He demands an explanation and severely threatens the player. Offer choices to defend yourself, apologize, or blame someone else.\n\n`;
     }
