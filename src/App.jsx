@@ -30,6 +30,7 @@ function App() {
   const [nickname, setNickname] = useState(localStorage.getItem('player_nickname') || '');
   const [nicknameConfirmed, setNicknameConfirmed] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
+  const [showIntro, setShowIntro] = useState(!sessionStorage.getItem('hotel_intro_seen'));
   // Supabase Authentication state
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -390,6 +391,68 @@ function App() {
     </div>
   );
 
+  const renderIntroScreen = () => (
+    <div className="intro-overlay">
+      <div className="intro-content">
+        <div className="intro-subtitle" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', letterSpacing: '0.25em', marginBottom: '2rem', animation: 'fadeUp 1.5s ease-out' }}>GREEK TOURISM RPG</div>
+        <h1 className="intro-main-title" style={{ fontSize: '3.5rem', textShadow: '0 0 20px rgba(102, 252, 241, 0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '2.5rem', animation: 'fadeUp 2s ease-out' }}>HOTEL MADNESS</h1>
+        
+        <div className="intro-narrative" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3.5rem' }}>
+          <div className="intro-line line-1" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>ΕΛΛΗΝΙΚΟΣ ΤΟΥΡΙΣΜΟΣ. 2026.</div>
+          <div className="intro-line line-2" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>Υψηλές προσδοκίες. Ακραίο Stress. Ατελείωτες βάρδιες.</div>
+          <div className="intro-line line-3" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>Ο GM Μουστάκας παρακολουθεί κάθε σου κίνηση...</div>
+          <div className="intro-line line-4" style={{ fontSize: '1.25rem', color: 'var(--accent-color)', fontWeight: 600, textShadow: '0 0 10px rgba(102, 252, 241, 0.2)' }}>Είσαι έτοιμος να επιβιώσεις στη "Βαριά Βιομηχανία" της χώρας;</div>
+        </div>
+
+        <button
+          className="intro-btn"
+          onClick={() => {
+            sessionStorage.setItem('hotel_intro_seen', 'true');
+            setShowIntro(false);
+          }}
+          style={{
+            backgroundColor: 'var(--accent-color)',
+            border: 'none',
+            borderRadius: '8px',
+            color: '#050608',
+            padding: '1rem 2.5rem',
+            fontSize: '1.1rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            cursor: 'pointer',
+            boxShadow: '0 0 25px rgba(102, 252, 241, 0.4)',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          ΕΙΣΟΔΟΣ ΣΤΗΝ ΕΠΙΧΕΙΡΗΣΗ →
+        </button>
+
+        <div style={{ marginTop: '1.5rem' }}>
+          <button
+            className="intro-skip-btn"
+            onClick={() => {
+              sessionStorage.setItem('hotel_intro_seen', 'true');
+              setShowIntro(false);
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              fontSize: '0.85rem',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              opacity: 0.6,
+              transition: 'opacity 0.2s'
+            }}
+          >
+            Skip Intro
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderRoleSelection = () => (
     <div className="role-selection">
       <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Επίλεξε τον Ρόλο σου, <span style={{ color: '#fff' }}>{nickname}</span></h2>
@@ -510,6 +573,10 @@ function App() {
       <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); }}>Apply for a new Job</button>
     </div>
   );
+
+  if (showIntro) {
+    return renderIntroScreen();
+  }
 
   return (
     <div className="app-container">
