@@ -287,8 +287,8 @@ function App() {
     }
 
     const currentTurn = currentState.turnCount;
-    // AI is used on Turn 0 (Interview) and every 5th turn (5, 10, 15, 25...)
-    const isAITurn = currentTurn === 0 || currentTurn % 5 === 0;
+    // AI is used on Turn 0 (Interview) and every 5th turn (5, 10, 15, etc.) EXCEPT if there's a SPECIFIC_EVENT
+    const isAITurn = (currentTurn === 0 || currentTurn % 5 === 0) && !SPECIFIC_EVENTS[currentTurn];
 
     if (!isAITurn) {
       // Hardcoded Route

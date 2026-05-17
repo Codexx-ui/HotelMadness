@@ -60,6 +60,28 @@ export const SPECIFIC_EVENTS = {
         { id: 3, text: "Πάω κατευθείαν στον Τάρναβα να κάνω επίσημη αναφορά.", stress_change: 40, reputation_change: 25, cash_change: 0, staff_relations_change: -30 }
       ]
     }
+  ],
+  25: [
+    {
+      scene_title: "Lobby - Πανικός (Act 25)",
+      story_text: "Ο Γενικός Διευθυντής Μουστάκας τρέχει κατακόκκινος. 'ΠΟΥ ΕΙΝΑΙ Ο ΠΕΡΑΝΤΩΝΑΚΗΣ;' ουρλιάζει. 'Από τον χθεσινό Γάμο τα παράτησαν ΟΛΑ στην παραλία! Ποτήρια, μπουκάλια, σκουπίδια! Ψάχνω τον Bar Manager να του τα ψάλω, τον έχεις δει;'",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Τον καλύπτω λέγοντας ότι τον είδα να πάει στην αποθήκη.", stress_change: 10, reputation_change: -5, cash_change: 0, staff_relations_change: 20 },
+        { id: 2, text: "Του λέω την αλήθεια, ότι πίνει καφέ στο κυλικείο προσωπικού.", stress_change: 5, reputation_change: 10, cash_change: 0, staff_relations_change: -25 },
+        { id: 3, text: "Προσφέρομαι να πάω εγώ στην παραλία να μαζέψω το χάος.", stress_change: 30, reputation_change: 20, cash_change: 0, staff_relations_change: 5 }
+      ]
+    },
+    {
+      scene_title: "Παραλία - Χάος (Act 25)",
+      story_text: "Βλέπεις την παραλία βομβαρδισμένη από τον χθεσινό γάμο. Ξαφνικά σκάει ο Μουστάκας αφρισμένος. 'Είναι εικόνα ξενοδοχείου αυτή; ΠΟΥ ΕΙΝΑΙ Ο ΝΙΚΟΣ Ο ΠΕΡΑΝΤΩΝΑΚΗΣ; Θα τον απολύσω τον Bar Manager σήμερα!'",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Του λέω ότι η βάρδια του Νίκου δεν έχει ξεκινήσει ακόμα.", stress_change: 15, reputation_change: -5, cash_change: 0, staff_relations_change: 15 },
+        { id: 2, text: "Συμφωνώ μαζί του και αρχίζω να κατηγορώ και εγώ το Μπαρ.", stress_change: 0, reputation_change: 5, cash_change: 0, staff_relations_change: -20 },
+        { id: 3, text: "Παίρνω τηλέφωνο κρυφά τον Νίκο να τον προειδοποιήσω.", stress_change: 10, reputation_change: 0, cash_change: 0, staff_relations_change: 25 }
+      ]
+    }
   ]
 };
 
