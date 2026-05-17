@@ -340,17 +340,33 @@ function App() {
           </button>
         </div>
       )}
+    </div>
+  );
 
-      {!session && (
-        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-            💡 Συνδέσου με Google για να αποθηκεύεται το παιχνίδι σου αυτόματα στον server!
-          </p>
-          <div style={{ display: 'inline-block' }}>
-            <Auth session={session} loading={authLoading} />
-          </div>
+  const renderLoginScreen = () => (
+    <div className="role-selection" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
+      <h2 style={{ fontSize: '2.5rem', color: 'var(--accent-color)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>🏨 Hotel Madness</h2>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 2.5rem auto', lineHeight: '1.6' }}>
+        Welcome to the premium Greek Hospitality simulator. Survive GM Moustakas, deal with overbookings, rude VIPs, and extreme workplace stress.
+      </p>
+      
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid var(--panel-border)',
+        borderRadius: '12px',
+        padding: '2.5rem 2rem',
+        maxWidth: '450px',
+        margin: '2rem auto',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+      }}>
+        <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1rem', marginTop: 0 }}>Ξεκινήστε το Παιχνίδι</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+          Συνδεθείτε με Google για να αποθηκεύεται το παιχνίδι σας αυτόματα στον server.
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Auth session={session} loading={authLoading} />
         </div>
-      )}
+      </div>
     </div>
   );
 
@@ -486,7 +502,11 @@ function App() {
       </div>
 
       <div className="game-layout">
-        {!gameStarted ? (
+        {!session ? (
+          <div style={{ gridColumn: '1 / -1' }}>
+            {renderLoginScreen()}
+          </div>
+        ) : !gameStarted ? (
           <div style={{ gridColumn: '1 / -1' }}>
             {!nicknameConfirmed ? renderNicknameScreen() : renderRoleSelection()}
           </div>
