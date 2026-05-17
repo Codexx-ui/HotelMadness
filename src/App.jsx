@@ -26,10 +26,10 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // State to hold the API key retrieved from local storage or environment
+  // State to hold the API key retrieved from local storage or environment (bypassed in production)
   const [apiKeyInput, setApiKeyInput] = useState(localStorage.getItem('gemini_api_key') || '');
   const [isKeyConfigured, setIsKeyConfigured] = useState(
-    !!(import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key'))
+    import.meta.env.PROD || !!(import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key'))
   );
 
   const saveApiKey = (key) => {
@@ -46,10 +46,12 @@ function App() {
   };
 
   const startGame = async (roleKey) => {
-    const currentKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key');
-    if (!currentKey) {
-      setErrorMsg("Setup Required: Please enter your Google Gemini API Key below to initiate the simulator.");
-      return;
+    if (!import.meta.env.PROD) {
+      const currentKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key');
+      if (!currentKey) {
+        setErrorMsg("Setup Required: Please enter your Google Gemini API Key below to initiate the simulator.");
+        return;
+      }
     }
     setGameState({ ...INITIAL_STATE, role: roleKey });
     setGameStarted(true);
@@ -102,64 +104,66 @@ function App() {
       <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Select Your Path</h2>
       <p style={{ color: 'var(--text-secondary)' }}>Enter the high-stakes world of Greek Hospitality.</p>
       
-      {/* Premium API Key Configuration Panel */}
-      <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.03)',
-        border: '1px solid var(--panel-border)',
-        borderRadius: '8px',
-        padding: '1.25rem',
-        maxWidth: '500px',
-        margin: '1.5rem auto',
-        textAlign: 'left'
-      }}>
-        <label style={{ display: 'block', fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>
-          Gemini API Configuration
-        </label>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <input
-            type="password"
-            placeholder={import.meta.env.VITE_GEMINI_API_KEY ? "Loaded from System Env" : "Paste your Gemini API Key here (AIzaSy...)"}
-            disabled={!!import.meta.env.VITE_GEMINI_API_KEY}
-            value={apiKeyInput}
-            onChange={(e) => saveApiKey(e.target.value)}
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              border: '1px solid var(--panel-border)',
-              borderRadius: '4px',
-              padding: '0.5rem 0.75rem',
-              color: '#fff',
-              fontFamily: 'monospace',
-              fontSize: '0.9rem'
-            }}
-          />
-          {apiKeyInput && !import.meta.env.VITE_GEMINI_API_KEY && (
-            <button
-              onClick={() => saveApiKey('')}
+      {/* Premium API Key Configuration Panel (only in local development) */}
+      {!import.meta.env.PROD && (
+        <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid var(--panel-border)',
+          borderRadius: '8px',
+          padding: '1.25rem',
+          maxWidth: '500px',
+          margin: '1.5rem auto',
+          textAlign: 'left'
+        }}>
+          <label style={{ display: 'block', fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>
+            Gemini API Configuration
+          </label>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              type="password"
+              placeholder={import.meta.env.VITE_GEMINI_API_KEY ? "Loaded from System Env" : "Paste your Gemini API Key here (AIzaSy...)"}
+              disabled={!!import.meta.env.VITE_GEMINI_API_KEY}
+              value={apiKeyInput}
+              onChange={(e) => saveApiKey(e.target.value)}
               style={{
-                backgroundColor: 'transparent',
-                border: '1px solid var(--danger-color)',
-                color: 'var(--danger-color)',
+                flex: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                border: '1px solid var(--panel-border)',
                 borderRadius: '4px',
-                padding: '0 0.75rem',
-                cursor: 'pointer',
-                fontSize: '0.85rem'
+                padding: '0.5rem 0.75rem',
+                color: '#fff',
+                fontFamily: 'monospace',
+                fontSize: '0.9rem'
               }}
-            >
-              Clear
-            </button>
-          )}
+            />
+            {apiKeyInput && !import.meta.env.VITE_GEMINI_API_KEY && (
+              <button
+                onClick={() => saveApiKey('')}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: '1px solid var(--danger-color)',
+                  color: 'var(--danger-color)',
+                  borderRadius: '4px',
+                  padding: '0 0.75rem',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem'
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginOpt: 0 }}>
+            {import.meta.env.VITE_GEMINI_API_KEY ? (
+              <span className="text-success">✔ API Key detected from local environment configuration.</span>
+            ) : isKeyConfigured ? (
+              <span className="text-success">✔ API Key securely cached in your local browser storage.</span>
+            ) : (
+              <span className="text-warning">⚠ A free key is required. Get one at <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)' }}>Google AI Studio</a>.</span>
+            )}
+          </p>
         </div>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginOpt: 0 }}>
-          {import.meta.env.VITE_GEMINI_API_KEY ? (
-            <span className="text-success">✔ API Key detected from local environment configuration.</span>
-          ) : isKeyConfigured ? (
-            <span className="text-success">✔ API Key securely cached in your local browser storage.</span>
-          ) : (
-            <span className="text-warning">⚠ A free key is required. Get one at <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)' }}>Google AI Studio</a>.</span>
-          )}
-        </p>
-      </div>
+      )}
 
       {errorMsg && (
         <div style={{ backgroundColor: 'rgba(255, 75, 75, 0.1)', border: '1px solid var(--danger-color)', padding: '1rem', borderRadius: '8px', maxWidth: '600px', margin: '1rem auto', color: 'var(--danger-color)' }}>
@@ -187,7 +191,7 @@ function App() {
           <div className="role-desc">The Kitchen Heat. Survive broken equipment, shortages, and intense heat. Path to Executive Chef.</div>
         </div>
       </div>
-      {!isKeyConfigured && (
+      {!isKeyConfigured && !import.meta.env.PROD && (
         <p style={{ marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           * Configure your Gemini API Key in the panel above to unlock role selection.
         </p>

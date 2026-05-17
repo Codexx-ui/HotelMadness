@@ -1,44 +1,7 @@
-// src/services/aiService.js
+// api/game.js
+// Vercel Serverless Function (Node.js)
 
 const SYSTEM_PROMPT = `
-# GAME DESIGN DOCUMENT & SYSTEM INSTRUCTION: HOTEL MANAGER RPG
-Role: Advanced Dungeon Master / Highly Complex Game State Engine
-Setting: High-Stakes Modern Greek Hotel Simulation (Intrigue, Spies, and Toxic Executive Management)
-`; // System prompt is now handled primarily by the server backend, but we keep it here for local fallback.
-
-export async function generateNextState(playerInput, currentStateData) {
-  // 1. IN PRODUCTION: Securely use our Vercel Serverless Function Proxy
-  if (import.meta.env.PROD) {
-    try {
-      const response = await fetch('/api/game', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ playerInput, currentStateData })
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || `API Error: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Production API Proxy Error:", error);
-      throw error;
-    }
-  }
-
-  // 2. IN LOCAL DEVELOPMENT: Fallback to direct client-side Google API call
-  // This allows the user to run 'npm run dev' locally using .env.local without Vercel CLI setup.
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key');
-  if (!apiKey) {
-    throw new Error("Missing Gemini API Key. Please provide one in .env.local or the local setup panel.");
-  }
-
-  // Define full system prompt for local fallback
-  const fullSystemPrompt = `
 # GAME DESIGN DOCUMENT & SYSTEM INSTRUCTION: HOTEL MANAGER RPG
 Role: Advanced Dungeon Master / Highly Complex Game State Engine
 Setting: High-Stakes Modern Greek Hotel Simulation (Intrigue, Spies, and Toxic Executive Management)
@@ -85,7 +48,25 @@ You must track and output these exact metrics inside a STRICT JSON object. Do NO
 When the player sends: "START: [ROLE]", initialize the game at Act 1 (The Interview) for that specific role, setting initial stats (Cash: 50, Stress: 10, Reputation: 50, Staff Relations: 0, Alcohol Warnings: 0), setting the shift to 'Πρωινή Βάρδια', and providing the opening story text and the first 3 interview choices using the schema above.
 `;
 
-  let promptStr = fullSystemPrompt + "\n\n";
+export default async function handler(req, res) {
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Server configuration error: Missing GEMINI_API_KEY.' });
+  }
+
+  const { playerInput, currentStateData } = req.body;
+
+  if (!playerInput) {
+    return res.status(400).json({ error: 'Missing playerInput in request body.' });
+  }
+
+  // Construct the prompt string with current state
+  let promptStr = SYSTEM_PROMPT + "\n\n";
   if (currentStateData) {
     promptStr += `CURRENT STATE SUMMARY:
 Stress: ${currentStateData.stress}
@@ -119,16 +100,22 @@ Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      const errText = await response.text();
+      throw new Error(`Google Gemini API responded with status ${response.status}: ${errText}`);
     }
 
     const data = await response.json();
     const textResp = data.candidates[0].content.parts[0].text;
+    
+    // Parse the JSON (clean markdown blocks if present)
     const cleanJsonString = textResp.replace(/```json/g, '').replace(/```/g, '').trim();
-    return JSON.parse(cleanJsonString);
+    const parsedData = JSON.parse(cleanJsonString);
+
+    // Return the response to the client
+    return res.status(200).json(parsedData);
 
   } catch (error) {
-    console.error("Local AI Fallback Error:", error);
-    throw error;
+    console.error("Vercel Serverless Function Error:", error);
+    return res.status(500).json({ error: 'Failed to generate game state: ' + error.message });
   }
 }
