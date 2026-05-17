@@ -4,7 +4,8 @@ import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
-import { ChefHat, Coffee, Hotel, ShieldAlert } from 'lucide-react';
+import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX } from 'lucide-react';
+import { audioService } from './services/audioService';
 
 const INITIAL_STATE = {
   stress: 10,
@@ -31,11 +32,24 @@ function App() {
   const [nicknameConfirmed, setNicknameConfirmed] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   const [showIntro, setShowIntro] = useState(!sessionStorage.getItem('hotel_intro_seen'));
+  const [isAudioMuted, setIsAudioMuted] = useState(audioService.isMuted());
   // Supabase Authentication state
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [hasCloudSave, setHasCloudSave] = useState(false);
   const [cloudSaveData, setCloudSaveData] = useState(null);
+
+  // Auto-play music on first click if intro is already seen
+  useEffect(() => {
+    if (!showIntro) {
+      const handleFirstInteraction = () => {
+        audioService.start();
+        document.removeEventListener('click', handleFirstInteraction);
+      };
+      document.addEventListener('click', handleFirstInteraction);
+      return () => document.removeEventListener('click', handleFirstInteraction);
+    }
+  }, [showIntro]);
 
   // Monitor Supabase Authentication
   useEffect(() => {
@@ -409,6 +423,7 @@ function App() {
           onClick={() => {
             sessionStorage.setItem('hotel_intro_seen', 'true');
             setShowIntro(false);
+            audioService.start();
           }}
           style={{
             backgroundColor: 'var(--accent-color)',
@@ -434,6 +449,7 @@ function App() {
             onClick={() => {
               sessionStorage.setItem('hotel_intro_seen', 'true');
               setShowIntro(false);
+              audioService.start();
             }}
             style={{
               background: 'transparent',
@@ -585,7 +601,32 @@ function App() {
           <h1 style={{ margin: 0 }}>Hotel Madness</h1>
           <p style={{ margin: '0.25rem 0 0 0' }}>Προηγμένος Εξομοιωτής Εταιρικής Διοίκησης Ξενοδοχείων</p>
         </div>
-        <Auth session={session} loading={authLoading} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button
+            onClick={() => {
+              const muted = audioService.toggleMute();
+              setIsAudioMuted(muted);
+            }}
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--panel-border)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: isAudioMuted ? 'var(--text-secondary)' : 'var(--accent-color)',
+              boxShadow: isAudioMuted ? 'none' : '0 0 10px rgba(102, 252, 241, 0.2)',
+              transition: 'all 0.2s'
+            }}
+            title={isAudioMuted ? "Unmute Music" : "Mute Music"}
+          >
+            {isAudioMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+          </button>
+          <Auth session={session} loading={authLoading} />
+        </div>
       </div>
 
       <div className="game-layout">
