@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Dashboard from './components/Dashboard';
 import EventTerminal from './components/EventTerminal';
+import Auth from './components/Auth';
+import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
 import { ChefHat, Coffee, Hotel, ShieldAlert } from 'lucide-react';
 
@@ -25,23 +27,114 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [nickname, setNickname] = useState(localStorage.getItem('player_nickname') || '');
-  const [nicknameConfirmed, setNicknameConfirmed] = useState(false);
+  // Supabase Authentication state
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [hasCloudSave, setHasCloudSave] = useState(false);
+  const [cloudSaveData, setCloudSaveData] = useState(null);
 
-  // Load saved game on startup
+  // Monitor Supabase Authentication
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+      if (session) {
+        // Pre-fill nickname with Google display name
+        const googleName = session.user.user_metadata?.full_name || '';
+        if (googleName && !nickname) {
+          setNickname(googleName);
+        }
+        checkCloudSave(session);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setAuthLoading(false);
+      if (session) {
+        const googleName = session.user.user_metadata?.full_name || '';
+        if (googleName && !nickname) {
+          setNickname(googleName);
+        }
+        checkCloudSave(session);
+      } else {
+        setHasCloudSave(false);
+        setCloudSaveData(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkCloudSave = async (currentSession) => {
+    if (!currentSession) return;
+    try {
+      const response = await fetch('/api/load', {
+        headers: {
+          'Authorization': `Bearer ${currentSession.access_token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.save) {
+          setCloudSaveData(data.save);
+          setHasCloudSave(true);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching cloud save:', err);
+    }
+  };
+
+  // Load saved game from cloud or local
   const savedGame = (() => { try { return JSON.parse(localStorage.getItem('hotel_saved_game')); } catch { return null; } })();
   const [hasSavedGame, setHasSavedGame] = useState(!!(savedGame && savedGame.gameStarted && !savedGame.gameOver));
 
-  // Auto-save game state to localStorage after every turn
+  // Sync to database and local storage after every turn
   useEffect(() => {
     if (gameStarted && !gameOver) {
       localStorage.setItem('hotel_saved_game', JSON.stringify({ gameState, sceneData, gameStarted, nickname }));
+      
+      // If user is logged in, sync to Supabase server in background
+      if (session) {
+        fetch('/api/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            nickname,
+            gameState,
+            sceneData,
+            role: gameState.role
+          })
+        }).catch(err => console.error('Auto-save to server failed:', err));
+      }
     }
     if (gameOver) {
       localStorage.removeItem('hotel_saved_game');
       setHasSavedGame(false);
+      setHasCloudSave(false);
+      
+      // If logged in, delete or clear save on server
+      if (session) {
+        fetch('/api/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            nickname: null,
+            gameState: null,
+            sceneData: null,
+            role: null
+          })
+        }).catch(err => console.error('Reset save on server failed:', err));
+      }
     }
-  }, [gameState, sceneData, gameOver]);
+  }, [gameState, sceneData, gameOver, session]);
 
   const loadSavedGame = () => {
     if (savedGame) {
@@ -51,6 +144,17 @@ function App() {
       setNicknameConfirmed(true);
       setGameStarted(true);
       setHasSavedGame(false);
+    }
+  };
+
+  const loadCloudSave = () => {
+    if (cloudSaveData) {
+      setGameState(cloudSaveData.game_state);
+      setSceneData(cloudSaveData.scene_data);
+      setNickname(cloudSaveData.nickname || '');
+      setNicknameConfirmed(true);
+      setGameStarted(true);
+      setHasCloudSave(false);
     }
   };
 
@@ -187,10 +291,34 @@ function App() {
         </button>
       </div>
 
-      {hasSavedGame && savedGame && (
+      {hasCloudSave && cloudSaveData && (
+        <div style={{ marginTop: '1.5rem', textAlign: 'center', backgroundColor: 'rgba(66, 133, 244, 0.05)', border: '1px solid rgba(66, 133, 244, 0.2)', padding: '1rem', borderRadius: '8px', maxWidth: '420px', margin: '1.5rem auto' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem', marginTop: 0 }}>
+            ☁ Βρέθηκε Cloud Save ως <strong style={{ color: 'var(--accent-color)' }}>{cloudSaveData.nickname}</strong> ({cloudSaveData.role})
+          </p>
+          <button
+            onClick={loadCloudSave}
+            style={{
+              backgroundColor: 'var(--accent-color)',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '0.6rem 1.5rem',
+              color: '#fff',
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            ▶ Συνέχεια από το Cloud
+          </button>
+        </div>
+      )}
+
+      {hasSavedGame && savedGame && !hasCloudSave && (
         <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-            📂 Βρέθηκε αποθηκευμένο παιχνίδι ως <strong style={{ color: 'var(--accent-color)' }}>{savedGame.nickname}</strong> ({savedGame.gameState?.role})
+            📂 Βρέθηκε τοπικό παιχνίδι ως <strong style={{ color: 'var(--accent-color)' }}>{savedGame.nickname}</strong> ({savedGame.gameState?.role})
           </p>
           <button
             onClick={loadSavedGame}
@@ -208,6 +336,17 @@ function App() {
           >
             ▶ Συνέχεια από εκεί που έμεινα
           </button>
+        </div>
+      )}
+
+      {!session && (
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+            💡 Συνδέσου με Google για να αποθηκεύεται το παιχνίδι σου αυτόματα στον server!
+          </p>
+          <div style={{ display: 'inline-block' }}>
+            <Auth session={session} loading={authLoading} />
+          </div>
         </div>
       )}
     </div>
@@ -336,9 +475,12 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="header">
-        <h1>Hotel Madness</h1>
-        <p>Advanced Corporate Management Simulator</p>
+      <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '2rem' }}>
+        <div>
+          <h1 style={{ margin: 0 }}>Hotel Madness</h1>
+          <p style={{ margin: '0.25rem 0 0 0' }}>Advanced Corporate Management Simulator</p>
+        </div>
+        <Auth session={session} loading={authLoading} />
       </div>
 
       <div className="game-layout">
