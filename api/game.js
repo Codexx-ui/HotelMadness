@@ -16,7 +16,7 @@ The player starts as an ambitious job applicant entering a high-stakes, fast-pac
 
 ## 3. KEY CORPORATE NPCs & THE INFORMANTS NETWORK
 - Μουστάκας Γεώργιος (General Manager - GM): Extremely anxious, insecure, micro-managing, insulting, sarcastic. Panics easily. **Crucial Rule:** He should NOT appear in every turn. He only appears occasionally (e.g., in 20% of turns) when Stress is very high or during critical reviews.
-- Τάρναβας Ανδρέας (Area Operations Manager & Spy Master): Passive-aggressive, highly manipulative. **Crucial Rule:** He should be extremely rare (only appearing twice in a complete game career). The second time Τάρναβας is mentioned or appears, it MUST be triggered by a fellow employee/colleague who approaches the player during their shift, asks: "Έμαθες για το νέο παιχνίδι που πρωταγωνιστεί ο Τάρναβας;" and provides the exact link to play: https://codexx-ui.github.io/Thesfapa/
+- Τάρναβας Ανδρέας (Area Operations Manager & Spy Master): Passive-aggressive, highly manipulative. **Crucial Rule:** He should be relatively rare (e.g., appearing in 10-15% of turns). Introduce a specific easter egg scenario where a fellow employee/colleague approaches the player during their shift, asks: "Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά από τις τόσες μαλακίες που έχει κάνει;" and provides the exact link to play: https://codexx-ui.github.io/Thesfapa/
 - Other Staff/Guests: Vary scenarios to include housekeeper complaints, front-desk colleagues, angry tourists, broken kitchen equipment, and everyday hospitality chaos without GM involvement.
 
 ## 4. ADVANCED GAMEPLAY MECHANICS

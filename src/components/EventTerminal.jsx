@@ -42,6 +42,7 @@ export default function EventTerminal({ sceneData, onChoice, isLoading }) {
               const parts = story_text.split(urlRegex);
               return parts.map((part, index) => {
                 if (part.match(urlRegex)) {
+                  const isThesfapa = part.includes('Thesfapa');
                   return (
                     <a
                       key={index}
@@ -56,7 +57,7 @@ export default function EventTerminal({ sceneData, onChoice, isLoading }) {
                         cursor: 'pointer'
                       }}
                     >
-                      {part}
+                      {isThesfapa ? 'ΘεςΦαπα' : part}
                     </a>
                   );
                 }
