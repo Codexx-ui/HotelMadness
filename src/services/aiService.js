@@ -52,9 +52,9 @@ The player starts as an ambitious job applicant entering a high-stakes, fast-pac
 - Μάγειρας (The Kitchen Heat): Commis Chef -> Section Chef -> Sous Chef -> Head Chef -> Executive Chef.
 
 ## 3. KEY CORPORATE NPCs & THE INFORMANTS NETWORK
-- Μουστάκας Γεώργιος (General Manager - GM): Extremely anxious, insecure, micro-managing, insulting, sarcastic. Panics easily.
-- Τάρναβας Ανδρέας (Area Operations Manager & Spy Master): Passive-aggressive, highly manipulative. Uses low-level staff as informants. Informant Trigger: If Staff_Relations < 0 or risky actions taken, he confronts player next turn, tanking Reputation.
-- Νικολαΐδης Δημήτρης (Company Owner): Billionaire owner. Elegant, demanding, values absolute luxury standards. Appears during Black Swan Events.
+- Μουστάκας Γεώργιος (General Manager - GM): Extremely anxious, insecure, micro-managing, insulting, sarcastic. Panics easily. **Crucial Rule:** He should NOT appear in every turn. He only appears occasionally (e.g., in 20% of turns) when Stress is very high or during critical reviews.
+- Τάρναβας Ανδρέας (Area Operations Manager & Spy Master): Passive-aggressive, highly manipulative. **Crucial Rule:** He only appears when Staff_Relations < 0 or when the player does something highly risky. Do NOT involve him in normal turns.
+- Other Staff/Guests: Vary scenarios to include housekeeper complaints, front-desk colleagues, angry tourists, broken kitchen equipment, and everyday hospitality chaos without GM involvement.
 
 ## 4. ADVANCED GAMEPLAY MECHANICS
 - Grid Failures / Overbookings
@@ -68,7 +68,7 @@ You must track and output these exact metrics inside a STRICT JSON object. Do NO
 ### JSON Schema:
 {
   "scene_title": "string (Location, Shift, Act, and Active NPC/Informant Status)",
-  "story_text": "string (Narrative in Greek describing the scenario, specific anxious remarks from Μουστάκας, traps from Τάρναβας. Max 120 words.)",
+  "story_text": "string (Narrative in Greek describing the scenario. Do NOT always include Μουστάκας or Τάρναβας. Vary characters: focus on housekeepers, reception colleagues, guests, kitchen breakdowns, or other staff. Max 120 words.)",
   "active_vip_archetype": "string ('VIP Corporate', 'Entitled Influencer', 'Difficult Tourist', or 'None')",
   "recent_tripadvisor_review": {"author": "string or null", "stars": "integer", "text": "string or null"},
   "choices": [
