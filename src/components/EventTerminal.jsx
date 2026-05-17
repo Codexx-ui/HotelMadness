@@ -57,7 +57,7 @@ export default function EventTerminal({ sceneData, onChoice, isLoading }) {
                         cursor: 'pointer'
                       }}
                     >
-                      {isThesfapa ? 'ΘεςΦαπα' : part}
+                      {isThesfapa ? 'Θες Φαπα ✨ παίξε τώρα!' : part}
                     </a>
                   );
                 }
