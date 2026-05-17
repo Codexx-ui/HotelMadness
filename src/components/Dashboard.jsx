@@ -1,7 +1,7 @@
 import React from 'react';
 import { Briefcase, Coins, HeartPulse, Star, Users, AlertTriangle, ShieldAlert, BarChart3, TrendingUp, TrendingDown } from 'lucide-react';
 
-export default function Dashboard({ state }) {
+export default function Dashboard({ state, nickname }) {
   // Helpers for progress colors
   const getStressColor = (val) => {
     if (val < 50) return 'var(--success-color)';
@@ -19,9 +19,15 @@ export default function Dashboard({ state }) {
     <div className="panel dashboard-panel">
       <div className="stat-group">
         <div className="stat-group-title">Player Profile</div>
+        {nickname && (
+          <div className="stat-item">
+            <span className="stat-label">👤 Nickname</span>
+            <span className="stat-value" style={{ color: 'var(--accent-color)' }}>{nickname}</span>
+          </div>
+        )}
         <div className="stat-item">
           <span className="stat-label"><Briefcase size={16} color="var(--accent-color)" /> Role</span>
-          <span className="stat-value">{state.role || 'Unassigned'}</span>
+          <span className="stat-value">{state.role || '—'}</span>
         </div>
         <div className="stat-item">
           <span className="stat-label"><Star size={16} color="var(--warning-color)" /> Shift</span>

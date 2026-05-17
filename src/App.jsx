@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dashboard from './components/Dashboard';
 import EventTerminal from './components/EventTerminal';
 import { generateNextState } from './services/aiService';
@@ -25,6 +25,34 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [nickname, setNickname] = useState(localStorage.getItem('player_nickname') || '');
+  const [nicknameConfirmed, setNicknameConfirmed] = useState(false);
+
+  // Load saved game on startup
+  const savedGame = (() => { try { return JSON.parse(localStorage.getItem('hotel_saved_game')); } catch { return null; } })();
+  const [hasSavedGame, setHasSavedGame] = useState(!!(savedGame && savedGame.gameStarted && !savedGame.gameOver));
+
+  // Auto-save game state to localStorage after every turn
+  useEffect(() => {
+    if (gameStarted && !gameOver) {
+      localStorage.setItem('hotel_saved_game', JSON.stringify({ gameState, sceneData, gameStarted, nickname }));
+    }
+    if (gameOver) {
+      localStorage.removeItem('hotel_saved_game');
+      setHasSavedGame(false);
+    }
+  }, [gameState, sceneData, gameOver]);
+
+  const loadSavedGame = () => {
+    if (savedGame) {
+      setGameState(savedGame.gameState);
+      setSceneData(savedGame.sceneData);
+      setNickname(savedGame.nickname || '');
+      setNicknameConfirmed(true);
+      setGameStarted(true);
+      setHasSavedGame(false);
+    }
+  };
 
   // State to hold the API key retrieved from local storage or environment (bypassed in production)
   const [apiKeyInput, setApiKeyInput] = useState(localStorage.getItem('gemini_api_key') || '');
@@ -53,11 +81,12 @@ function App() {
         return;
       }
     }
-    setGameState({ ...INITIAL_STATE, role: roleKey });
+    const newState = { ...INITIAL_STATE, role: roleKey, nickname };
+    setGameState(newState);
     setGameStarted(true);
     setGameOver(false);
     setErrorMsg('');
-    await processTurn(`START: ${roleKey}`, null);
+    await processTurn(`START: ${roleKey}. Player nickname: ${nickname || 'Άγνωστος'}`, newState);
   };
 
   const handleChoice = async (choice) => {
@@ -99,9 +128,94 @@ function App() {
     }
   };
 
+  const renderNicknameScreen = () => (
+    <div className="role-selection">
+      <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Καλώς ήρθατε</h2>
+      <p style={{ color: 'var(--text-secondary)' }}>Πώς σε λένε, νέε υπάλληλε;</p>
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid var(--panel-border)',
+        borderRadius: '12px',
+        padding: '2rem',
+        maxWidth: '420px',
+        margin: '2rem auto',
+        textAlign: 'center'
+      }}>
+        <label style={{ display: 'block', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: '1rem', fontWeight: 600 }}>
+          Nickname
+        </label>
+        <input
+          type="text"
+          placeholder="π.χ. Νίκος, Maria, Chef..."
+          value={nickname}
+          maxLength={20}
+          autoFocus
+          onChange={(e) => setNickname(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && nickname.trim()) { localStorage.setItem('player_nickname', nickname.trim()); setNicknameConfirmed(true); } }}
+          style={{
+            width: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            border: '1px solid var(--accent-color)',
+            borderRadius: '6px',
+            padding: '0.75rem 1rem',
+            color: '#fff',
+            fontFamily: 'inherit',
+            fontSize: '1.1rem',
+            textAlign: 'center',
+            outline: 'none',
+            boxSizing: 'border-box'
+          }}
+        />
+        <button
+          onClick={() => { localStorage.setItem('player_nickname', nickname.trim()); setNicknameConfirmed(true); }}
+          disabled={!nickname.trim()}
+          style={{
+            marginTop: '1.5rem',
+            backgroundColor: nickname.trim() ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
+            border: 'none',
+            borderRadius: '6px',
+            padding: '0.75rem 2rem',
+            color: '#fff',
+            fontSize: '1rem',
+            fontWeight: 600,
+            cursor: nickname.trim() ? 'pointer' : 'not-allowed',
+            transition: 'all 0.2s',
+            letterSpacing: '0.05em'
+          }}
+        >
+          Έτοιμος →
+        </button>
+      </div>
+
+      {hasSavedGame && savedGame && (
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+            📂 Βρέθηκε αποθηκευμένο παιχνίδι ως <strong style={{ color: 'var(--accent-color)' }}>{savedGame.nickname}</strong> ({savedGame.gameState?.role})
+          </p>
+          <button
+            onClick={loadSavedGame}
+            style={{
+              backgroundColor: 'transparent',
+              border: '1px solid var(--accent-color)',
+              borderRadius: '6px',
+              padding: '0.6rem 1.5rem',
+              color: 'var(--accent-color)',
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            ▶ Συνέχεια από εκεί που έμεινα
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
   const renderRoleSelection = () => (
     <div className="role-selection">
-      <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Select Your Path</h2>
+      <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Επίλεξε τον Ρόλο σου, <span style={{ color: '#fff' }}>{nickname}</span></h2>
       <p style={{ color: 'var(--text-secondary)' }}>Enter the high-stakes world of Greek Hospitality.</p>
       
       {/* Premium API Key Configuration Panel (only in local development) */}
@@ -216,7 +330,7 @@ function App() {
         <div>Final Rep: <span className="text-warning">{gameState.reputation}%</span></div>
         <div>Cash: <span className="text-success">€{gameState.cash}</span></div>
       </div>
-      <button className="btn-restart" onClick={() => setGameStarted(false)}>Apply for a new Job</button>
+      <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setNickname(localStorage.getItem('player_nickname') || ''); }}>Apply for a new Job</button>
     </div>
   );
 
@@ -230,7 +344,7 @@ function App() {
       <div className="game-layout">
         {!gameStarted ? (
           <div style={{ gridColumn: '1 / -1' }}>
-            {renderRoleSelection()}
+            {!nicknameConfirmed ? renderNicknameScreen() : renderRoleSelection()}
           </div>
         ) : gameOver ? (
           <div style={{ gridColumn: '1 / -1' }}>
@@ -238,7 +352,7 @@ function App() {
           </div>
         ) : (
           <>
-            <Dashboard state={gameState} />
+            <Dashboard state={gameState} nickname={nickname} />
             <EventTerminal 
               sceneData={sceneData} 
               onChoice={handleChoice} 
