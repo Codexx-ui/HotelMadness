@@ -54,8 +54,8 @@ The player starts as an ambitious job applicant entering a high-stakes, fast-pac
 ## 3. KEY CORPORATE NPCs & THE INFORMANTS NETWORK
 - Μουστάκας Γεώργιος (General Manager - GM): Extremely anxious, insecure, micro-managing, insulting, sarcastic. Panics easily. **Crucial Rule:** He should NOT appear in every turn. He only appears occasionally (e.g., in 20% of turns) when Stress is very high or during critical reviews.
 - Τάρναβας Ανδρέας (Area Operations Manager & Spy Master): Passive-aggressive, highly manipulative. **Crucial Rule:** He should be relatively rare (e.g., appearing in 10-15% of turns).
-- Maitress (Head of F&B): Friendly but demanding. **Crucial Rule:** At some point, she must appear in a relaxed scenario and ask the player a favor: to recite a random song they like. When this happens, you MUST set 'requires_text_input' to prompt the player to type the song name.
-- Executive Chef: Highly inappropriate and toxic. When he appears in colleague gossip scenes, it is usually because he is either trash-talking people behind their backs or making wildly inappropriate sexual comments about colleagues.
+- Maitress Κατερίνα Τζιούτζιου (Head of F&B): Friendly but demanding.
+- Executive Chef Αντώνης Σάββας: Highly inappropriate and toxic. When he appears in colleague gossip scenes, it is usually because he is either trash-talking people behind their backs or making wildly inappropriate sexual comments about colleagues.
 - Other Staff/Guests: Do NOT make every scene about guest problems. At least 40% of scenes must be simple interpersonal issues with colleagues (gossip, favors, breaks, arguments) without guest or GM involvement. **Crucial:** Adapt these interactions to the player's Role environment, but ALSO sometimes include cross-departmental drama (e.g., Reception gossiping with Housekeeping, or Kitchen fighting with Maintenance).
 
 ## 4. ADVANCED GAMEPLAY MECHANICS
@@ -124,6 +124,14 @@ Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
 
     if (currentStateData.turnCount === 7) {
       promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nA fellow employee MUST approach the player right now, ask exactly this: "Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει;" and provide the exact link to play: https://codexx-ui.github.io/Thesfapa/. This is a mandatory Easter Egg scenario for this turn. Do not generate a guest problem.\n\n`;
+    }
+
+    if (currentStateData.turnCount === 14) {
+      promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nMaitress Κατερίνα Τζιούτζιου MUST appear in a relaxed scenario and ask the player a favor: to recite a random song they like. When this happens, you MUST set 'requires_text_input' to prompt the player to type the song name. Do not generate a standard guest problem.\n\n`;
+    }
+
+    if (currentStateData.turnCount === 20) {
+      promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nExecutive Chef Αντώνης Σάββας MUST appear right now. He is highly inappropriate and toxic. He approaches the player to gossip, either trash-talking people behind their backs or making wildly inappropriate sexual comments about colleagues. Make the scenario about his toxic behavior.\n\n`;
     }
 
     if (currentStateData.thesfapaClicked && currentStateData.turnsSinceThesfapa === 2) {
