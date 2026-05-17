@@ -37,6 +37,7 @@ function App() {
   const [nicknameConfirmed, setNicknameConfirmed] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   const [showIntro, setShowIntro] = useState(!sessionStorage.getItem('hotel_intro_seen'));
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(audioService.isMuted());
   // Supabase Authentication state
   const [session, setSession] = useState(null);
@@ -210,10 +211,7 @@ function App() {
     }
     const newState = { ...INITIAL_STATE, role: roleKey, nickname };
     setGameState(newState);
-    setGameStarted(true);
-    setGameOver(false);
-    setErrorMsg('');
-    await processTurn(`START: ${roleKey}. Player nickname: ${nickname || 'Άγνωστος'}`, newState);
+    setShowDisclaimer(true);
   };
 
   const handleThesfapaClick = () => {
@@ -681,6 +679,32 @@ function App() {
     </div>
   );
 
+  const renderDisclaimerScreen = () => (
+    <div className="intro-screen">
+      <div className="intro-content">
+        <h1>Καλώς ήρθες στην Οικογένεια της Atlantica</h1>
+        <p style={{ marginTop: '2rem', fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '2rem auto' }}>
+          Οποιαδήποτε ομοιότητα με πρόσωπα, καταστάσεις ή γεγονότα είναι εντελώς συμπτωματική και δεν ανταποκρίνεται στην πραγματικότητα.
+          <br /><br />
+          Αν όμως νομίζεις ότι κάτι σου θυμίζει... μάλλον έχεις δίκιο.
+        </p>
+        <button 
+          className="btn-primary" 
+          style={{ marginTop: '2rem', padding: '1rem 3rem', fontSize: '1.2rem' }}
+          onClick={async () => {
+             setShowDisclaimer(false);
+             setGameStarted(true);
+             setGameOver(false);
+             setErrorMsg('');
+             await processTurn(`START: ${gameState.role}. Player nickname: ${nickname || 'Άγνωστος'}`, gameState);
+          }}
+        >
+          Συνέχεια
+        </button>
+      </div>
+    </div>
+  );
+
   if (showIntro) {
     return renderIntroScreen();
   }
@@ -727,7 +751,7 @@ function App() {
           </div>
         ) : !gameStarted ? (
           <div style={{ gridColumn: '1 / -1' }}>
-            {!nicknameConfirmed ? renderNicknameScreen() : renderRoleSelection()}
+            {!nicknameConfirmed ? renderNicknameScreen() : (showDisclaimer ? renderDisclaimerScreen() : renderRoleSelection())}
           </div>
         ) : gameOver ? (
           <div style={{ gridColumn: '1 / -1' }}>
