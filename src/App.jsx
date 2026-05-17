@@ -349,7 +349,7 @@ function App() {
     <div className="role-selection" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
       <h2 style={{ fontSize: '2.5rem', color: 'var(--accent-color)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>🏨 Hotel Madness</h2>
       <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 2.5rem auto', lineHeight: '1.6' }}>
-        Welcome to the premium Greek Hospitality simulator. Survive GM Moustakas, deal with overbookings, rude VIPs, and extreme workplace stress.
+        Καλώς ήρθατε στον κορυφαίο εξομοιωτή Ελληνικής Φιλοξενίας. Επιβιώστε από τον GM Μουστάκα, διαχειριστείτε υπερκρατήσεις, αγενείς VIP και το ακραίο εργασιακό stress.
       </p>
       
       <div style={{
@@ -456,7 +456,7 @@ function App() {
   const renderRoleSelection = () => (
     <div className="role-selection">
       <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Επίλεξε τον Ρόλο σου, <span style={{ color: '#fff' }}>{nickname}</span></h2>
-      <p style={{ color: 'var(--text-secondary)' }}>Enter the high-stakes world of Greek Hospitality.</p>
+      <p style={{ color: 'var(--text-secondary)' }}>Μπείτε στον γεμάτο προκλήσεις κόσμο της Ελληνικής Ξενοδοχειακής Βιομηχανίας.</p>
       
       {/* Premium API Key Configuration Panel (only in local development) */}
       {!import.meta.env.PROD && (
@@ -583,7 +583,7 @@ function App() {
       <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ margin: 0 }}>Hotel Madness</h1>
-          <p style={{ margin: '0.25rem 0 0 0' }}>Advanced Corporate Management Simulator</p>
+          <p style={{ margin: '0.25rem 0 0 0' }}>Προηγμένος Εξομοιωτής Εταιρικής Διοίκησης Ξενοδοχείων</p>
         </div>
         <Auth session={session} loading={authLoading} />
       </div>
