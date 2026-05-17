@@ -27,6 +27,8 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [nickname, setNickname] = useState(localStorage.getItem('player_nickname') || '');
+  const [nicknameConfirmed, setNicknameConfirmed] = useState(false);
   // Supabase Authentication state
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
