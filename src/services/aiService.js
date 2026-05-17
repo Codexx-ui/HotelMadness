@@ -99,6 +99,10 @@ Alcohol Warnings: ${currentStateData.alcoholWarnings}
 Occupancy: ${currentStateData.occupancy}
 Financial Metric: ${currentStateData.financialMetric}
 Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
+
+    if (currentStateData.thesfapaClicked && currentStateData.turnsSinceThesfapa === 2) {
+      promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nΤάρναβας MUST appear extremely angry in this scene. He tells the player that he saw them from the security cameras playing the 'Thesfapa' game and "του έσπασες τα μούτρα" (smashing his face in). He demands an explanation and severely threatens the player. Offer choices to defend yourself, apologize, or blame someone else.\n\n`;
+    }
   }
 
   promptStr += `PLAYER INPUT:\n${playerInput}\n\nGENERATE EXACT JSON RESPONSE ACCORDING TO SCHEMA:`;

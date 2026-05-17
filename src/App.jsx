@@ -18,7 +18,9 @@ const INITIAL_STATE = {
   alcoholWarnings: 0,
   occupancy: 65,
   financialMetric: 45,
-  staffTurnover: 5
+  staffTurnover: 5,
+  thesfapaClicked: false,
+  turnsSinceThesfapa: 0
 };
 
 function App() {
@@ -211,8 +213,21 @@ function App() {
     await processTurn(`START: ${roleKey}. Player nickname: ${nickname || 'Άγνωστος'}`, newState);
   };
 
+  const handleThesfapaClick = () => {
+    setGameState(prev => ({
+      ...prev,
+      thesfapaClicked: true,
+      turnsSinceThesfapa: 0
+    }));
+  };
+
   const handleChoice = async (choice) => {
-    await processTurn(`I choose option ${choice.id}: ${choice.text}`, gameState);
+    const updatedState = { ...gameState };
+    if (updatedState.thesfapaClicked) {
+      updatedState.turnsSinceThesfapa += 1;
+    }
+    setGameState(updatedState);
+    await processTurn(`I choose option ${choice.id}: ${choice.text}`, updatedState);
   };
 
   const processTurn = async (playerInput, currentState) => {
@@ -648,7 +663,8 @@ function App() {
             <EventTerminal 
               sceneData={sceneData} 
               onChoice={handleChoice} 
-              isLoading={isLoading} 
+              isLoading={isLoading}
+              onThesfapaClick={handleThesfapaClick}
             />
           </>
         )}

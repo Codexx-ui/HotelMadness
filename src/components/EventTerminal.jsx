@@ -1,7 +1,7 @@
 import React from 'react';
 import { MessageSquare, Star } from 'lucide-react';
 
-export default function EventTerminal({ sceneData, onChoice, isLoading }) {
+export default function EventTerminal({ sceneData, onChoice, isLoading, onThesfapaClick }) {
   if (!sceneData) {
     return (
       <div className="panel terminal-panel" style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -49,6 +49,11 @@ export default function EventTerminal({ sceneData, onChoice, isLoading }) {
                       href={part}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => {
+                        if (isThesfapa && onThesfapaClick) {
+                          onThesfapaClick();
+                        }
+                      }}
                       style={{
                         color: 'var(--accent-color)',
                         textDecoration: 'underline',
