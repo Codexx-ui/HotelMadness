@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, Coins, HeartPulse, Star, Users, AlertTriangle, ShieldAlert, BarChart3, TrendingUp, TrendingDown } from 'lucide-react';
+import { Briefcase, Coins, HeartPulse, Star, Users, AlertTriangle, ShieldAlert, BarChart3, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
 export default function Dashboard({ state, nickname }) {
   // Helpers for progress colors
@@ -15,6 +15,12 @@ export default function Dashboard({ state, nickname }) {
     return 'var(--danger-color)';
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="panel dashboard-panel">
       <div className="stat-group">
@@ -25,6 +31,10 @@ export default function Dashboard({ state, nickname }) {
             <span className="stat-value" style={{ color: 'var(--accent-color)' }}>{nickname}</span>
           </div>
         )}
+        <div className="stat-item">
+          <span className="stat-label"><Calendar size={16} color="var(--accent-color)" /> Date</span>
+          <span className="stat-value" style={{ fontWeight: 600, color: '#fff' }}>{formatDate(state.currentDate)}</span>
+        </div>
         <div className="stat-item">
           <span className="stat-label"><Briefcase size={16} color="var(--accent-color)" /> Role</span>
           <span className="stat-value">{state.role || '—'}</span>

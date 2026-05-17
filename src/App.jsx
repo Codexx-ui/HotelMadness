@@ -20,7 +20,9 @@ const INITIAL_STATE = {
   financialMetric: 45,
   staffTurnover: 5,
   thesfapaClicked: false,
-  turnsSinceThesfapa: 0
+  turnsSinceThesfapa: 0,
+  currentDate: '2026-02-01',
+  turnCount: 0
 };
 
 function App() {
@@ -226,6 +228,17 @@ function App() {
     if (updatedState.thesfapaClicked) {
       updatedState.turnsSinceThesfapa += 1;
     }
+    
+    // Calendar Progression
+    if (updatedState.turnCount === 0) {
+      updatedState.currentDate = '2026-04-25';
+    } else {
+      const current = new Date(updatedState.currentDate);
+      current.setDate(current.getDate() + 10);
+      updatedState.currentDate = current.toISOString().split('T')[0];
+    }
+    updatedState.turnCount += 1;
+
     setGameState(updatedState);
     await processTurn(`I choose option ${choice.id}: ${choice.text}`, updatedState);
   };

@@ -72,6 +72,7 @@ export default async function handler(req, res) {
   let promptStr = SYSTEM_PROMPT + "\n\n";
   if (currentStateData) {
     promptStr += `CURRENT STATE SUMMARY:
+Date: ${currentStateData.currentDate}
 Stress: ${currentStateData.stress}
 Reputation: ${currentStateData.reputation}
 Cash: ${currentStateData.cash}
@@ -83,6 +84,24 @@ Alcohol Warnings: ${currentStateData.alcoholWarnings}
 Occupancy: ${currentStateData.occupancy}
 Financial Metric: ${currentStateData.financialMetric}
 Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
+
+    // SEASONAL LOGIC INJECTION
+    if (currentStateData.currentDate) {
+      const current = new Date(currentStateData.currentDate);
+      const endOfSeason = new Date('2026-11-01');
+      if (current >= endOfSeason) {
+         promptStr += `CRITICAL CALENDAR INSTRUCTION: The date is ${currentStateData.currentDate}. The summer season is officially OVER. The hotel is closing for the winter. You MUST output a final wrap-up story summarizing the player's performance over the season and explicitly set "game_over": true to end the game successfully.\n\n`;
+      } else {
+         const month = current.getMonth() + 1; // 1-12
+         if (month === 4 || month === 5) {
+           promptStr += `SEASONAL CONTEXT: It's early in the season (Spring/May). Focus on opening preparations, new staff training, and low occupancy issues.\n\n`;
+         } else if (month === 7 || month === 8) {
+           promptStr += `SEASONAL CONTEXT: It's PEAK SUMMER SEASON (July/August). Occupancy is 100%. Chaos, heatwaves, overbookings, and extreme stress are the norm. Increase the intensity of events!\n\n`;
+         } else if (month === 9 || month === 10) {
+           promptStr += `SEASONAL CONTEXT: It's the end of the season (Autumn). Staff are exhausted, equipment is breaking down from wear and tear, and everyone just wants to go home.\n\n`;
+         }
+      }
+    }
 
     if (currentStateData.thesfapaClicked && currentStateData.turnsSinceThesfapa === 2) {
       promptStr += `CRITICAL EVENT INSTRUCTION FOR THIS EXACT TURN:\nΤάρναβας MUST appear extremely angry in this scene. He tells the player that he saw them from the security cameras playing the 'Thesfapa' game and "του έσπασες τα μούτρα" (smashing his face in). He demands an explanation and severely threatens the player. Offer choices to defend yourself, apologize, or blame someone else.\n\n`;
