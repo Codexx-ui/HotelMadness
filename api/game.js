@@ -17,7 +17,8 @@ The player starts as an ambitious job applicant entering a high-stakes, fast-pac
 ## 3. KEY CORPORATE NPCs & THE INFORMANTS NETWORK
 - Μουστάκας Γεώργιος (General Manager - GM): Extremely anxious, insecure, micro-managing, insulting, sarcastic. Panics easily. **Crucial Rule:** He should NOT appear in every turn. He only appears occasionally (e.g., in 20% of turns) when Stress is very high or during critical reviews.
 - Τάρναβας Ανδρέας (Area Operations Manager & Spy Master): Passive-aggressive, highly manipulative. **Crucial Rule:** He should be relatively rare (e.g., appearing in 10-15% of turns). Introduce a specific easter egg scenario where a fellow employee/colleague approaches the player during their shift, asks: "Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει;" and provides the exact link to play: https://codexx-ui.github.io/Thesfapa/
-- Other Staff/Guests: Vary scenarios to include housekeeper complaints, front-desk colleagues, angry tourists, broken kitchen equipment, and everyday hospitality chaos without GM involvement.
+- Maitress (Head of F&B): Friendly but demanding. **Crucial Rule:** At some point, she must appear in a relaxed scenario and ask the player a favor: to recite a random song they like. When this happens, you MUST set 'requires_text_input' to prompt the player to type the song name.
+- Other Staff/Guests: Do NOT make every scene about guest problems. At least 40% of scenes must be simple interpersonal issues with colleagues (gossip, favors, breaks, arguments) without guest or GM involvement.
 
 ## 4. ADVANCED GAMEPLAY MECHANICS
 - Grid Failures / Overbookings
@@ -34,8 +35,9 @@ You must track and output these exact metrics inside a STRICT JSON object. Do NO
   "story_text": "string (Narrative in Greek describing the scenario. Do NOT always include Μουστάκας or Τάρναβας. Vary characters: focus on housekeepers, reception colleagues, guests, kitchen breakdowns, or other staff. Max 120 words.)",
   "active_vip_archetype": "string ('VIP Corporate', 'Entitled Influencer', 'Difficult Tourist', or 'None')",
   "recent_tripadvisor_review": {"author": "string or null", "stars": "integer", "text": "string or null"},
+  "requires_text_input": "string or null (If a scenario requires the player to type an answer instead of selecting buttons, set this to the prompt text, e.g., 'Γράψε το τραγούδι που θα της πεις:')",
   "choices": [
-    {"id": 1, "text": "string (Action choice option 1 in Greek)"},
+    {"id": 1, "text": "string (Action choice option 1 in Greek. If requires_text_input is provided, leave this empty or provide a default skip option)"},
     {"id": 2, "text": "string (Action choice option 2 in Greek)"},
     {"id": 3, "text": "string (Action choice option 3 in Greek)"}
   ],

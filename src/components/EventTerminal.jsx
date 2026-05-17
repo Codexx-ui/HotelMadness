@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MessageSquare, Star } from 'lucide-react';
 
 export default function EventTerminal({ sceneData, onChoice, isLoading, onThesfapaClick }) {
+  const [inputText, setInputText] = useState('');
+
   if (!sceneData) {
     return (
       <div className="panel terminal-panel" style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -92,16 +94,63 @@ export default function EventTerminal({ sceneData, onChoice, isLoading, onThesfa
       </div>
 
       <div className="choices-container">
-        {choices && choices.map((choice) => (
-          <button 
-            key={choice.id} 
-            className="choice-btn"
-            onClick={() => onChoice(choice)}
-            disabled={isLoading}
-          >
-            {choice.text}
-          </button>
-        ))}
+        {sceneData.requires_text_input ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+            <p style={{ color: 'var(--accent-color)', fontWeight: 600, margin: 0 }}>
+              {sceneData.requires_text_input}
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input 
+                type="text" 
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Γράψε την απάντησή σου..."
+                style={{
+                  flex: 1,
+                  padding: '1rem',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(0,0,0,0.4)',
+                  border: '1px solid var(--panel-border)',
+                  color: 'var(--text-primary)',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)'
+                }}
+                disabled={isLoading}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && inputText.trim()) {
+                    onChoice({ id: 0, text: inputText.trim() });
+                    setInputText('');
+                  }
+                }}
+              />
+              <button
+                className="choice-btn"
+                style={{ width: 'auto', padding: '0 2rem', marginBottom: 0 }}
+                onClick={() => {
+                  if (inputText.trim()) {
+                    onChoice({ id: 0, text: inputText.trim() });
+                    setInputText('');
+                  }
+                }}
+                disabled={isLoading || !inputText.trim()}
+              >
+                Απάντηση
+              </button>
+            </div>
+          </div>
+        ) : (
+          choices && choices.map((choice) => (
+            <button 
+              key={choice.id} 
+              className="choice-btn"
+              onClick={() => onChoice(choice)}
+              disabled={isLoading}
+            >
+              {choice.text}
+            </button>
+          ))
+        )}
       </div>
     </div>
   );
