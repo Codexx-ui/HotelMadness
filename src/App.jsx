@@ -359,7 +359,10 @@ function App() {
         setGameOver(true);
       }
     } catch (error) {
-      setErrorMsg("Corporate Network Error: Failed to contact Management (API Error). Check your API Key.");
+      console.warn("AI Generation failed. Falling back to a hardcoded generic event.", error);
+      // Fallback to GENERAL_EVENTS to prevent the game from getting stuck
+      const randomGen = GENERAL_EVENTS[Math.floor(Math.random() * GENERAL_EVENTS.length)];
+      setCurrentScene({ ...randomGen });
     } finally {
       setIsLoading(false);
     }
