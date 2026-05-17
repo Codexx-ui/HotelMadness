@@ -35,7 +35,35 @@ export default function EventTerminal({ sceneData, onChoice, isLoading }) {
         </div>
 
         <div className="story-content">
-          <p>{story_text}</p>
+          <p>
+            {(() => {
+              if (!story_text) return null;
+              const urlRegex = /(https?:\/\/[^\s]+)/g;
+              const parts = story_text.split(urlRegex);
+              return parts.map((part, index) => {
+                if (part.match(urlRegex)) {
+                  return (
+                    <a
+                      key={index}
+                      href={part}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: 'var(--accent-color)',
+                        textDecoration: 'underline',
+                        fontWeight: 600,
+                        wordBreak: 'break-all',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {part}
+                    </a>
+                  );
+                }
+                return part;
+              });
+            })()}
+          </p>
           
           {recent_tripadvisor_review && recent_tripadvisor_review.text && (
             <div className="review-card">
