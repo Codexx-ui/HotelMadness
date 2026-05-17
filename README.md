@@ -1,8 +1,14 @@
 # Hotel Madness: Greek Management RPG
 
+[![Deploy with Vercel](https://vercel.com/button)](https://hotel-madness.vercel.app/)
+
 A high-stakes, AI-powered text RPG simulating the intense, toxic, and high-pressure environment of a modern Greek hotel.
 
-Powered by Google Gemini as the Game State Engine (Dungeon Master).
+### 🎮 **[Play Live on Vercel now!](https://hotel-madness.vercel.app/)** 
+
+*(Note: The game is hosted on Vercel because it uses a secure serverless backend to protect the Google Gemini API key. The older GitHub Pages static hosting does not support serverless backend functions, so make sure to use the Vercel link above to play and share!)*
+
+Powered by Google Gemini 1.5 Flash as the Game State Engine (Dungeon Master).
 
 ## Setup Instructions
 
