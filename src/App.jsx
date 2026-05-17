@@ -29,6 +29,7 @@ function App() {
   const [errorMsg, setErrorMsg] = useState('');
   const [nickname, setNickname] = useState(localStorage.getItem('player_nickname') || '');
   const [nicknameConfirmed, setNicknameConfirmed] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
   // Supabase Authentication state
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -359,12 +360,31 @@ function App() {
         margin: '2rem auto',
         boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
       }}>
-        <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1rem', marginTop: 0 }}>Ξεκινήστε το Παιχνίδι</h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-          Συνδεθείτε με Google για να αποθηκεύεται το παιχνίδι σας αυτόματα στον server.
+        <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1.5rem', marginTop: 0 }}>Είσοδος στο Παιχνίδι</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '1.5rem', lineHeight: '1.4' }}>
+          Συνδεθείτε με Google για να αποθηκεύεται το παιχνίδι σας.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
           <Auth session={session} loading={authLoading} />
+        </div>
+        <div style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
+          <button
+            onClick={() => setIsGuest(true)}
+            style={{
+              backgroundColor: 'transparent',
+              border: '1px solid var(--text-secondary)',
+              borderRadius: '6px',
+              padding: '0.6rem 1.5rem',
+              color: 'var(--text-secondary)',
+              fontSize: '0.95rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              width: '100%'
+            }}
+          >
+            Συνδεθείτε ως Επισκέπτης
+          </button>
         </div>
       </div>
     </div>
@@ -487,7 +507,7 @@ function App() {
         <div>Final Rep: <span className="text-warning">{gameState.reputation}%</span></div>
         <div>Cash: <span className="text-success">€{gameState.cash}</span></div>
       </div>
-      <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setNickname(localStorage.getItem('player_nickname') || ''); }}>Apply for a new Job</button>
+      <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); }}>Apply for a new Job</button>
     </div>
   );
 
@@ -502,7 +522,7 @@ function App() {
       </div>
 
       <div className="game-layout">
-        {!session ? (
+        {!(session || isGuest) ? (
           <div style={{ gridColumn: '1 / -1' }}>
             {renderLoginScreen()}
           </div>
