@@ -234,7 +234,7 @@ function App() {
       updatedState.currentDate = '2026-04-25';
     } else {
       const current = new Date(updatedState.currentDate);
-      current.setDate(current.getDate() + 10);
+      current.setDate(current.getDate() + 7);
       updatedState.currentDate = current.toISOString().split('T')[0];
     }
     updatedState.turnCount += 1;
