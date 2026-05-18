@@ -998,15 +998,15 @@ function App() {
 
       <div className="game-layout">
         {!(session || isGuest) ? (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '65vh', width: '100%' }}>
             {renderLoginScreen()}
           </div>
         ) : !gameStarted ? (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '65vh', width: '100%' }}>
             {!nicknameConfirmed ? renderNicknameScreen() : (showDisclaimer ? renderDisclaimerScreen() : renderRoleSelection())}
           </div>
         ) : gameOver ? (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '65vh', width: '100%' }}>
             {renderGameOver()}
           </div>
         ) : (

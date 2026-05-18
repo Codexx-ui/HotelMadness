@@ -818,3 +818,13 @@ input:checked + .slider:before {
     padding: 1rem !important;
   }
 }
+
+/* Intro and disclaimer screen centering */
+.intro-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
