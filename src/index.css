@@ -770,49 +770,6 @@ input:checked + .slider:before {
   display: block; /* Visible by default on desktop */
 }
 
-@media (max-width: 900px) {
-  .game-layout {
-    grid-template-columns: minmax(130px, 1.1fr) 2fr !important;
-    grid-template-rows: none !important;
-    gap: 0.75rem !important;
-  }
-
-  .panel {
-    padding: 0.75rem !important;
-  }
-
-  /* Scale down the dashboard sidebar on mobile to fit perfectly side-by-side */
-  .dashboard-panel {
-    font-size: 0.72rem !important;
-  }
-  .dashboard-panel .stat-group {
-    margin-bottom: 1rem !important;
-  }
-  .dashboard-panel .stat-group-title {
-    font-size: 0.65rem !important;
-    margin-bottom: 0.4rem !important;
-    padding-bottom: 0.2rem !important;
-  }
-  .dashboard-panel .stat-item {
-    margin-bottom: 0.25rem !important;
-    font-size: 0.72rem !important;
-  }
-  .dashboard-panel .stat-label {
-    gap: 0.2rem !important;
-  }
-  .dashboard-panel svg {
-    width: 11px !important;
-    height: 11px !important;
-  }
-  .dashboard-panel .progress-bar-container {
-    height: 5px !important;
-    margin-top: 0.2rem !important;
-  }
-  .dashboard-panel .inventory-item {
-    font-size: 0.65rem !important;
-    padding: 0.1rem 0.3rem !important;
-  }
-}
 
 /* Intro and disclaimer screen centering */
 .intro-screen {
