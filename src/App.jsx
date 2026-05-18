@@ -570,7 +570,7 @@ function App() {
 
   const renderLoginScreen = () => (
     <div className="role-selection" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '3rem auto 2.5rem auto', lineHeight: '1.6' }}>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '3rem auto 1.2rem auto', lineHeight: '1.6' }}>
         Καλώς ήρθατε στον κορυφαίο εξομοιωτή Ελληνικής Φιλοξενίας. Επιβιώστε από τον GM Μουστάκα, διαχειριστείτε υπερκρατήσεις, αγενείς VIP και το ακραίο εργασιακό stress.
       </p>
       
@@ -580,7 +580,7 @@ function App() {
         borderRadius: '12px',
         padding: '2.5rem 2rem',
         maxWidth: '450px',
-        margin: '2rem auto',
+        margin: '0 auto',
         boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
       }}>
         <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1.5rem', marginTop: 0 }}>Είσοδος στο Παιχνίδι</h3>
