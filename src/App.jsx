@@ -711,7 +711,7 @@ function App() {
   const renderDisclaimerScreen = () => (
     <div className="intro-screen">
       <div className="intro-content" style={{ textAlign: 'center' }}>
-        <h1>Καλώς ήρθες στην Οικογένεια της Atlantica</h1>
+        <h1>Καλώς ήρθες στην Οικογένεια της Faplatinca</h1>
         <p style={{ marginTop: '2rem', fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '2rem auto' }}>
           Οποιαδήποτε ομοιότητα με πρόσωπα, καταστάσεις ή γεγονότα είναι εντελώς συμπτωματική και δεν ανταποκρίνεται στην πραγματικότητα.
           <br /><br />
