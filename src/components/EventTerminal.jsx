@@ -50,10 +50,11 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
               return parts.map((part, index) => {
                 if (part.match(urlRegex)) {
                   const isThesfapa = part.includes('Thesfapa');
+                  const cleanHref = part.replace(/['".,;!]$/, '');
                   return (
                     <a
                       key={index}
-                      href={part}
+                      href={cleanHref}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => {

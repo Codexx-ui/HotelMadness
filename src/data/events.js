@@ -349,7 +349,7 @@ export const SPECIFIC_EVENTS = {
     },
     {
       scene_title: "Αποδυτήρια Προσωπικού (Act 7)",
-      story_text: "Βρίσκεις ένα χαρτάκι κολλημένο στο ντουλάπι σου. Γράφει: 'Ο Τάρναβας πρέπει να πληρώσει. Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει; Μπες εδώ: https://codexx-ui.github.io/Thesfapa/'",
+      story_text: "Βρίσκεις ένα χαρτάκι κολλημένο στο ντουλάπι σου. Γράφει: 'Ο Τάρναβας πρέπει να πληρώσει. Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει; Μπες εδώ: https://codexx-ui.github.io/Thesfapa/ '",
       requires_text_input: null,
       choices: [
         { id: 1, text: "Μπαίνω να παίξω, πρέπει να ξεσκάσω.", stress_change: -10, reputation_change: 0, cash_change: 0, staff_relations_change: 5 },
