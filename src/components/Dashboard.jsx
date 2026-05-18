@@ -29,21 +29,28 @@ export default function Dashboard({ state, nickname }) {
       <div 
         className="mobile-dashboard-toggle" 
         onClick={() => setIsMobileExpanded(!isMobileExpanded)}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}
       >
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', fontSize: '0.9rem', fontWeight: 600 }}>
-          <span>📊 Στατιστικά:</span>
-          <span>😰 <span style={{ color: getStressColor(state.stress) }}>{state.stress}%</span></span>
-          <span>⭐ <span style={{ color: getReputationColor(state.reputation) }}>{state.reputation}%</span></span>
-          <span>💶 <span style={{ color: 'var(--success-color)' }}>€{state.cash}</span></span>
+        <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', fontSize: '0.95rem', fontWeight: 700, flexWrap: 'wrap' }}>
+          <span style={{ color: '#fff', marginRight: '0.2rem' }}>📊</span>
+          <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>😰 <span style={{ color: getStressColor(state.stress) }}>{state.stress}%</span></span>
+          <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>⭐ <span style={{ color: getReputationColor(state.reputation) }}>{state.reputation}%</span></span>
+          <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>💶 <span style={{ color: 'var(--success-color)' }}>{state.cash}€</span></span>
         </div>
-        <span style={{ 
-          fontSize: '0.8rem', 
+        <div style={{ 
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'rgba(102, 252, 241, 0.1)',
           color: 'var(--accent-color)', 
+          width: '28px',
+          height: '28px',
+          borderRadius: '50%',
           transition: 'transform 0.3s', 
           transform: isMobileExpanded ? 'rotate(180deg)' : 'rotate(0deg)' 
         }}>
           ▼
-        </span>
+        </div>
       </div>
 
       <div className="dashboard-content-wrapper">
