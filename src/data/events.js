@@ -410,6 +410,18 @@ export const SPECIFIC_EVENTS = {
       ]
     }
   ],
+  24: [
+    {
+      scene_title: "Εστιατόριο Προσωπικού - Γαστρονομικός Εφιάλτης (Act 24)",
+      story_text: "Πηγαίνεις στο εστιατόριο προσωπικού για το μεσημεριανό σου διάλειμμα. Σήμερα το μενού έχει νερόβραστα μακαρόνια με σάλτσα που μοιάζει με λάσπη και κοτόπουλο που φαίνεται να έχει πεθάνει από φυσικά αίτια πριν μια εβδομάδα. Ο μάγειρας της λάντζας σε κοιτάζει γεμάτος περηφάνια: «Φρέσκο πράγμα, corporate alignment στη γεύση!». Το στομάχι σου διαμαρτύρεται έντονα.",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Το τρώω αδιαμαρτύρητα, κάνοντας τον σταυρό μου να μην πάθω τροφική δηλητηρίαση.", stress_change: 20, reputation_change: 0, cash_change: 0, staff_relations_change: 15 },
+        { id: 2, text: "Πετάω τον δίσκο στα σκουπίδια και παραγγέλνω κρυφά delivery σουβλάκια από το Roi Mat.", stress_change: -15, reputation_change: 0, cash_change: -10, staff_relations_change: -10 },
+        { id: 3, text: "Πηγαίνω στον Μουστάκα και κάνω παράπονο ότι το φαγητό είναι επικίνδυνο για τη δημόσια υγεία.", stress_change: 30, reputation_change: 10, cash_change: 0, staff_relations_change: -25 }
+      ]
+    }
+  ],
   26: [
     {
       scene_title: "Lobby - Πανικός (Act 26)",
