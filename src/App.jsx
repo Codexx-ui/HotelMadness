@@ -88,6 +88,7 @@ function App() {
   const [useSFX, setUseSFX] = useState(localStorage.getItem('game_use_sfx') !== 'false');
   const [musicPlaylist, setMusicPlaylist] = useState(audioService.getPlaylist());
   const [showSlapOMeter, setShowSlapOMeter] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   const showToast = (text, icon = '💵') => {
     setToastMessage({ text, icon });
@@ -1662,6 +1663,32 @@ function App() {
             <Settings size={16} />
             <span>Ρυθμίσεις</span>
           </button>
+
+          {/* Admin Panel Button */}
+          {nickname && nickname.trim().toLowerCase() === 'admin' && (
+            <button
+              onClick={() => setShowAdminPanel(true)}
+              style={{
+                background: 'linear-gradient(135deg, #ff4b4b, #b388ff)',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '0.5rem 1rem',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#ffffff',
+                boxShadow: '0 0 12px rgba(255, 75, 75, 0.3)',
+                transition: 'all 0.2s',
+                gap: '0.4rem',
+                fontWeight: 600
+              }}
+              title="Admin Panel"
+            >
+              <span>🛠️ Admin</span>
+            </button>
+          )}
           {gameStarted && !gameOver && (
             <button
               onClick={() => {
@@ -1871,36 +1898,7 @@ function App() {
               </div>
             </div>
 
-            <div className="settings-section">
-              <div className="settings-section-title">ΦαΠ-Ο-Μέτρο Playground 🤚</div>
-              <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
-                <span className="settings-label" style={{ textAlign: 'center', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#a8b2d8' }}>
-                  Δοκίμασε τα αντανακλαστικά σου στο ΦαΠ-Ο-Μέτρο οποιαδήποτε στιγμή!
-                </span>
-                <button
-                  className="settings-btn"
-                  style={{
-                    background: 'linear-gradient(135deg, #66fcf1, #45a29e)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '0.6rem 1.5rem',
-                    color: '#0b0c10',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    boxShadow: '0 0 10px rgba(102, 252, 241, 0.3)',
-                    transition: 'all 0.2s',
-                    width: '100%',
-                    textTransform: 'uppercase'
-                  }}
-                  onClick={() => {
-                    setShowSettings(false);
-                    setShowSlapOMeter(true);
-                  }}
-                >
-                  ⚡ ΠΑΙΞΕ ΦαΠ-Ο-Μέτρο
-                </button>
-              </div>
-            </div>
+
 
             <div className="settings-section">
               <div className="settings-section-title">Δεδομένα & Πρόοδος</div>
@@ -1938,6 +1936,115 @@ function App() {
               onClick={() => setShowSettings(false)}
             >
               Αποθήκευση & Κλείσιμο
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Panel Modal */}
+      {showAdminPanel && (
+        <div className="modal-overlay" onClick={() => setShowAdminPanel(false)}>
+          <div className="settings-modal" style={{ background: '#0b0c10', border: '2px solid #ff4b4b', boxShadow: '0 0 25px rgba(255, 75, 75, 0.4)' }} onClick={(e) => e.stopPropagation()}>
+            <div className="settings-header" style={{ borderBottom: '1px solid rgba(255, 75, 75, 0.3)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, color: '#ff4b4b', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                🛠️ Πάνελ Διαχειριστή (Admin Panel)
+              </h2>
+              <button className="modal-close-btn" style={{ color: '#ff4b4b' }} onClick={() => setShowAdminPanel(false)}>x</button>
+            </div>
+            
+            <div className="settings-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '70vh', overflowY: 'auto' }}>
+              
+              {/* God Mode Stats */}
+              <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
+                <div className="settings-section-title" style={{ color: '#ffdd67', borderBottom: '1px solid rgba(255, 221, 103, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
+                  👼 God Mode Stats
+                </div>
+                
+                {/* Stress Cheat */}
+                <div className="settings-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <span className="settings-label">🤯 Άγχος (Stress): <strong>{gameState.stress}%</strong></span>
+                  <button 
+                    onClick={() => {
+                      setGameState(prev => ({ ...prev, stress: 0 }));
+                      showToast("🧘 Το Stress μηδενίστηκε!", "😇");
+                    }}
+                    style={{ background: 'rgba(75, 255, 75, 0.1)', border: '1px solid #4bff4b', color: '#4bff4b', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                  >
+                    🧘 Μηδενισμός
+                  </button>
+                </div>
+
+                {/* Reputation Cheat */}
+                <div className="settings-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <span className="settings-label">🌟 Φήμη (Reputation): <strong>{gameState.reputation}%</strong></span>
+                  <button 
+                    onClick={() => {
+                      setGameState(prev => ({ ...prev, reputation: 100 }));
+                      showToast("🌟 Η Φήμη εκτοξεύτηκε στο 100%!", "👑");
+                    }}
+                    style={{ background: 'rgba(102, 252, 241, 0.1)', border: '1px solid #66fcf1', color: '#66fcf1', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                  >
+                    👑 Μέγιστο
+                  </button>
+                </div>
+
+                {/* Cash Cheat */}
+                <div className="settings-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="settings-label">💵 Μετρητά (Cash): <strong>{gameState.cash.toLocaleString('el-GR')}€</strong></span>
+                  <button 
+                    onClick={() => {
+                      setGameState(prev => ({ ...prev, cash: prev.cash + 5000 }));
+                      showToast("💵 Προστέθηκαν +5.000€!", "💰");
+                      audioService.playCashSound();
+                    }}
+                    style={{ background: 'rgba(255, 221, 103, 0.1)', border: '1px solid #ffdd67', color: '#ffdd67', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                  >
+                    💰 +5.000€
+                  </button>
+                </div>
+              </div>
+
+              {/* Slap Playground in Admin */}
+              <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
+                <div className="settings-section-title" style={{ color: '#b388ff', borderBottom: '1px solid rgba(179, 136, 255, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
+                  🤚 ΦαΠ-Ο-Μέτρο Playground
+                </div>
+                <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
+                  <span className="settings-label" style={{ textAlign: 'center', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#a8b2d8' }}>
+                    Δοκίμασε τα αντανακλαστικά σου στο ΦαΠ-Ο-Μέτρο οποιαδήποτε στιγμή!
+                  </span>
+                  <button
+                    style={{
+                      background: 'linear-gradient(135deg, #b388ff, #ff4b4b)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.6rem 1.5rem',
+                      color: '#ffffff',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      boxShadow: '0 0 10px rgba(179, 136, 255, 0.3)',
+                      transition: 'all 0.2s',
+                      width: '100%',
+                      textTransform: 'uppercase'
+                    }}
+                    onClick={() => {
+                      setShowAdminPanel(false);
+                      setShowSlapOMeter(true);
+                    }}
+                  >
+                    ⚡ ΠΑΙΞΕ ΦαΠ-Ο-Μέτρο
+                  </button>
+                </div>
+              </div>
+
+            </div>
+            
+            <button 
+              className="btn-primary" 
+              style={{ width: '100%', marginTop: '1.25rem', background: '#ff4b4b', color: '#ffffff', border: 'none' }} 
+              onClick={() => setShowAdminPanel(false)}
+            >
+              Κλείσιμο Πάνελ
             </button>
           </div>
         </div>
