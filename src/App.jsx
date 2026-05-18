@@ -1761,19 +1761,21 @@ function App() {
                 <button 
                   className="settings-btn danger" 
                   onClick={() => {
-                    if (confirm("Είσαι σίγουρος ότι θέλεις να διαγράψεις όλη την πρόοδό σου και να ξεκινήσεις από την αρχή;")) {
+                    if (confirm("Είσαι σίγουρος ότι θέλεις να διαγράψεις όλη την πρόοδό σου, τις ρυθμίσεις και την κατάταξη για να ξεκινήσεις από την αρχή;")) {
                       localStorage.removeItem('game_difficulty');
                       localStorage.removeItem('game_use_ai');
                       localStorage.removeItem('game_music_volume');
                       localStorage.removeItem('game_use_sfx');
                       localStorage.removeItem('player_nickname');
+                      localStorage.removeItem('hotel_madness_leaderboard');
                       // Reset local storage states
                       setGameState(INITIAL_STATE);
                       setGameStarted(false);
                       setNicknameConfirmed(false);
                       setIsGuest(false);
+                      setOnlineScores([]);
                       setShowSettings(false);
-                      alert("Η πρόοδος διαγράφηκε επιτυχώς!");
+                      alert("Η πρόοδος και η κατάταξη διαγράφηκαν επιτυχώς!");
                     }
                   }}
                 >
