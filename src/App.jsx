@@ -734,7 +734,7 @@ function App() {
         <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
           <div>Τελικό Άγχος: <span className="text-danger">{gameState.stress}%</span></div>
           <div>Τελική Φήμη: <span className="text-warning">{gameState.reputation}%</span></div>
-          <div>Μετρητά: <span className="text-success">€{gameState.cash}</span></div>
+          <div>Λογαριασμός Eurobank: <span className="text-success">€{gameState.cash}</span></div>
         </div>
 
         {isSeasonEnd && (

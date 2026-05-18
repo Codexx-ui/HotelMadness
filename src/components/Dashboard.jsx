@@ -65,7 +65,7 @@ export default function Dashboard({ state, nickname }) {
         </div>
 
         <div className="stat-item" style={{ marginTop: '1rem' }}>
-          <span className="stat-label"><Coins size={16} color="var(--success-color)" /> Μετρητά</span>
+          <span className="stat-label"><Coins size={16} color="var(--success-color)" /> Λογαριασμός Eurobank</span>
           <span className="stat-value text-success">€{state.cash}</span>
         </div>
       </div>
