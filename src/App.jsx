@@ -4,7 +4,7 @@ import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
-import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings } from 'lucide-react';
+import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag } from 'lucide-react';
 import { audioService } from './services/audioService';
 import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
 import confetti from 'canvas-confetti';
@@ -50,7 +50,9 @@ function App() {
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [isSendingFeedback, setIsSendingFeedback] = useState(false);
-  const [tipsNotification, setTipsNotification] = useState(null);
+  const [tipsNotification, setTipsNotification] = useState(null); // Keep for backwards compatibility if needed
+  const [showStore, setShowStore] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
 
   // Settings and Difficulty States
   const [showSettings, setShowSettings] = useState(false);
@@ -59,11 +61,48 @@ function App() {
   const [musicVolume, setMusicVolume] = useState(parseFloat(localStorage.getItem('game_music_volume') || '0.5'));
   const [useSFX, setUseSFX] = useState(localStorage.getItem('game_use_sfx') !== 'false');
 
-  const triggerTipsToast = (amount) => {
-    setTipsNotification({ amount });
+  const showToast = (text, icon = '💵') => {
+    setToastMessage({ text, icon });
     setTimeout(() => {
-      setTipsNotification(null);
+      setToastMessage(null);
     }, 3000);
+  };
+
+  const triggerTipsToast = (amount) => {
+    showToast(`Έλαβες Φιλοδώρημα: +${amount}€!`, '💵');
+  };
+
+  const STORE_ITEMS = [
+    { id: 'coffee', name: 'Καφέ', price: 5, stressReduction: 10, emoji: '☕', desc: 'Γρήγορη δόση καφεΐνης για να βγάλεις το shift.' },
+    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹', desc: 'Ένα σφηνάκι στο μπαρ του Περαντωνάκη μετά τη δουλειά.' },
+    { id: 'doctor', name: 'Αναρρωτική από Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺', desc: 'Ψευδής ιατρική γνωμάτευση για 2 μέρες ξεκούραση.' },
+    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩', desc: 'Ζουμερή σπαλομπριζόλα και κόκκινο κρασί.' },
+    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Ένα μεταχειρισμένο Toyota Yaris για να μην παρακαλάς για ride. (Προστίθεται στο inventory)' }
+  ];
+
+  const buyStoreItem = (item) => {
+    if (gameState.cash < item.price) {
+      showToast("Δεν επαρκούν τα χρήματα!", "⚠️");
+      return;
+    }
+
+    const mult = getDifficultyMultipliers();
+    const stressDelta = item.stressReduction * mult.stressDown;
+
+    const newState = {
+      ...gameState,
+      cash: gameState.cash - item.price,
+      stress: Math.max(0, gameState.stress - stressDelta)
+    };
+
+    if (item.id === 'car') {
+      if (!newState.inventory.includes('Αυτοκίνητο')) {
+        newState.inventory = [...newState.inventory, 'Αυτοκίνητο'];
+      }
+    }
+
+    setGameState(newState);
+    showToast(`Αγόρασες ${item.name}!`, item.emoji);
   };
 
   const getDifficultyMultipliers = () => {
@@ -945,10 +984,10 @@ function App() {
 
   return (
     <div className="app-container">
-      {tipsNotification && (
+      {toastMessage && (
         <div className="tips-toast">
-          <span style={{ fontSize: '1.2rem' }}>💵</span>
-          <span>Έλαβες Φιλοδώρημα: <strong>+{tipsNotification.amount}€</strong>!</span>
+          <span style={{ fontSize: '1.2rem' }}>{toastMessage.icon}</span>
+          <span>{toastMessage.text}</span>
         </div>
       )}
       <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '2rem' }}>
@@ -970,6 +1009,29 @@ function App() {
           </h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {gameStarted && !gameOver && (
+            <button
+              onClick={() => setShowStore(true)}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--panel-border)',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'var(--accent-color)',
+                boxShadow: '0 0 10px rgba(102, 252, 241, 0.2)',
+                transition: 'all 0.2s',
+                marginRight: '0.5rem'
+              }}
+              title="Κατάστημα / Αγορά"
+            >
+              <ShoppingBag size={18} />
+            </button>
+          )}
           <button
             onClick={() => setShowSettings(true)}
             style={{
@@ -1173,6 +1235,64 @@ function App() {
               onClick={() => setShowSettings(false)}
             >
               Αποθήκευση & Κλείσιμο
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showStore && (
+        <div className="modal-overlay" onClick={() => setShowStore(false)}>
+          <div className="store-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="settings-header">
+              <h2>🛍️ Κατάστημα Faplatinca</h2>
+              <button className="modal-close-btn" onClick={() => setShowStore(false)}>×</button>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem' }}>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν.
+              </div>
+              <div className="store-balance-badge">
+                <span>💵 Υπόλοιπο:</span>
+                <span>{gameState.cash.toLocaleString('el-GR')}€</span>
+              </div>
+            </div>
+
+            <div className="store-grid">
+              {STORE_ITEMS.map((item) => {
+                const canAfford = gameState.cash >= item.price;
+                return (
+                  <div className="store-card" key={item.id}>
+                    <div>
+                      <div className="store-item-emoji">{item.emoji}</div>
+                      <div className="store-item-title">{item.name}</div>
+                      <div className="store-item-desc">{item.desc}</div>
+                      <div className="store-item-stat-badge stress-reduction">
+                        Stress: -{item.stressReduction}%
+                      </div>
+                    </div>
+                    
+                    <div className="store-card-footer">
+                      <div className="store-price-tag">{item.price.toLocaleString('el-GR')}€</div>
+                      <button 
+                        className="store-buy-btn" 
+                        disabled={!canAfford}
+                        onClick={() => buyStoreItem(item)}
+                      >
+                        {canAfford ? 'Αγορά' : 'Μη επαρκές ποσό'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button 
+              className="btn-primary" 
+              style={{ width: '100%', marginTop: '1.5rem' }} 
+              onClick={() => setShowStore(false)}
+            >
+              Κλείσιμο Καταστήματος
             </button>
           </div>
         </div>

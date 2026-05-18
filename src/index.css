@@ -835,3 +835,184 @@ input:checked + .slider:before {
 .header-title-link:hover {
   opacity: 0.85;
 }
+
+/* Store / Market styles */
+.store-modal {
+  background: linear-gradient(135deg, #1f2833, #0b0c10);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 10px 40px rgba(0, 252, 241, 0.2), 0 0 0 1px rgba(102, 252, 241, 0.1);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 780px;
+  max-height: 85vh;
+  padding: 2rem;
+  position: relative;
+  animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.store-balance-badge {
+  background: rgba(102, 252, 241, 0.1);
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 0.5rem 1.25rem;
+  border-radius: 30px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  box-shadow: 0 0 15px rgba(102, 252, 241, 0.2);
+}
+
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  padding: 0.5rem;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--panel-border) transparent;
+}
+
+.store-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.store-grid::-webkit-scrollbar-thumb {
+  background-color: var(--panel-border);
+  border-radius: 3px;
+}
+
+.store-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.store-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.store-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(102, 252, 241, 0.3);
+  box-shadow: 0 5px 15px rgba(102, 252, 241, 0.1);
+}
+
+.store-card:hover::before {
+  opacity: 1;
+}
+
+.store-item-emoji {
+  font-size: 2.2rem;
+  margin-bottom: 0.25rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.store-item-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.store-item-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.store-item-stat-badge {
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+}
+
+.store-item-stat-badge.stress-reduction {
+  background-color: rgba(75, 255, 75, 0.1);
+  border: 1px solid rgba(75, 255, 75, 0.3);
+  color: #4bff4b;
+}
+
+.store-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.75rem;
+}
+
+.store-price-tag {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+}
+
+.store-buy-btn {
+  background: linear-gradient(135deg, var(--accent-color), #45a29e);
+  border: none;
+  color: #0b0c10;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(102, 252, 241, 0.3);
+}
+
+.store-buy-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 252, 241, 0.5);
+}
+
+.store-buy-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.store-buy-btn:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .store-modal {
+    padding: 1.5rem;
+    height: 90vh;
+  }
+  .store-grid {
+    grid-template-columns: 1fr;
+  }
+}
