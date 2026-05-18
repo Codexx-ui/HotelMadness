@@ -1704,19 +1704,36 @@ function App() {
                         disabled={isDisabled}
                         onClick={() => buyStoreItem(item)}
                         style={{
-                          background: isDisabled ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #66fcf1, #45a29e)',
-                          border: isDisabled ? '1px solid rgba(255,255,255,0.2)' : 'none',
+                          background: hasPurchasedThisTurn 
+                            ? 'rgba(255, 255, 255, 0.05)' 
+                            : (!canAfford 
+                                ? 'rgba(255, 75, 75, 0.08)' 
+                                : 'linear-gradient(135deg, #66fcf1, #45a29e)'),
+                          border: hasPurchasedThisTurn 
+                            ? '1px solid rgba(255, 255, 255, 0.15)' 
+                            : (!canAfford 
+                                ? '1px solid rgba(255, 75, 75, 0.4)' 
+                                : 'none'),
                           borderRadius: '6px',
-                          padding: '0.5rem 1rem',
-                          color: isDisabled ? '#ffffff' : '#0b0c10',
+                          padding: '0.5rem 1.2rem',
+                          color: hasPurchasedThisTurn 
+                            ? 'rgba(255, 255, 255, 0.4)' 
+                            : (!canAfford 
+                                ? '#ff4b4b' 
+                                : '#0b0c10'),
                           fontWeight: 700,
                           fontSize: '0.9rem',
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           transition: 'all 0.2s',
                           whiteSpace: 'nowrap',
+                          boxShadow: !isDisabled 
+                            ? '0 0 10px rgba(102, 252, 241, 0.2)' 
+                            : (!canAfford && !hasPurchasedThisTurn 
+                                ? '0 0 10px rgba(255, 75, 75, 0.15)' 
+                                : 'none')
                         }}
                       >
-                        {hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : (canAfford ? 'Αγορά' : 'Λείπουν χρήματα')}
+                        {hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : 'Αγορά'}
                       </button>
                     </div>
                   </div>
