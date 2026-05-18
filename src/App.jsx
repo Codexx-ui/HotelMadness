@@ -64,8 +64,14 @@ function App() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Supabase auth listener is handled in the main auth listener below
+  // One-time automatic cleanup of old local leaderboard scores to prevent confusion
+  useEffect(() => {
+    const hasCleanedLegacy = localStorage.getItem('hotel_legacy_cleaned_v2');
+    if (!hasCleanedLegacy) {
+      localStorage.removeItem('hotel_madness_leaderboard');
+      localStorage.setItem('hotel_legacy_cleaned_v2', 'true');
+    }
+  }, []);  // Supabase auth listener is handled in the main auth listener below
 
   // Settings and Difficulty States
   const [showSettings, setShowSettings] = useState(false);
