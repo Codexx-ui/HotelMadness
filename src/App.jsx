@@ -750,7 +750,7 @@ function App() {
     if (!isAITurn) {
       // Hardcoded Route
       let nextScene = null;
-      const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn];
+      const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] && (currentTurn !== 7 || currentState.season === 2);
       if (hasSpecificEvent) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
         const roleFiltered = alternatives.filter(alt => !alt.role || alt.role === currentState.role);
@@ -781,7 +781,7 @@ function App() {
         updatedState.thesfapaTargetTurn = Math.floor(Math.random() * 15) + 11; // Turn 11 to 25
       }
       if (updatedState.turnCount === updatedState.thesfapaTargetTurn && !updatedState.thesfapaSpawnedThisSeason) {
-        nextScene.story_text += " \n\nΚάποιος συνάδελφος σου ψιθυρίζει για ένα κρυφό παιχνίδι και σου στέλνει το link: https://codexx-ui.github.io/Thesfapa/";
+        nextScene.story_text += " \n\nΈνας πελάτης σε βγάζει εκτός εαυτού με τις παράλογες απαιτήσεις του! Νιώθεις το αίμα σου να βράζει και θες απεγνωσμένα να τον χαστουκίσεις! Ξέσπασε εδώ: http://FapOMeter";
         updatedState.thesfapaSpawnedThisSeason = true;
       }
 
@@ -841,7 +841,7 @@ function App() {
         newState.thesfapaTargetTurn = Math.floor(Math.random() * 15) + 11; // Turn 11 to 25
       }
       if (newState.turnCount === newState.thesfapaTargetTurn && !newState.thesfapaSpawnedThisSeason) {
-        response.story_text += " \n\nΚάποιος συνάδελφος σου ψιθυρίζει για ένα κρυφό παιχνίδι και σου στέλνει το link: https://codexx-ui.github.io/Thesfapa/";
+        response.story_text += " \n\nΈνας πελάτης σε βγάζει εκτός εαυτού με τις παράλογες απαιτήσεις του! Νιώθεις το αίμα σου να βράζει και θες απεγνωσμένα να τον χαστουκίσεις! Ξέσπασε εδώ: http://FapOMeter";
         newState.thesfapaSpawnedThisSeason = true;
       }
 

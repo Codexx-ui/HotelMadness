@@ -97,6 +97,7 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
               return parts.map((part, index) => {
                 if (part.match(urlRegex)) {
                   const isThesfapa = part.includes('Thesfapa');
+                  const isFapOMeter = part.includes('FapOMeter');
                   const cleanHref = part.replace(/['".,;!]$/, '');
                   return (
                     <a
@@ -105,7 +106,7 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => {
-                        if (isThesfapa) {
+                        if (isFapOMeter) {
                           e.preventDefault();
                           if (onThesfapaClick) {
                             onThesfapaClick();
@@ -120,7 +121,7 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
                         cursor: 'pointer'
                       }}
                     >
-                      {isThesfapa ? 'Θες Φαπα ✨ παίξε τώρα!' : part}
+                      {isFapOMeter ? 'ΦαΠ-Ο-Μέτρο 🤚 Παίξε τώρα!' : (isThesfapa ? 'Θες Φαπα ✨ παίξε τώρα!' : part)}
                     </a>
                   );
                 }
