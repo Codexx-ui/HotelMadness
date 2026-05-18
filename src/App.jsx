@@ -4,7 +4,7 @@ import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
-import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag } from 'lucide-react';
+import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut } from 'lucide-react';
 import { audioService } from './services/audioService';
 import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
 import confetti from 'canvas-confetti';
@@ -74,11 +74,11 @@ function App() {
   };
 
   const STORE_ITEMS = [
-    { id: 'coffee', name: 'Καφέ', price: 5, stressReduction: 10, emoji: '☕', desc: 'Γρήγορη δόση καφεΐνης για να βγάλεις το shift.' },
-    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹', desc: 'Ένα σφηνάκι στο μπαρ του Περαντωνάκη μετά τη δουλειά.' },
-    { id: 'doctor', name: 'Αναρρωτική από Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺', desc: 'Ψευδής ιατρική γνωμάτευση για 2 μέρες ξεκούραση.' },
-    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩', desc: 'Ζουμερή σπαλομπριζόλα και κόκκινο κρασί.' },
-    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Ένα μεταχειρισμένο Toyota Yaris για να μην παρακαλάς για ride. (Προστίθεται στο inventory)' }
+    { id: 'coffee', name: 'Καφέ', price: 5, stressReduction: 10, emoji: '☕', desc: 'Να πάει για Καφέ που θα έχει κόστος 5 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
+    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹', desc: 'Να πάει για ποτό με κόστος 15 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
+    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺', desc: 'Να πάρει αναρρωτική από τον Γιατρό Σωτήρη 30 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
+    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩', desc: 'Να πάει να φάει στον Λάμπρο Steakhouse 100 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
+    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Να αγοράσει αυτοκίνητο 15.000 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' }
   ];
 
   const buyStoreItem = (item) => {
@@ -843,17 +843,21 @@ function App() {
 
   const renderGameOver = () => {
     const isSeasonEnd = new Date(gameState.currentDate) >= new Date('2026-11-01');
+    const isResigned = gameState.resigned;
 
     return (
       <div className="game-over-screen">
         <div className="game-over-title">
-          {gameState.stress >= 100 ? "BURNOUT! GAME OVER" : 
+          {isResigned ? "ΠΑΡΑΙΤΗΣΗ! GAME OVER" :
+           gameState.stress >= 100 ? "BURNOUT! GAME OVER" : 
            gameState.reputation <= 0 ? "ΑΠΟΛΥΘΗΚΕΣ! GAME OVER" : 
            gameState.alcoholWarnings >= 3 ? "ΠΕΙΘΑΡΧΙΚΗ ΑΠΟΛΥΣΗ! GAME OVER" : 
            isSeasonEnd ? "ΤΕΛΟΣ ΣΕΖΟΝ!" : "GAME OVER"}
         </div>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
-          {isSeasonEnd 
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center', lineHeight: '1.6' }}>
+          {isResigned 
+            ? "Πέταξες τη στολή στα μούτρα του Μουστάκα, μάζεψες τα πράγματά σου και έφυγες τρέχοντας για το λιμάνι! Είσαι πλέον ένας ελεύθερος άνθρωπος μακριά από το ξενοδοχειακό χάος! 🏖️✈️"
+            : isSeasonEnd 
             ? "Καλό χειμώνα! Τα καταφέρατε και επιβιώσατε άλλη μια σεζόν. Ξεκουραστείτε... γιατί του χρόνου ο εφιάλτης συνεχίζεται! 🏖️🔥"
             : "Υπέκυψες στην αβάσταχτη πίεση του σύγχρονου ελληνικού ξενοδοχειακού management. Ο GM Μουστάκας σε αντικατέστησε ήδη."}
         </p>
@@ -1031,51 +1035,89 @@ function App() {
             <span>Hotel Madness</span>
           </h1>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           {gameStarted && !gameOver && (
-            <button
-              onClick={() => setShowStore(true)}
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid var(--panel-border)',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: 'var(--accent-color)',
-                boxShadow: '0 0 10px rgba(102, 252, 241, 0.2)',
-                transition: 'all 0.2s',
-                marginRight: '0.5rem'
-              }}
-              title="Κατάστημα / Αγορά"
-            >
-              <ShoppingBag size={18} />
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textTransform: 'uppercase', marginBottom: '0.2rem', letterSpacing: '0.05em', fontWeight: 600 }}>
+                Μίνι Μάρκετ
+              </span>
+              <button
+                onClick={() => setShowStore(true)}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid var(--panel-border)',
+                  borderRadius: '50%',
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: 'var(--accent-color)',
+                  boxShadow: '0 0 10px rgba(102, 252, 241, 0.2)',
+                  transition: 'all 0.2s'
+                }}
+                title="Κατάστημα / Αγορά"
+              >
+                <ShoppingBag size={18} />
+              </button>
+            </div>
           )}
           <button
             onClick={() => setShowSettings(true)}
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid var(--panel-border)',
-              borderRadius: '50%',
-              width: '40px',
+              borderRadius: '20px',
+              padding: '0.5rem 1rem',
               height: '40px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               color: 'var(--accent-color)',
-              boxShadow: '0 0 10px rgba(102, 252, 241, 0.2)',
+              boxShadow: '0 0 10px rgba(102, 252, 241, 0.1)',
               transition: 'all 0.2s',
-              marginRight: '0.5rem'
+              gap: '0.4rem',
+              fontWeight: 500
             }}
-            title="Settings"
+            title="Ρυθμίσεις"
           >
-            <Settings size={18} />
+            <Settings size={16} />
+            <span>Ρυθμίσεις</span>
           </button>
+          {gameStarted && !gameOver && (
+            <button
+              onClick={() => {
+                if (window.confirm("Είσαι σίγουρος ότι θέλεις να παραιτηθείς και να γλιτώσεις από τον Μουστάκα;")) {
+                  const newState = { ...gameState, resigned: true };
+                  setGameState(newState);
+                  setGameOver(true);
+                  saveScoreToLeaderboard(newState);
+                }
+              }}
+              style={{
+                backgroundColor: 'rgba(255, 75, 75, 0.1)',
+                border: '1px solid var(--danger-color)',
+                borderRadius: '20px',
+                padding: '0.5rem 1rem',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'var(--danger-color)',
+                boxShadow: '0 0 10px rgba(255, 75, 75, 0.15)',
+                transition: 'all 0.2s',
+                gap: '0.4rem',
+                fontWeight: 600
+              }}
+              title="Παραίτηση"
+            >
+              <LogOut size={16} />
+              <span>Παραίτηση</span>
+            </button>
+          )}
           <button
             onClick={() => {
               const muted = audioService.toggleMute();
