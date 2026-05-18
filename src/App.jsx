@@ -75,12 +75,12 @@ function App() {
   };
 
   const STORE_ITEMS = [
-    { id: 'coffee', name: 'Καφές στο Roi Mat', price: 5, stressReduction: 5, emoji: '☕' },
-    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 10, emoji: '🏖️' },
-    { id: 'drink', name: 'Ποτό στο Σκάλα', price: 15, stressReduction: 15, emoji: '🍹' },
-    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 20, emoji: '🩺' },
-    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 30, emoji: '🥩' },
-    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗' }
+    { id: 'coffee', name: 'Καφέ', price: 5, stressReduction: 10, emoji: '☕', desc: 'Να πάει για Καφέ που θα έχει κόστος 5 ευρώ.' },
+    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 15, emoji: '🏖️', desc: 'Να πάει στην παραλία για χαλάρωση.' },
+    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹', desc: 'Να πάει για ποτό με κόστος 15 ευρώ.' },
+    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺', desc: 'Να πάρει αναρρωτική από τον Γιατρό Σωτήρη 30 ευρώ.' },
+    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩', desc: 'Να πάει να φάει στον Λάμπρο Steakhouse 100 ευρώ.' },
+    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Να αγοράσει αυτοκίνητο 15.000 ευρώ.' }
   ];
 
   const buyStoreItem = (item) => {
@@ -1335,9 +1335,9 @@ function App() {
       {showStore && (
         <div className="modal-overlay" onClick={() => setShowStore(false)}>
           <div className="store-modal" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
-              <h2 style={{ margin: 0, color: '#66fcf1', fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>🛍️ Κατάστημα Faplantica</h2>
-              <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.5rem' }} onClick={() => setShowStore(false)}>×</button>
+            <div className="settings-header">
+              <h2>🛍️ Κατάστημα Faplantica</h2>
+              <button className="modal-close-btn" onClick={() => setShowStore(false)}>×</button>
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem', marginBottom: '1rem', flexShrink: 0 }}>
@@ -1362,6 +1362,7 @@ function App() {
                     <div>
                       <div className="store-item-emoji">{item.emoji}</div>
                       <div className="store-item-title">{item.name}</div>
+                      <div className="store-item-desc">{item.desc}</div>
                       <div className="store-item-stat-badge stress-reduction">
                         Stress: -{item.stressReduction}%
                       </div>
@@ -1374,7 +1375,10 @@ function App() {
                         disabled={isDisabled}
                         onClick={() => buyStoreItem(item)}
                       >
-                        {hasPurchasedThisTurn ? "1 / Βάρδια" : (canAfford ? "Αγορά" : "Δεν φτάνουν")}
+                        {hasPurchasedThisTurn 
+                          ? 'Όριο αγοράς' 
+                          : canAfford ? 'Αγορά' : 'Λείπουν χρήματα'
+                        }
                       </button>
                     </div>
                   </div>
