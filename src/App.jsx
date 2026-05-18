@@ -26,7 +26,8 @@ const INITIAL_STATE = {
   currentDate: '2026-02-01',
   turnCount: 0,
   season: 1,
-  tips: 0
+  tips: 0,
+  usedEventTexts: []
 };
 
 function App() {
@@ -453,13 +454,27 @@ function App() {
       if (SPECIFIC_EVENTS[currentTurn]) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
         const roleFiltered = alternatives.filter(alt => !alt.role || alt.role === currentState.role);
-        nextScene = roleFiltered[Math.floor(Math.random() * roleFiltered.length)] || alternatives[0];
+        const unused = roleFiltered.filter(alt => !currentState.usedEventTexts?.includes(alt.story_text));
+        const pool = unused.length > 0 ? unused : roleFiltered;
+        nextScene = pool[Math.floor(Math.random() * pool.length)] || alternatives[0];
       } else {
         // Filter general events so that role-specific events are only served to players with that role
         const filteredEvents = GENERAL_EVENTS.filter(e => !e.role || e.role === currentState.role);
-        const randomGen = filteredEvents[Math.floor(Math.random() * filteredEvents.length)];
+        const unused = filteredEvents.filter(e => !currentState.usedEventTexts?.includes(e.story_text));
+        const pool = unused.length > 0 ? unused : filteredEvents;
+        const randomGen = pool[Math.floor(Math.random() * pool.length)];
         nextScene = { ...randomGen };
       }
+
+      // Track this scene text in history
+      const updatedState = { ...currentState };
+      if (!updatedState.usedEventTexts) {
+        updatedState.usedEventTexts = [];
+      }
+      if (nextScene && nextScene.story_text) {
+        updatedState.usedEventTexts.push(nextScene.story_text);
+      }
+      setGameState(updatedState);
 
       // Simulate network delay for UI smoothness
       setTimeout(() => {
@@ -516,7 +531,20 @@ function App() {
     } catch (error) {
       console.warn("AI Generation failed. Falling back to a hardcoded generic event.", error);
       // Fallback to GENERAL_EVENTS to prevent the game from getting stuck
-      const randomGen = GENERAL_EVENTS[Math.floor(Math.random() * GENERAL_EVENTS.length)];
+      const filteredEvents = GENERAL_EVENTS.filter(e => !e.role || e.role === currentState.role);
+      const unused = filteredEvents.filter(e => !currentState.usedEventTexts?.includes(e.story_text));
+      const pool = unused.length > 0 ? unused : filteredEvents;
+      const randomGen = pool[Math.floor(Math.random() * pool.length)];
+
+      const updatedState = { ...currentState };
+      if (!updatedState.usedEventTexts) {
+        updatedState.usedEventTexts = [];
+      }
+      if (randomGen && randomGen.story_text) {
+        updatedState.usedEventTexts.push(randomGen.story_text);
+      }
+      setGameState(updatedState);
+
       setSceneData({ ...randomGen });
     } finally {
       setIsLoading(false);
