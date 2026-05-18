@@ -398,6 +398,18 @@ export const SPECIFIC_EVENTS = {
       ]
     }
   ],
+  22: [
+    {
+      scene_title: "Αποθήκη Λινών - Ένταση με Φασλί (Act 22)",
+      story_text: "Μπαίνεις στην αποθήκη και πετυχαίνεις τον Φασλί (τον κηπουρό/τεχνικό) να κλωτσάει ένα καρότσι και να ουρλιάζει έξαλλος στα αλβανικά: 'Qifsha ropt, ma qifsh krushkun, mut rop qifsh!' επειδή χάλασε η χλοοκοπτική και ο Μουστάκας τον απειλεί με μείωση μισθού. Σε βλέπει και έρχεται κατά πάνω σου με άγριο βλέμμα, έτοιμος για καβγά!",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Τον πλησιάζω ήρεμα, του δίνω ένα παγωμένο νερό και προσπαθώ να τον ηρεμήσω.", stress_change: 15, reputation_change: 5, cash_change: 0, staff_relations_change: 25 },
+        { id: 2, text: "Τον βρίζω κι εγώ στα αλβανικά: 'Qifsha ropt Fasli, ik mor krrut!' για να καταλάβει ποιος κάνει κουμάντο.", stress_change: 25, reputation_change: -20, cash_change: 0, staff_relations_change: -15 },
+        { id: 3, text: "Κάνω μεταβολή και φεύγω αθόρυβα πριν με αρπάξει από τον λαιμό.", stress_change: -10, reputation_change: 0, cash_change: 0, staff_relations_change: -5 }
+      ]
+    }
+  ],
   26: [
     {
       scene_title: "Lobby - Πανικός (Act 26)",
