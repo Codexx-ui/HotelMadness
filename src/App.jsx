@@ -98,12 +98,14 @@ function App() {
   };
 
   const STORE_ITEMS = [
-    { id: 'coffee', name: 'Καφές στο Roi Mat', price: 5, stressReduction: 5, emoji: '☕' },
-    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 10, emoji: '🏖️' },
-    { id: 'drink', name: 'Ποτό στο Σκάλα', price: 15, stressReduction: 15, emoji: '🍹' },
-    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 20, emoji: '🩺' },
-    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 30, emoji: '🥩' },
-    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗' }
+    { id: 'coffee', name: 'Καφές στο Roi Mat', price: 5, stressReduction: 5, emoji: '☕', desc: 'Μειώνει ελαφρώς το άγχος.' },
+    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 10, emoji: '🏖️', desc: 'Χαλάρωση στον ήλιο.' },
+    { id: 'drink', name: 'Ποτό στο Σκάλα', price: 15, stressReduction: 15, emoji: '🍹', desc: 'Βραδινό ποτάκι για αποσυμπίεση.' },
+    { id: 'eye', name: 'Μαγικό Μάτι 🧿', price: 20, stressReduction: 0, emoji: '🧿', desc: 'Ακυρώνει αυτόματα την επόμενη αναποδιά / κακή συνέπεια.' },
+    { id: 'grandma', name: 'Χαρτζιλίκι Γιαγιάς 👵', price: 0, stressReduction: -15, emoji: '👵', desc: 'Σου δίνει +50€ cash, αλλά αυξάνει το stress κατά 15% (λόγω ερωτήσεων γάμου!).' },
+    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 20, emoji: '🩺', desc: 'Επίσημη δικαιολογία για ξεκούραση.' },
+    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 30, emoji: '🥩', desc: 'Καλό φαγητό για γερό στομάχι.' },
+    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Το απόλυτο status symbol της Faplantica.' }
   ];
 
   const buyStoreItem = (item) => {
@@ -122,7 +124,7 @@ function App() {
     const newState = {
       ...gameState,
       cash: gameState.cash - item.price,
-      stress: Math.max(0, gameState.stress - stressDelta)
+      stress: Math.max(0, Math.min(100, gameState.stress - stressDelta))
     };
 
     if (item.id === 'car') {
@@ -131,9 +133,25 @@ function App() {
       }
     }
 
+    if (item.id === 'eye') {
+      newState.inventory = [...newState.inventory, 'Μαγικό Μάτι 🧿'];
+    }
+
+    if (item.id === 'grandma') {
+      newState.cash += 50;
+    }
+
     setGameState(newState);
     setHasPurchasedThisTurn(true);
-    showToast(`Αγόρασες ${item.name}!`, item.emoji);
+    
+    if (item.id === 'grandma') {
+      showToast("👵 Η γιαγιά σου έδωσε 50€ και σε ρώτησε πότε θα παντρευτείς!", "❤️");
+    } else if (item.id === 'eye') {
+      showToast("🧿 Αγόρασες το Μαγικό Μάτι! Σε προστατεύει από την επόμενη αναποδιά.", "🔮");
+    } else {
+      showToast(`Αγόρασες ${item.name}!`, item.emoji);
+    }
+    
     audioService.playCashSound();
   };
 
@@ -567,18 +585,40 @@ function App() {
 
     // Apply hardcoded stat changes if they exist on the choice object
     if (choice.stress_change !== undefined) {
-      const stressDelta = choice.stress_change > 0 
+      let stressDelta = choice.stress_change > 0 
         ? choice.stress_change * mult.stressUp 
         : choice.stress_change * mult.stressDown;
-      const repDelta = choice.reputation_change > 0
+      let repDelta = choice.reputation_change > 0
         ? choice.reputation_change * mult.repUp
         : choice.reputation_change * mult.repDown;
-      const cashDelta = choice.cash_change ? Math.round(choice.cash_change * mult.cash) : 0;
+      let cashDelta = choice.cash_change ? Math.round(choice.cash_change * mult.cash) : 0;
+      let staffDelta = choice.staff_relations_change || 0;
+
+      // Check Magic Eye Protection!
+      const hasBadConsequence = stressDelta > 0 || repDelta < 0 || staffDelta < 0;
+      if (hasBadConsequence && updatedState.inventory && updatedState.inventory.includes('Μαγικό Μάτι 🧿')) {
+        const eyeIdx = updatedState.inventory.indexOf('Μαγικό Μάτι 🧿');
+        if (eyeIdx !== -1) {
+          const newInv = [...updatedState.inventory];
+          newInv.splice(eyeIdx, 1);
+          updatedState.inventory = newInv;
+
+          // Nullify all negative impacts!
+          if (stressDelta > 0) stressDelta = 0;
+          if (repDelta < 0) repDelta = 0;
+          if (staffDelta < 0) staffDelta = 0;
+
+          // Push visual feedback toast with delay
+          setTimeout(() => {
+            showToast("🧿 Το Μαγικό Μάτι σε προστάτεψε από την αναποδιά!", "🔮");
+          }, 600);
+        }
+      }
 
       updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + stressDelta));
       updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + repDelta));
       updatedState.cash += cashDelta;
-      updatedState.staffRelations = Math.max(-100, Math.min(100, updatedState.staffRelations + (choice.staff_relations_change || 0)));
+      updatedState.staffRelations = Math.max(-100, Math.min(100, updatedState.staffRelations + staffDelta));
       
       if (stressDelta > 0 || repDelta < 0) {
         audioService.playSlapSound();
@@ -1858,18 +1898,52 @@ function App() {
                   >
                     <div style={{ fontSize: '2.2rem', lineHeight: 1 }}>{item.emoji}</div>
                     <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>{item.name}</div>
-                    <div style={{
-                      display: 'inline-block',
-                      fontSize: '0.82rem',
-                      fontWeight: 700,
-                      color: '#4bff4b',
-                      background: 'rgba(75,255,75,0.1)',
-                      border: '1px solid rgba(75,255,75,0.3)',
-                      borderRadius: '4px',
-                      padding: '0.2rem 0.5rem',
-                      alignSelf: 'flex-start',
-                    }}>
-                      Stress: -{item.stressReduction}%
+                    {item.id === 'eye' ? (
+                      <div style={{
+                        display: 'inline-block',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        color: '#b388ff',
+                        background: 'rgba(179,136,255,0.1)',
+                        border: '1px solid rgba(179,136,255,0.3)',
+                        borderRadius: '4px',
+                        padding: '0.2rem 0.5rem',
+                        alignSelf: 'flex-start',
+                      }}>
+                        🧿 Ασπίδα Προστασίας
+                      </div>
+                    ) : item.id === 'grandma' ? (
+                      <div style={{
+                        display: 'inline-block',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        color: '#ffdd67',
+                        background: 'rgba(255,221,103,0.1)',
+                        border: '1px solid rgba(255,221,103,0.3)',
+                        borderRadius: '4px',
+                        padding: '0.2rem 0.5rem',
+                        alignSelf: 'flex-start',
+                      }}>
+                        💵 +50€ | 🤯 Stress +15%
+                      </div>
+                    ) : (
+                      <div style={{
+                        display: 'inline-block',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        color: '#4bff4b',
+                        background: 'rgba(75,255,75,0.1)',
+                        border: '1px solid rgba(75,255,75,0.3)',
+                        borderRadius: '4px',
+                        padding: '0.2rem 0.5rem',
+                        alignSelf: 'flex-start',
+                      }}>
+                        Stress: -{item.stressReduction}%
+                      </div>
+                    )}
+
+                    <div style={{ fontSize: '0.85rem', color: '#a8b2d8', lineHeight: '1.4', marginTop: '0.25rem' }}>
+                      {item.desc}
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '0.75rem' }}>
