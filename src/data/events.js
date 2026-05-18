@@ -185,5 +185,82 @@ export const GENERAL_EVENTS = [
       { id: 2, text: "Καθησυχάζω τον κόσμο με φακούς και καλώ την πυροσβεστική.", stress_change: 15, reputation_change: 5, cash_change: 0, staff_relations_change: 5 },
       { id: 3, text: "Πανικοβάλλομαι και κρύβομαι στο γραφείο.", stress_change: -10, reputation_change: -35, cash_change: 0, staff_relations_change: -20 }
     ]
+  },
+  {
+    scene_title: "Τηλεφώνημα Πανικού",
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Το ξυπνητήρι δεν χτύπησε ποτέ! Ξυπνάς από το επίμονο τηλεφώνημα της Maitress Κατερίνας Τζιούτζιου: 'Πού είσαι; Η πρωινή βάρδια έχει ξεκινήσει, ο μπουφές είναι γεμάτος κόσμο και εσύ λείπεις!'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Λέω ψέματα ότι έπαθα λάστιχο στον δρόμο και έρχομαι σφαίρα.", stress_change: 15, reputation_change: -5, cash_change: 0, staff_relations_change: -5 },
+      { id: 2, text: "Λέω την αλήθεια, ζητάω χίλια συγγνώμη και υπόσχομαι να κάνω διπλοβάρδια.", stress_change: 25, reputation_change: 10, cash_change: 0, staff_relations_change: 10 },
+      { id: 3, text: "Κλείνω το τηλέφωνο και το γυρνάω στο αθόρυβο. Ας με απολύσουν.", stress_change: -20, reputation_change: -30, cash_change: 0, staff_relations_change: -20 }
+    ]
+  },
+  {
+    scene_title: "Λούφα στην Κουζίνα",
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Βρίσκεσαι πίσω στην κουζίνα και γυαλίζεις μαχαιροπίρουνα με ρυθμούς χελώνας, χαζεύοντας στο κινητό. Ξαφνικά εμφανίζεται η Maitress Κατερίνα και σε πιάνει στα πράσα!",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Κρύβω γρήγορα το κινητό και προσποιούμαι ότι τρίβω με μανία ένα κουτάλι.", stress_change: 15, reputation_change: -5, cash_change: 0, staff_relations_change: -10 },
+      { id: 2, text: "Ζητάω συγγνώμη και της λέω ότι περίμενα να βγουν τα καθαρά σκεύη από το πλυντήριο.", stress_change: 10, reputation_change: 5, cash_change: 0, staff_relations_change: 5 },
+      { id: 3, text: "Της λέω με θράσος ότι δουλεύω 12ωρα χωρίς διάλειμμα και δικαιούμαι 5 λεπτά.", stress_change: 25, reputation_change: -20, cash_change: 0, staff_relations_change: -15 }
+    ]
+  },
+  {
+    scene_title: "Σύγκρουση στο Μπουφέ",
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Ο Βαλάντης ο μπουφετζής τρέχει σαν τρελός με ένα καρότσι γεμάτο πιάτα και σε χτυπάει άσχημα στον αστράγαλο. Αντί να ζητήσει συγγνώμη, σου φωνάζει: 'Φύγε από τη μέση ρε, δεν βλέπεις ότι βιάζομαι;'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Του φωνάζω κι εγώ και τον σπρώχνω. Δεν θα με πατάει ο κάθε άσχετος!", stress_change: 20, reputation_change: -15, cash_change: 0, staff_relations_change: -25 },
+      { id: 2, text: "Παίρνω βαθιά ανάσα, τον αγνοώ και πάω να βάλω πάγο στον αστράγαλό μου.", stress_change: 15, reputation_change: 10, cash_change: 0, staff_relations_change: 5 },
+      { id: 3, text: "Του λέω ειρωνικά: 'Μπράβο Βαλάντη, πάρε και δίπλωμα νταλίκας!' και συνεχίζω.", stress_change: 5, reputation_change: 0, cash_change: 0, staff_relations_change: -10 }
+    ]
+  },
+  {
+    scene_title: "Το Χανγκόβερ του Μπαλατσούκα",
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Ο συνάδελφός σου ο Μπαλατσούκας ήρθε στη βάρδια ολοφάνερα μεθυσμένος μετά από χθεσινοβραδινή έξοδο στο 'Σαράι'. Δεν μπορεί να σταθεί όρθιος και όλη η δουλειά του F&B πέφτει στις δικές σου πλάτες!",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τον καλύπτω και τρέχω σαν τρελός να βγάλω και τα δικά του τραπέζια για το τιπ.", stress_change: 35, reputation_change: 15, cash_change: 20, staff_relations_change: 35 },
+      { id: 2, text: "Πάω κρυφά στη Maitress Κατερίνα και την ενημερώνω για την κατάστασή του.", stress_change: 10, reputation_change: 10, cash_change: 0, staff_relations_change: -30 },
+      { id: 3, text: "Του λέω να πάει να κοιμηθεί στις τουαλέτες κι εγώ κάνω μόνο τα απολύτως απαραίτητα.", stress_change: 15, reputation_change: -10, cash_change: 0, staff_relations_change: 10 }
+    ]
+  },
+  {
+    scene_title: "Παρατήρηση από Τάρναβα",
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Ο Area Operations Manager Ανδρέας Τάρναβας περνάει από το εστιατόριο, κοιτάζει το πάτωμα και σου κάνει αυστηρή παρατήρηση: 'Αυτό το πάτωμα είναι βρώμικο, υπάρχουν ψίχουλα παντού. Αυτή είναι η εικόνα πεντάστερου ξενοδοχείου;'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Ζητάω αμέσως συγγνώμη και παίρνω τη σφουγγαρίστρα να το καθαρίσω επιτόπου.", stress_change: 20, reputation_change: 10, cash_change: 0, staff_relations_change: 0 },
+      { id: 2, text: "Του λέω ότι μόλις σηκώθηκε ένα τραπέζι με 5 παιδιά και θα το καθαρίζαμε τώρα.", stress_change: 10, reputation_change: 5, cash_change: 0, staff_relations_change: 5 },
+      { id: 3, text: "Του απαντάω ότι είμαστε μόνο 2 σερβιτόροι για 100 άτομα και δεν προλαβαίνουμε.", stress_change: 25, reputation_change: -15, cash_change: 0, staff_relations_change: -10 }
+    ]
+  },
+  {
+    scene_title: "Το Ψυγείο των Κρασιών",
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Ο Ανδρέας Τάρναβας ελέγχει το Wine Cooler του εστιατορίου και σε καλεί έξαλλος: 'Το ψυγείο με τα κρασιά έχει λάθος θερμοκρασία! Έχει πάει στους 18 βαθμούς! Θέλετε να σερβίρουμε ζεστή Σαντορίνη στους VIP;'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Αναλαμβάνω την ευθύνη, ρυθμίζω ξανά τον θερμοστάτη και ελέγχω τα μπουκάλια.", stress_change: 15, reputation_change: 10, cash_change: 0, staff_relations_change: 5 },
+      { id: 2, text: "Του λέω ότι η συντήρηση το πείραξε χθες και ότι φταίνε οι τεχνικοί.", stress_change: 10, reputation_change: -5, cash_change: 0, staff_relations_change: -15 },
+      { id: 3, text: "Του προτείνω να βάλουμε μερικά μπουκάλια σε σαμπανιέρες με πάγο για άμεση λύση.", stress_change: 5, reputation_change: 15, cash_change: 0, staff_relations_change: 10 }
+    ]
+  },
+  {
+    scene_title: "Ουρά Αναμονής",
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Είναι ώρα αιχμής στο κεντρικό εστιατόριο. Έχει δημιουργηθεί τεράστια ουρά αναμονής στην είσοδο, οι πελάτες πεινάνε, φωνάζουν και απειλούν με κακά σχόλια επειδή καθυστερούν να καθίσουν!",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τρέχω να καθαρίσω τραπέζια με ταχύτητα φωτός για να καθίσουν οι επόμενοι.", stress_change: 35, reputation_change: 15, cash_change: 0, staff_relations_change: 10 },
+      { id: 2, text: "Πηγαίνω στην ουρά και τους κερνάω prosecco/χυμούς για να ηρεμήσω τα πνεύματα.", stress_change: 15, reputation_change: 20, cash_change: -20, staff_relations_change: 15 },
+      { id: 3, text: "Τους λέω ψυχρά ότι αν δεν έχουν κράτηση θα πρέπει να περιμένουν τουλάχιστον μία ώρα.", stress_change: 10, reputation_change: -25, cash_change: 0, staff_relations_change: -10 }
+    ]
   }
 ];
