@@ -1280,32 +1280,11 @@ function App() {
             </table>
           </div>
 
-          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <button 
-              className="btn-primary" 
-              onClick={() => {
-                if (window.confirm("Θέλεις σίγουρα να μηδενίσεις την κατάταξη; (Θα επαναφέρει τους προεπιλεγμένους παίκτες)")) {
-                  localStorage.removeItem('hotel_madness_leaderboard');
-                  setShowLeaderboard(false);
-                  setTimeout(() => setShowLeaderboard(true), 50);
-                }
-              }}
-              style={{
-                backgroundColor: 'rgba(255, 75, 75, 0.1)',
-                border: '1px solid rgba(255, 75, 75, 0.3)',
-                color: 'var(--danger-color)',
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-                cursor: 'pointer'
-              }}
-            >
-              Επαναφορά Κατάταξης
-            </button>
-
+          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
             <button 
               className="btn-primary" 
               onClick={() => setShowLeaderboard(false)}
+              style={{ padding: '0.6rem 2.5rem', width: 'auto' }}
             >
               Κλείσιμο
             </button>
