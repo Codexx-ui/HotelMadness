@@ -570,20 +570,6 @@ function App() {
 
   const renderLoginScreen = () => (
     <div className="role-selection" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-      <h2 style={{ 
-        fontSize: '2.5rem', 
-        color: 'var(--accent-color)', 
-        marginBottom: '2rem', 
-        textTransform: 'uppercase', 
-        letterSpacing: '0.05em',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '0.6rem'
-      }}>
-        <Hotel size={32} color="var(--danger-color)" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 75, 75, 0.5))' }} />
-        <span>Hotel Madness</span>
-      </h2>
       <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 2.5rem auto', lineHeight: '1.6' }}>
         Καλώς ήρθατε στον κορυφαίο εξομοιωτή Ελληνικής Φιλοξενίας. Επιβιώστε από τον GM Μουστάκα, διαχειριστείτε υπερκρατήσεις, αγενείς VIP και το ακραίο εργασιακό stress.
       </p>
