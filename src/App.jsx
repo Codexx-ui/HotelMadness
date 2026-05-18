@@ -1872,10 +1872,10 @@ function App() {
             </div>
 
             <div className="settings-section">
-              <div className="settings-section-title">Slap-O-Meter Playground 🤚</div>
+              <div className="settings-section-title">ΦαΠ-Ο-Μέτρο Playground 🤚</div>
               <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
                 <span className="settings-label" style={{ textAlign: 'center', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#a8b2d8' }}>
-                  Δοκίμασε τα αντανακλαστικά σου στο Slap-O-Meter οποιαδήποτε στιγμή!
+                  Δοκίμασε τα αντανακλαστικά σου στο ΦαΠ-Ο-Μέτρο οποιαδήποτε στιγμή!
                 </span>
                 <button
                   className="settings-btn"
@@ -1897,7 +1897,7 @@ function App() {
                     setShowSlapOMeter(true);
                   }}
                 >
-                  ⚡ ΠΑΙΞΕ SLAP-O-METER
+                  ⚡ ΠΑΙΞΕ ΦαΠ-Ο-Μέτρο
                 </button>
               </div>
             </div>
