@@ -122,5 +122,87 @@ export const audioService = {
 
   isMuted() {
     return isMuted;
+  },
+
+  playSlapSound() {
+    this.init();
+    if (isMuted || !audioCtx || !masterGain) return;
+    const now = audioCtx.currentTime;
+    
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(260, now);
+    osc.frequency.exponentialRampToValueAtTime(30, now + 0.15);
+    
+    gainNode.gain.setValueAtTime(0.25, now);
+    gainNode.gain.linearRampToValueAtTime(0.01, now + 0.15);
+    
+    osc.connect(gainNode);
+    gainNode.connect(masterGain);
+    
+    osc.start(now);
+    osc.stop(now + 0.15);
+  },
+
+  playCashSound() {
+    this.init();
+    if (isMuted || !audioCtx || !masterGain) return;
+    const now = audioCtx.currentTime;
+    
+    // First high beep
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(987.77, now); // B5
+    gain1.gain.setValueAtTime(0.08, now);
+    gain1.gain.linearRampToValueAtTime(0, now + 0.08);
+    osc1.connect(gain1);
+    gain1.connect(masterGain);
+    osc1.start(now);
+    osc1.stop(now + 0.08);
+    
+    // Second even higher beep
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+    gain2.gain.setValueAtTime(0.08, now + 0.08);
+    gain2.gain.linearRampToValueAtTime(0, now + 0.35);
+    osc2.connect(gain2);
+    gain2.connect(masterGain);
+    osc2.start(now + 0.08);
+    osc2.stop(now + 0.35);
+  },
+
+  playGameOverSound() {
+    this.init();
+    if (isMuted || !audioCtx || !masterGain) return;
+    const now = audioCtx.currentTime;
+    
+    const notes = [
+      { freq: 392.00, time: 0 },    // G4
+      { freq: 349.23, time: 0.15 }, // F4
+      { freq: 311.13, time: 0.30 }, // Eb4
+      { freq: 261.63, time: 0.45 }  // C4
+    ];
+    
+    notes.forEach(note => {
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(note.freq, now + note.time);
+      
+      gainNode.gain.setValueAtTime(0.15, now + note.time);
+      gainNode.gain.linearRampToValueAtTime(0, now + note.time + 0.35);
+      
+      osc.connect(gainNode);
+      gainNode.connect(masterGain);
+      
+      osc.start(now + note.time);
+      osc.stop(now + note.time + 0.35);
+    });
   }
 };

@@ -85,6 +85,7 @@ function App() {
 
   const triggerTipsToast = (amount) => {
     showToast(`Έλαβες Φιλοδώρημα: +${amount}€!`, '💵');
+    audioService.playCashSound();
   };
 
   const STORE_ITEMS = [
@@ -124,6 +125,7 @@ function App() {
     setGameState(newState);
     setHasPurchasedThisTurn(true);
     showToast(`Αγόρασες ${item.name}!`, item.emoji);
+    audioService.playCashSound();
   };
 
   const getDifficultyMultipliers = () => {
@@ -166,6 +168,42 @@ function App() {
     }
   ];
 
+  const calculateSuccessRate = (state) => {
+    if (!state) return 0;
+    const turnWeight = Math.min(1, (state.turnCount || 0) / 30);
+    const cashWeight = Math.min(1, (state.cash + (state.tips || 0)) / (2000 + (state.season || 1) * 800));
+    const stressPenalty = (state.stress || 0) * 0.3;
+    const repBonus = ((state.reputation || 50) - 50) * 0.4;
+
+    let score = (turnWeight * 40) + (cashWeight * 60) + repBonus - stressPenalty;
+    if (state.resigned) score -= 15;
+    if (state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3) score = score * 0.6;
+    return Math.max(0, Math.min(100, Math.round(score)));
+  };
+
+  const getEvaluationGrade = (rate, state) => {
+    if (state.resigned) {
+      if (rate >= 70) return { grade: 'B-', label: 'Συνειδητοποιημένος Δραπέτης 🏃', desc: 'Έφυγες με γεμάτες τσέπες, αφήνοντας τον Μουστάκα στα κρύα του λουτρού!' };
+      return { grade: 'D', label: 'Λιποτάκτης 🏃', desc: 'Πέταξες τη ποδιά και έφυγες τρέχοντας για το πλοίο της επιστροφής.' };
+    }
+    if (state.stress >= 100) {
+      return { grade: 'F+', label: 'Θύμα του Συστήματος 🤯', desc: 'Κατέρρευσες από το ακραίο stress. Σε βρήκαν στην αποθήκη να κλαις αγκαλιά με ένα σεντόνι.' };
+    }
+    if (state.reputation <= 0) {
+      return { grade: 'F-', label: 'Ανεπιθύμητος 📉', desc: 'Κατέστρεψες τη φήμη του ξενοδοχείου. Ο Μουστάκας σε πέταξε έξω με κλωτσιές και σου μαύρισε το βιογραφικό.' };
+    }
+    if (state.alcoholWarnings >= 3) {
+      return { grade: 'F', label: 'Αλκοολικός της Faplantica ⚠️', desc: 'Σε έπιασαν να πίνεις το σφηνάκι του VIP. Σε έστειλαν σπίτι σου με 3 πειθαρχικές προειδοποιήσεις.' };
+    }
+    
+    if (rate >= 95) return { grade: 'S+', label: 'Διάδοχος του Μουστάκα 👑', desc: 'Αδιανόητο! Έγινες ο φόβος και ο τρόμος των υπαλλήλων. Ο Μουστάκας υποκλίνεται στο μεγαλείο σου!' };
+    if (rate >= 85) return { grade: 'A', label: 'Υπάλληλος της Χρονιάς 🏆', desc: 'Το HR σε έχει ως πρότυπο (αν και ακόμα δεν σου έχουν πληρώσει τις υπερωρίες).' };
+    if (rate >= 70) return { grade: 'B', label: 'Έμπειρος Επαγγελματίας 🛎️', desc: 'Ξέρεις πώς να κρύβεις τα λάθη σου και πώς να παίρνεις tips. Ένας αληθινός επαγγελματίας.' };
+    if (rate >= 50) return { grade: 'C', label: 'Επιζών της Σεζόν 🩹', desc: 'Με μισό κουτί depon την ημέρα και άπειρο καφέ, κατάφερες να βγάλεις τη σεζόν όρθιος.' };
+    if (rate >= 30) return { grade: 'D', label: 'Φοβισμένο Γατάκι 🐱', desc: 'Κρυβόσουν στις τουαλέτες κάθε φορά που φώναζε ο Μουστάκας. Αλλά τουλάχιστον πληρώθηκες.' };
+    return { grade: 'F', label: 'Απολυμένος 💼', desc: 'Δεν άντεξες ούτε τη βασική εκπαίδευση. Ο τουρισμός δεν είναι για σένα.' };
+  };
+
   const saveScoreToLeaderboard = (state) => {
     try {
       const difficultyMap = {
@@ -194,6 +232,9 @@ function App() {
         status = 'Απολύθηκε (GM Warning) ⚠️';
       }
 
+      const successRate = calculateSuccessRate(state);
+      const evalObj = getEvaluationGrade(successRate, state);
+
       const newEntry = {
         id: Date.now().toString(),
         nickname: nickname || 'Guest',
@@ -204,6 +245,9 @@ function App() {
         tips: state.tips || 0,
         difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
         status: status,
+        successRate: successRate,
+        evaluationGrade: evalObj.grade,
+        evaluationLabel: evalObj.label,
         date: new Date().toLocaleDateString('el-GR')
       };
 
@@ -234,7 +278,9 @@ function App() {
           cash: state.cash || 0,
           tips: state.tips || 0,
           difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
-          status: status
+          status: status,
+          success_rate: successRate,
+          evaluation: `${evalObj.grade} - ${evalObj.label}`
         })
       })
       .then(res => res.json())
@@ -523,6 +569,10 @@ function App() {
       updatedState.cash += cashDelta;
       updatedState.staffRelations = Math.max(-100, Math.min(100, updatedState.staffRelations + (choice.staff_relations_change || 0)));
       
+      if (stressDelta > 0 || repDelta < 0) {
+        audioService.playSlapSound();
+      }
+
       if (cashDelta > 0) {
         updatedState.tips = (updatedState.tips || 0) + cashDelta;
         triggerTipsToast(cashDelta);
@@ -539,6 +589,7 @@ function App() {
           game_over: true
         });
         setGameOver(true);
+        audioService.playGameOverSound();
         const rejectedState = { ...updatedState, turnCount: 0, resigned: false };
         setGameState(rejectedState);
         saveScoreToLeaderboard(rejectedState);
@@ -566,6 +617,7 @@ function App() {
         game_over: true
       });
       setGameOver(true);
+      audioService.playGameOverSound();
       setIsLoading(false);
       saveScoreToLeaderboard(currentState);
       return;
@@ -580,6 +632,7 @@ function App() {
         game_over: true
       });
       setGameOver(true);
+      audioService.playGameOverSound();
       setIsLoading(false);
       saveScoreToLeaderboard(currentState);
       return;
@@ -645,6 +698,11 @@ function App() {
           : response.reputation_change * mult.repDown;
         newState.reputation = Math.max(0, Math.min(100, newState.reputation + repDelta));
       }
+
+      if (response.stress_change > 0 || response.reputation_change < 0) {
+        audioService.playSlapSound();
+      }
+
       if (response.cash_change) {
         const cashDelta = response.cash_change > 0 ? Math.round(response.cash_change * mult.cash) : response.cash_change;
         newState.cash += cashDelta;
@@ -669,6 +727,7 @@ function App() {
 
       if (response.game_over || newState.stress >= 100 || newState.reputation <= 0 || newState.alcoholWarnings >= 3) {
         setGameOver(true);
+        audioService.playGameOverSound();
         saveScoreToLeaderboard(newState);
       }
     } catch (error) {
@@ -1017,6 +1076,8 @@ function App() {
   const renderGameOver = () => {
     const isSeasonEnd = new Date(gameState.currentDate) >= new Date('2026-11-01');
     const isResigned = gameState.resigned;
+    const successRate = calculateSuccessRate(gameState);
+    const evalObj = getEvaluationGrade(successRate, gameState);
 
     return (
       <div className="game-over-screen">
@@ -1034,61 +1095,143 @@ function App() {
             ? "Καλό χειμώνα! Τα καταφέρατε και επιβιώσατε άλλη μια σεζόν. Ξεκουραστείτε... γιατί του χρόνου ο εφιάλτης συνεχίζεται! 🏖️🔥"
             : "Υπέκυψες στην αβάσταχτη πίεση του σύγχρονου ελληνικού ξενοδοχειακού management. Ο GM Μουστάκας σε αντικατέστησε ήδη."}
         </p>
-        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
+        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
           <div>Τελικό Άγχος: <span className="text-danger">{gameState.stress}%</span></div>
           <div>Τελική Φήμη: <span className="text-warning">{gameState.reputation}%</span></div>
           <div>Λογαριασμός Eurobank: <span className="text-success">€{gameState.cash}</span></div>
         </div>
 
-        {isSeasonEnd && (
-          <div style={{ marginTop: '2rem', backgroundColor: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', maxWidth: '600px', margin: '2rem auto' }}>
-            <h3 style={{ marginTop: 0, color: 'var(--accent-color)' }}>Πώς θα περιέγραφες τη φετινή εμπειρία σου;</h3>
-            {!feedbackSent ? (
-              <>
-                <textarea 
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                  placeholder="Γράψε εδώ τα παράπονά σου (δεν θα τα διαβάσει κανείς στο HR)..."
-                  style={{ width: '100%', height: '100px', padding: '1rem', borderRadius: '8px', border: '1px solid var(--panel-border)', backgroundColor: 'rgba(0,0,0,0.3)', color: 'var(--text-primary)', marginTop: '1rem', resize: 'vertical' }}
-                />
-                <button 
-                  className="btn-primary" 
-                  style={{ marginTop: '1rem', width: '100%' }}
-                  onClick={async () => {
-                    if (!feedbackText.trim()) return;
-                    setIsSendingFeedback(true);
-                    try {
-                      await fetch('https://formspree.io/f/meedqrjg', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                          nickname: nickname,
-                          role: gameState.role,
-                          stress: gameState.stress,
-                          reputation: gameState.reputation,
-                          cash: gameState.cash,
-                          feedback: feedbackText
-                        })
-                      });
-                      setFeedbackSent(true);
-                    } catch (err) {
-                      console.error("Failed to send feedback:", err);
-                    }
-                    setIsSendingFeedback(false);
-                  }}
-                  disabled={isSendingFeedback || !feedbackText.trim()}
-                >
-                  {isSendingFeedback ? 'Αποστολή...' : 'Αποστολή Αναφοράς'}
-                </button>
-              </>
-            ) : (
-              <p style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>Η αναφορά σας εστάλη επιτυχώς. Καλό χειμώνα!</p>
-            )}
+        {/* GORGEOUS EMPLOYEE CAREER CARD */}
+        <div className="employee-profile-card" style={{
+          marginTop: '2rem',
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px dashed rgba(102, 252, 241, 0.4)',
+          borderRadius: '16px',
+          padding: '1.5rem',
+          maxWidth: '550px',
+          margin: '2rem auto',
+          textAlign: 'center',
+          boxShadow: '0 0 25px rgba(102, 252, 241, 0.03)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Retro Watermarked Badge */}
+          <div style={{
+            position: 'absolute',
+            top: '0.8rem',
+            right: '-2.5rem',
+            background: evalObj.grade.startsWith('S') || evalObj.grade.startsWith('A') || evalObj.grade.startsWith('B') ? 'rgba(75, 255, 75, 0.15)' : 'rgba(255, 75, 75, 0.15)',
+            color: evalObj.grade.startsWith('S') || evalObj.grade.startsWith('A') || evalObj.grade.startsWith('B') ? '#4bff4b' : '#ff4b4b',
+            border: '1px solid currentColor',
+            padding: '0.2rem 2.5rem',
+            transform: 'rotate(35deg)',
+            fontSize: '0.75rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em'
+          }}>
+            {gameState.season === 1 ? '1η Σεζόν' : `${gameState.season}η Σεζόν`}
           </div>
-        )}
+
+          <h3 style={{ margin: '0 0 1.25rem 0', color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '1.15rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+            💼 ΚΑΡΤΕΛΑ ΥΠΑΛΛΗΛΟΥ FAPLANTICA
+          </h3>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+            {/* Success Rate Circle */}
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
+                Ποσοστό Επιτυχίας
+              </span>
+              <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#66fcf1', textShadow: '0 0 10px rgba(102, 252, 241, 0.3)' }}>
+                {successRate}%
+              </div>
+            </div>
+
+            {/* Grade Badge */}
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
+                Αξιολόγηση HR
+              </span>
+              <div style={{
+                fontSize: '2.2rem',
+                fontWeight: 900,
+                color: evalObj.grade.startsWith('S') || evalObj.grade.startsWith('A') || evalObj.grade.startsWith('B') ? '#4bff4b' : '#ff4b4b',
+                textShadow: evalObj.grade.startsWith('S') || evalObj.grade.startsWith('A') || evalObj.grade.startsWith('B') ? '0 0 10px rgba(75,255,75,0.3)' : '0 0 10px rgba(255,75,75,0.3)'
+              }}>
+                {evalObj.grade}
+              </div>
+            </div>
+          </div>
+
+          {/* Character Evaluation Label & Description */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.35rem' }}>
+              {evalObj.label}
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5', margin: 0 }}>
+              {evalObj.desc}
+            </p>
+          </div>
+        </div>
+
+        {/* HR SUBMISSION PANEL */}
+        <div style={{ marginTop: '1.5rem', backgroundColor: 'rgba(255,255,255,0.04)', padding: '1.25rem', borderRadius: '12px', maxWidth: '550px', margin: '1.5rem auto', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <h3 style={{ marginTop: 0, color: 'var(--accent-color)', fontSize: '1.1rem' }}>
+            {isSeasonEnd ? "Πώς θα περιέγραφες τη φετινή εμπειρία σου;" : "Υπόβαλε Αναφορά στο HR της Faplantica:"}
+          </h3>
+          {!feedbackSent ? (
+            <>
+              <textarea 
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                placeholder="Γράψε εδώ τα παράπονά σου (δεν θα τα διαβάσει κανείς στο HR)..."
+                style={{ width: '100%', height: '80px', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--panel-border)', backgroundColor: 'rgba(0,0,0,0.3)', color: 'var(--text-primary)', marginTop: '0.5rem', resize: 'vertical', fontSize: '0.9rem' }}
+              />
+              <button 
+                className="btn-primary" 
+                style={{ marginTop: '0.75rem', width: '100%', padding: '0.6rem 1rem' }}
+                onClick={async () => {
+                  if (!feedbackText.trim()) return;
+                  setIsSendingFeedback(true);
+                  try {
+                    await fetch('https://formspree.io/f/meedqrjg', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        nickname: nickname || 'Guest',
+                        role: gameState.role,
+                        season: gameState.season || 1,
+                        turns: gameState.turnCount || 0,
+                        stress: gameState.stress,
+                        reputation: gameState.reputation,
+                        cash: gameState.cash,
+                        tips: gameState.tips || 0,
+                        success_rate: `${successRate}%`,
+                        evaluation: `${evalObj.grade} - ${evalObj.label}`,
+                        feedback: feedbackText
+                      })
+                    });
+                    setFeedbackSent(true);
+                  } catch (err) {
+                    console.error("Failed to send feedback:", err);
+                  }
+                  setIsSendingFeedback(false);
+                }}
+                disabled={isSendingFeedback || !feedbackText.trim()}
+              >
+                {isSendingFeedback ? 'Υποβολή...' : 'Υποβολή Φακέλου στο HR'}
+              </button>
+            </>
+          ) : (
+            <p style={{ color: 'var(--success-color)', fontWeight: 'bold', margin: 0, fontSize: '0.95rem' }}>
+              Η αναφορά σας αρχειοθετήθηκε επιτυχώς (στα σκουπίδια του HR). Καλή τύχη!
+            </p>
+          )}
+        </div>
 
         <button className="btn-restart" onClick={() => { 
           if (isSeasonEnd) {
