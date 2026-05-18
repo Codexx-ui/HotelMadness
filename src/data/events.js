@@ -1,4 +1,39 @@
 export const SPECIFIC_EVENTS = {
+  0: [
+    {
+      role: "Ρεσεψιονίστ",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Βρίσκεσαι στο γραφείο του GM Γεώργιου Μουστάκα για τη συνέντευξη εργασίας ως Ρεσεψιονίστ. Σε κοιτάζει με ένα μείγμα άγχους και αυστηρότητας: «Η ρεσεψιόν είναι η πρώτη γραμμή άμυνας. Αν σκάσει overbooking 5 δωματίων και VIP πελάτης ταυτόχρονα, πώς θα το χειριστείς;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Θα εφαρμόσω Flawless Corporate Diplomacy και θα μεταφέρω τους απλούς guests σε διπλανό μοτέλ.", stress_change: 15, reputation_change: 10, cash_change: 0 },
+        { id: 2, text: "Θα προσφέρω δωρεάν ποτά στο μπαρ και θα κρυφτώ πίσω στο γραφείο των κρατήσεων.", stress_change: -10, reputation_change: -15, cash_change: 0 },
+        { id: 3, text: "Θα τηλεφωνήσω αμέσως σε εσάς, κύριε Διευθυντά, για να πάρω οδηγίες ευθυγράμμισης.", stress_change: 10, reputation_change: 20, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Σερβιτόρος",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Βρίσκεσαι στο γραφείο του GM Γεώργιου Μουστάκα για τη συνέντευξη εργασίας ως Σερβιτόρος. Παίζει με ένα στυλό νευρικά: «Η σάλα είναι πόλεμος. Αν ένας VIP πελάτης σου πετάξει το κρασί επειδή δεν είναι στη σωστή θερμοκρασία, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Ζητώ συγγνώμη με corporate χαμόγελο και του φέρνω νέα φιάλη αμέσως.", stress_change: 15, reputation_change: 15, cash_change: 0 },
+        { id: 2, text: "Του λέω ότι το κρασί είναι μια χαρά και μάλλον δεν ξέρει από καλά κρασιά.", stress_change: -15, reputation_change: -25, cash_change: 0 },
+        { id: 3, text: "Παίρνω τη φιάλη, πηγαίνω στην κουζίνα, βάζω παγάκια και του το ξαναφέρνω.", stress_change: 5, reputation_change: 5, cash_change: 10 }
+      ]
+    },
+    {
+      role: "Μάγειρας",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Βρίσκεσαι στο γραφείο του GM Γεώργιου Μουστάκα για τη συνέντευξη εργασίας ως Μάγειρας. Σου δείχνει το ρολόι του: «Η κουζίνα είναι κόλαση. Αν σκάσει banquet 200 ατόμων και χαλάσει το κεντρικό πλυντήριο πιάτων, πώς θα αντιδράσεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Θα βάλω τους λαντζέρηδες να πλένουν στο χέρι με 1000% ρυθμό και θα βγάλω το μενού κανονικά.", stress_change: 20, reputation_change: 15, cash_change: 0 },
+        { id: 2, text: "Θα αρχίσω να ουρλιάζω στους σερβιτόρους να μη φέρνουν άλλα πιάτα στην κουζίνα.", stress_change: -10, reputation_change: -20, cash_change: 0 },
+        { id: 3, text: "Θα μαγειρέψω σε σκεύη μίας χρήσης και θα το παρουσιάσω ως eco-friendly concept.", stress_change: 10, reputation_change: 5, cash_change: 0 }
+      ]
+    }
+  ],
   7: [
     {
       scene_title: "Διάδρομος Προσωπικού (Act 7)",

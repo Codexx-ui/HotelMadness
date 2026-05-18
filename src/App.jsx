@@ -452,7 +452,8 @@ function App() {
       let nextScene = null;
       if (SPECIFIC_EVENTS[currentTurn]) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
-        nextScene = alternatives[Math.floor(Math.random() * alternatives.length)];
+        const roleFiltered = alternatives.filter(alt => !alt.role || alt.role === currentState.role);
+        nextScene = roleFiltered[Math.floor(Math.random() * roleFiltered.length)] || alternatives[0];
       } else {
         // Filter general events so that role-specific events are only served to players with that role
         const filteredEvents = GENERAL_EVENTS.filter(e => !e.role || e.role === currentState.role);
