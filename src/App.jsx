@@ -24,6 +24,7 @@ const INITIAL_STATE = {
   staffTurnover: 5,
   thesfapaClicked: false,
   turnsSinceThesfapa: 0,
+  thesfapaSpawnedThisSeason: false,
   currentDate: '2026-02-01',
   turnCount: 0,
   season: 1,
@@ -749,7 +750,7 @@ function App() {
     if (!isAITurn) {
       // Hardcoded Route
       let nextScene = null;
-      const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] && (currentTurn !== 7 || currentState.season === 2);
+      const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn];
       if (hasSpecificEvent) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
         const roleFiltered = alternatives.filter(alt => !alt.role || alt.role === currentState.role);
@@ -774,6 +775,15 @@ function App() {
         updatedState.usedEventTexts.push(nextScene.story_text);
       }
       setGameState(updatedState);
+
+      // Dynamic Thesfapa Injection
+      if (!updatedState.thesfapaTargetTurn) {
+        updatedState.thesfapaTargetTurn = Math.floor(Math.random() * 15) + 11; // Turn 11 to 25
+      }
+      if (updatedState.turnCount === updatedState.thesfapaTargetTurn && !updatedState.thesfapaSpawnedThisSeason) {
+        nextScene.story_text += " \n\nΚάποιος συνάδελφος σου ψιθυρίζει για ένα κρυφό παιχνίδι και σου στέλνει το link: https://codexx-ui.github.io/Thesfapa/";
+        updatedState.thesfapaSpawnedThisSeason = true;
+      }
 
       // Simulate network delay for UI smoothness
       setTimeout(() => {
@@ -824,6 +834,15 @@ function App() {
         if (response.hotel_metrics_updated.occupancy_change) newState.occupancy += response.hotel_metrics_updated.occupancy_change;
         if (response.hotel_metrics_updated.financial_metric_change) newState.financialMetric += response.hotel_metrics_updated.financial_metric_change;
         if (response.hotel_metrics_updated.staff_turnover_change) newState.staffTurnover += response.hotel_metrics_updated.staff_turnover_change;
+      }
+
+      // Dynamic Thesfapa Injection
+      if (!newState.thesfapaTargetTurn) {
+        newState.thesfapaTargetTurn = Math.floor(Math.random() * 15) + 11; // Turn 11 to 25
+      }
+      if (newState.turnCount === newState.thesfapaTargetTurn && !newState.thesfapaSpawnedThisSeason) {
+        response.story_text += " \n\nΚάποιος συνάδελφος σου ψιθυρίζει για ένα κρυφό παιχνίδι και σου στέλνει το link: https://codexx-ui.github.io/Thesfapa/";
+        newState.thesfapaSpawnedThisSeason = true;
       }
 
       setGameState(newState);

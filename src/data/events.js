@@ -336,28 +336,6 @@ export const SPECIFIC_EVENTS = {
       ]
     }
   ],
-  7: [
-    {
-      scene_title: "Διάδρομος Προσωπικού (Act 7)",
-      story_text: "Σε πλησιάζει ο ρεσεψιονίστ γελώντας πονηρά. 'Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει;' Σου στέλνει κρυφά το link: https://codexx-ui.github.io/Thesfapa/",
-      requires_text_input: null,
-      choices: [
-        { id: 1, text: "Μπαίνω αμέσως να παίξω και να του σπάσω τα μούτρα!", stress_change: -15, reputation_change: 0, cash_change: 0, staff_relations_change: 15 },
-        { id: 2, text: "Αστο καλύτερα, θα μας δουν από τις κάμερες.", stress_change: 5, reputation_change: 0, cash_change: 0, staff_relations_change: -5 },
-        { id: 3, text: "Το προωθώ σε όλο το προσωπικό για να γελάσουμε!", stress_change: -5, reputation_change: -5, cash_change: 0, staff_relations_change: 25 }
-      ]
-    },
-    {
-      scene_title: "Αποδυτήρια Προσωπικού (Act 7)",
-      story_text: "Βρίσκεις ένα χαρτάκι κολλημένο στο ντουλάπι σου. Γράφει: 'Ο Τάρναβας πρέπει να πληρώσει. Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει; Μπες εδώ: https://codexx-ui.github.io/Thesfapa/ '",
-      requires_text_input: null,
-      choices: [
-        { id: 1, text: "Μπαίνω να παίξω, πρέπει να ξεσκάσω.", stress_change: -10, reputation_change: 0, cash_change: 0, staff_relations_change: 5 },
-        { id: 2, text: "Πετάω το χαρτάκι στα σκουπίδια, δεν ασχολούμαι.", stress_change: 5, reputation_change: 5, cash_change: 0, staff_relations_change: -10 },
-        { id: 3, text: "Ψάχνω να βρω ποιος το κόλλησε για να τον καρφώσω.", stress_change: 15, reputation_change: 10, cash_change: 0, staff_relations_change: -25 }
-      ]
-    }
-  ],
   14: [
     {
       scene_title: "Lobby (Act 14)",
