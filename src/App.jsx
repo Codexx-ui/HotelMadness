@@ -396,7 +396,7 @@ function App() {
       if (isRejected) {
         setSceneData({
           scene_title: "Απόρριψη στη Συνέντευξη",
-          story_text: "Ο GM Γεώργιος Μουστάκας σε κοίταξε υποτιμητικά από πάνω μέχρι κάτω. «Δεν μου αρέσει η φάτσα σου. Δεν ταιριάζεις στο corporate alignment της Faplatinca. Έξω!» Η καριέρα σου έληξε πριν καν αρχίσει.",
+          story_text: "Ο GM Γεώργιος Μουστάκας σε κοίταξε υποτιμητικά από πάνω μέχρι κάτω. «Δεν μου αρέσει η φάτσα σου. Δεν ταιριάζεις στο corporate alignment της Faplantica. Έξω!» Η καριέρα σου έληξε πριν καν αρχίσει.",
           choices: [],
           game_over: true
         });
@@ -1002,7 +1002,7 @@ function App() {
     
     setSceneData({
       scene_title: `Καλώς Ήρθες στη Σεζόν ${nextSeason}`,
-      story_text: `Ο χειμώνας πέρασε. Επέστρεψες στην Faplatinca. Φέτος τα πράγματα αλλάζουν: Πήρες προαγωγή σε ${nextRole}! Ο Μουστάκας σε περιμένει...`,
+      story_text: `Ο χειμώνας πέρασε. Επέστρεψες στην Faplantica. Φέτος τα πράγματα αλλάζουν: Πήρες προαγωγή σε ${nextRole}! Ο Μουστάκας σε περιμένει...`,
       active_vip_archetype: 'None',
       choices: [{ id: 1, text: 'Πάμε γερά!' }]
     });
@@ -1011,7 +1011,7 @@ function App() {
   const renderDisclaimerScreen = () => (
     <div className="intro-screen">
       <div className="intro-content" style={{ textAlign: 'center' }}>
-        <h1>Καλώς ήρθες στην Οικογένεια της Faplatinca</h1>
+        <h1>Καλώς ήρθες στην Οικογένεια της Faplantica</h1>
         <p style={{ marginTop: '2rem', fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '2rem auto' }}>
           Οποιαδήποτε ομοιότητα με πρόσωπα, καταστάσεις ή γεγονότα είναι εντελώς συμπτωματική και δεν ανταποκρίνεται στην πραγματικότητα.
           <br /><br />
@@ -1336,7 +1336,7 @@ function App() {
         <div className="modal-overlay" onClick={() => setShowStore(false)}>
           <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: 'clamp(1rem, 4vw, 2rem)', maxWidth: '700px', width: '95%', maxHeight: '90vh', display: 'flex', flexDirection: 'column', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
-              <h2 style={{ margin: 0, color: '#66fcf1', fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>🛍️ Κατάστημα Faplatinca</h2>
+              <h2 style={{ margin: 0, color: '#66fcf1', fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>🛍️ Κατάστημα Faplantica</h2>
               <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.5rem' }} onClick={() => setShowStore(false)}>×</button>
             </div>
             
@@ -1353,63 +1353,28 @@ function App() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', overflowY: 'auto', paddingRight: '0.3rem', flex: 1 }}>
+            <div className="store-grid">
               {STORE_ITEMS.map((item) => {
                 const canAfford = gameState.cash >= item.price;
                 const isDisabled = hasPurchasedThisTurn || !canAfford;
                 return (
-                  <div
-                    key={item.id}
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(102,252,241,0.2)',
-                      borderRadius: '12px',
-                      padding: '1rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1rem',
-                      flexWrap: 'wrap'
-                    }}
-                  >
-                    <div style={{ fontSize: '2.5rem', lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>{item.emoji}</div>
-                    <div style={{ flex: '1 1 150px' }}>
-                      <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.4rem' }}>{item.name}</div>
-                      <div style={{
-                        display: 'inline-block',
-                        fontSize: '0.82rem',
-                        fontWeight: 700,
-                        color: '#4bff4b',
-                        background: 'rgba(75,255,75,0.1)',
-                        border: '1px solid rgba(75,255,75,0.3)',
-                        borderRadius: '4px',
-                        padding: '0.2rem 0.5rem',
-                      }}>
+                  <div className="store-card" key={item.id}>
+                    <div>
+                      <div className="store-item-emoji">{item.emoji}</div>
+                      <div className="store-item-title">{item.name}</div>
+                      <div className="store-item-stat-badge stress-reduction">
                         Stress: -{item.stressReduction}%
                       </div>
                     </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1 1 100%', justifyContent: 'space-between', marginTop: '0.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.75rem' }}>
-                      <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#66fcf1' }}>
-                        {item.price.toLocaleString('el-GR')}€
-                      </div>
-                      <button
+                    
+                    <div className="store-card-footer">
+                      <div className="store-price-tag">{item.price.toLocaleString('el-GR')}€</div>
+                      <button 
+                        className="store-buy-btn" 
                         disabled={isDisabled}
                         onClick={() => buyStoreItem(item)}
-                        style={{
-                          background: isDisabled ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #66fcf1, #45a29e)',
-                          border: isDisabled ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                          borderRadius: '6px',
-                          padding: '0.5rem 1rem',
-                          color: isDisabled ? '#ffffff' : '#0b0c10',
-                          fontWeight: 700,
-                          fontSize: '0.85rem',
-                          cursor: isDisabled ? 'not-allowed' : 'pointer',
-                          transition: 'all 0.2s',
-                          whiteSpace: 'nowrap',
-                          minWidth: '110px'
-                        }}
                       >
-                        {hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : (canAfford ? 'Αγορά' : 'Δεν φτάνουν')}
+                        {hasPurchasedThisTurn ? "1 / Βάρδια" : (canAfford ? "Αγορά" : "Δεν φτάνουν")}
                       </button>
                     </div>
                   </div>

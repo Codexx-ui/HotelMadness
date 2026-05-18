@@ -19,7 +19,7 @@ export const SPECIFIC_EVENTS = {
       requires_text_input: null,
       choices: [
         { id: 1, text: "Παίρνω τα κλειδιά, ζητώ ταπεινά συγγνώμη και του κάνω άμεση αναβάθμιση.", stress_change: 20, reputation_change: 15, cash_change: 0 },
-        { id: 2, text: "Του τα πετάω κι εγώ πίσω λέγοντάς του ότι ο σεβασμός είναι αμοιβαίος στη Faplatinca.", stress_change: 10, reputation_change: -30, cash_change: 0 },
+        { id: 2, text: "Του τα πετάω κι εγώ πίσω λέγοντάς του ότι ο σεβασμός είναι αμοιβαίος στη Faplantica.", stress_change: 10, reputation_change: -30, cash_change: 0 },
         { id: 3, text: "Του χαμογελάω ακίνητος, εφαρμόζοντας τεχνικές διαλογισμού για να μη φωνάξω την ασφάλεια.", stress_change: 30, reputation_change: 10, cash_change: 0 }
       ]
     },
@@ -37,7 +37,7 @@ export const SPECIFIC_EVENTS = {
     {
       role: "Ρεσεψιονίστ",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
-      story_text: "Ο Μουστάκας σε ρωτάει νευρικά: «Αν έρθει ο κουμπάρος του ιδιοκτήτη της Faplatinca χωρίς κράτηση και απαιτεί το δωμάτιο ενός απλού πελάτη που έχει ήδη πληρώσει, τι κάνεις;»",
+      story_text: "Ο Μουστάκας σε ρωτάει νευρικά: «Αν έρθει ο κουμπάρος του ιδιοκτήτη της Faplantica χωρίς κράτηση και απαιτεί το δωμάτιο ενός απλού πελάτη που έχει ήδη πληρώσει, τι κάνεις;»",
       requires_text_input: null,
       choices: [
         { id: 1, text: "Δίνω το δωμάτιο στον κουμπάρο αμέσως και «διώχνω» τον απλό πελάτη με δικαιολογία βλάβης.", stress_change: 15, reputation_change: 10, cash_change: -20 },
@@ -96,14 +96,14 @@ export const SPECIFIC_EVENTS = {
       requires_text_input: null,
       choices: [
         { id: 1, text: "Ζητώ συγγνώμη, πηγαίνω αμέσως στα πλυντήρια και ζητώ να μου τη σιδερώσουν επιτόπου.", stress_change: 15, reputation_change: 10, cash_change: 0 },
-        { id: 2, text: "Του εξηγώ ότι σιδέρωσα 3 φορές αλλά το ύφασμα της Faplatinca είναι χαμηλής ποιότητας.", stress_change: 25, reputation_change: -15, cash_change: 0 },
+        { id: 2, text: "Του εξηγώ ότι σιδέρωσα 3 φορές αλλά το ύφασμα της Faplantica είναι χαμηλής ποιότητας.", stress_change: 25, reputation_change: -15, cash_change: 0 },
         { id: 3, text: "Του λέω ότι το τσαλακωμένο look είναι η νέα corporate τάση στο εξωτερικό.", stress_change: 30, reputation_change: -25, cash_change: 0 }
       ]
     },
     {
       role: "Ρεσεψιονίστ",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
-      story_text: "Ο Μουστάκας κάνει μια βαθιά ερώτηση: «Τι σημαίνει για σένα η έννοια του Corporate Alignment στη Faplatinca;»",
+      story_text: "Ο Μουστάκας κάνει μια βαθιά ερώτηση: «Τι σημαίνει για σένα η έννοια του Corporate Alignment στη Faplantica;»",
       requires_text_input: null,
       choices: [
         { id: 1, text: "Σημαίνει να θυσιάζω τα πάντα για το καλό και την κερδοφορία της εταιρείας.", stress_change: 25, reputation_change: 20, cash_change: 0 },
@@ -174,7 +174,7 @@ export const SPECIFIC_EVENTS = {
       story_text: "Ο Μουστάκας σε κοιτάζει στα μάτια: «Αν σου ζητήσω να κάνεις διπλοβάρδια 16 ωρών επειδή ο συνάδελφός σου ο Μπαλατσούκας δεν ήρθε, τι θα μου απαντήσεις;»",
       requires_text_input: null,
       choices: [
-        { id: 1, text: "Θα δεχτώ αμέσως, κύριε Διευθυντά! Η Faplatinca είναι η οικογένειά μου.", stress_change: 35, reputation_change: 20, cash_change: 30 },
+        { id: 1, text: "Θα δεχτώ αμέσως, κύριε Διευθυντά! Η Faplantica είναι η οικογένειά μου.", stress_change: 35, reputation_change: 20, cash_change: 30 },
         { id: 2, text: "Θα δεχτώ μόνο αν πληρωθώ τις υπερωρίες μου στο 100%.", stress_change: 20, reputation_change: 10, cash_change: 15 },
         { id: 3, text: "Θα αρνηθώ ευγενικά διότι η σωματική μου υγεία προηγείται.", stress_change: 10, reputation_change: -25, cash_change: 0 }
       ]
@@ -330,7 +330,7 @@ export const SPECIFIC_EVENTS = {
       story_text: "Ο Μουστάκας ολοκληρώνει: «Ο μισθός σου θα είναι 850€ για 12ωρη εργασία, 7 ημέρες την εβδομάδα, χωρίς ρεπό. Πώς σου φαίνεται;»",
       requires_text_input: null,
       choices: [
-        { id: 1, text: "Είναι μια εξαιρετική ευκαιρία να αποδείξω την αξία μου στη Faplatinca!", stress_change: 35, reputation_change: 20, cash_change: 0 },
+        { id: 1, text: "Είναι μια εξαιρετική ευκαιρία να αποδείξω την αξία μου στη Faplantica!", stress_change: 35, reputation_change: 20, cash_change: 0 },
         { id: 2, text: "Δέχομαι, αλλά θα ήθελα να συζητήσουμε bonus αποδοτικότητας στο τέλος της σεζόν.", stress_change: 20, reputation_change: 10, cash_change: 10 },
         { id: 3, text: "Του λέω ότι με αυτά τα λεφτά προτιμώ να πάω να δουλέψω delivery.", stress_change: 15, reputation_change: -30, cash_change: 0 }
       ]
