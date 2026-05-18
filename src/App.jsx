@@ -65,31 +65,7 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-    // Supabase auth listener – keeps session & token in sync
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setAuthLoading(false);
-      if (session?.access_token) {
-        localStorage.setItem('auth_token', session.access_token);
-      } else {
-        localStorage.removeItem('auth_token');
-      }
-    });
-
-    // Subscribe to auth changes (login/logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setAuthLoading(false);
-      if (session?.access_token) {
-        localStorage.setItem('auth_token', session.access_token);
-      } else {
-        localStorage.removeItem('auth_token');
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+  // Supabase auth listener is handled in the main auth listener below
 
   // Settings and Difficulty States
   const [showSettings, setShowSettings] = useState(false);
@@ -261,9 +237,15 @@ function App() {
       const successRate = calculateSuccessRate(state);
       const evalObj = getEvaluationGrade(successRate, state);
 
+      // Robust resolved nickname finder
+      const resolvedNickname = nickname || 
+                               (session?.user?.user_metadata?.full_name) || 
+                               (session?.user?.email ? session.user.email.split('@')[0] : '') || 
+                               'Guest';
+
       const newEntry = {
         id: Date.now().toString(),
-        nickname: nickname || 'Guest',
+        nickname: resolvedNickname,
         role: roleMap[state.role] || state.role || '—',
         turns: state.turnCount || 0,
         season: state.season || 1,
@@ -290,29 +272,28 @@ function App() {
       // Keep top 100 entries
       localStorage.setItem('hotel_madness_leaderboard', JSON.stringify(updatedLeaderboard.slice(0, 100)));
 
-        // POST to global online database (include auth token if logged in)
-        const token = localStorage.getItem('auth_token');
-        const headers = {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        };
-        fetch('/api/leaderboard', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            nickname: nickname || 'Guest',
-            role: roleMap[state.role] || state.role || '—',
-            turns: state.turnCount || 0,
-            season: state.season || 1,
-            cash: state.cash || 0,
-            tips: state.tips || 0,
-            difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
-            status: status,
-            success_rate: successRate,
-            evaluation: `${evalObj.grade} - ${evalObj.label}`
-          })
+      // POST to global online database (include auth token if logged in)
+      const token = localStorage.getItem('auth_token');
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
+      fetch('/api/leaderboard', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          nickname: resolvedNickname,
+          role: roleMap[state.role] || state.role || '—',
+          turns: state.turnCount || 0,
+          season: state.season || 1,
+          cash: state.cash || 0,
+          tips: state.tips || 0,
+          difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
+          status: status,
+          success_rate: successRate,
+          evaluation: `${evalObj.grade} - ${evalObj.label}`
         })
-                // Duplicate fetch handling removed – kept only one .then/.catch chain
+      })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -376,40 +357,46 @@ function App() {
       return () => clearInterval(interval);
     }
   }, [showDisclaimer]);
-
-  // Monitor Supabase Authentication
+  // Monitor Supabase Authentication & Sync Nickname
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const handleSessionUpdate = (session) => {
       setSession(session);
       setAuthLoading(false);
       if (session) {
-        // Pre-fill nickname with Google display name
-        const googleName = session.user.user_metadata?.full_name || '';
-        if (googleName && !nickname) {
-          setNickname(googleName);
+        // Save token to localStorage for Serverless API Authorization headers
+        if (session.access_token) {
+          localStorage.setItem('auth_token', session.access_token);
         }
-        checkCloudSave(session);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setAuthLoading(false);
-      if (session) {
-        const googleName = session.user.user_metadata?.full_name || '';
-        if (googleName && !nickname) {
-          setNickname(googleName);
+        
+        // Resolve google display name or email prefix
+        const resolvedName = session.user.user_metadata?.full_name || 
+                             (session.user.email ? session.user.email.split('@')[0] : '');
+        
+        if (resolvedName) {
+          setNickname(resolvedName);
+          localStorage.setItem('player_nickname', resolvedName);
+          setNicknameConfirmed(true);
         }
         checkCloudSave(session);
       } else {
+        localStorage.removeItem('auth_token');
         setHasCloudSave(false);
         setCloudSaveData(null);
       }
+    };
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSessionUpdate(session);
+    });
+
+    // Subscribe to auth status changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleSessionUpdate(session);
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
   const checkCloudSave = async (currentSession) => {
     if (!currentSession) return;
     try {
@@ -1357,8 +1344,20 @@ function App() {
     if (!showLeaderboard) return null;
     const offlineList = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
     
-    // Merge online scores with mock scores for an immediately populated list
+    // Merge online scores with offline list and mock scores
     const uniqueScores = [...onlineScores];
+    
+    // Add local scores to uniqueScores if they aren't already represented online
+    offlineList.forEach(localEntry => {
+      const exists = uniqueScores.some(e => 
+        (e.id && e.id === localEntry.id) ||
+        (e.nickname === localEntry.nickname && e.turns === localEntry.turns && e.cash === localEntry.cash && e.season === localEntry.season)
+      );
+      if (!exists) {
+        uniqueScores.push(localEntry);
+      }
+    });
+
     const mockList = getMockLeaderboard();
     mockList.forEach(mockEntry => {
       if (!uniqueScores.some(e => e.nickname.trim().toLowerCase() === mockEntry.nickname.trim().toLowerCase())) {
