@@ -1322,26 +1322,7 @@ function App() {
   return (
     <div className="app-container">
       {isMobileLayout && (
-        <div style={{
-          background: 'linear-gradient(90deg, rgba(102, 252, 241, 0.12), rgba(11, 12, 16, 0.95))',
-          border: '1px solid rgba(102, 252, 241, 0.25)',
-          borderRadius: '12px',
-          padding: '1rem',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-          color: '#fff',
-          fontSize: '0.9rem',
-          lineHeight: '1.4',
-          textAlign: 'left'
-        }}>
-          <span style={{ fontSize: '1.4rem' }}>💡</span>
-          <div>
-            <strong>Tip για Κινητά:</strong> Για την απόλυτη εμπειρία (Locked Layout & Dashboard δίπλα-δίπλα), ενεργοποίησε την <strong>"Προβολή Επιφάνειας Εργασίας" (Desktop Site)</strong> από τις ρυθμίσεις του browser σου! 📱
-          </div>
-        </div>
+        <div className="mobile-vertical-spacer" style={{ height: '3rem' }} />
       )}
       {toastMessage && (
         <div className="tips-toast">
