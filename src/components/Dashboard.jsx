@@ -82,7 +82,9 @@ export default function Dashboard({ state, nickname }) {
             </span>
           </div>
           <div className="stat-item">
-            <span className="stat-label"><Star size={16} color="var(--warning-color)" /> Βάρδια</span>
+            <span className="stat-label">
+              <Star size={16} color="var(--warning-color)" /> {state.turnCount === 0 ? 'Φάση' : 'Βάρδια'}
+            </span>
             <span className="stat-value">{state.turnCount === 0 ? 'Διαδικασία Συνέντευξης' : (state.shift || 'Καμία')}</span>
           </div>
         </div>
