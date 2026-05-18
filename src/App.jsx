@@ -4,7 +4,7 @@ import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
-import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX } from 'lucide-react';
+import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings } from 'lucide-react';
 import { audioService } from './services/audioService';
 import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
 import confetti from 'canvas-confetti';
@@ -52,11 +52,31 @@ function App() {
   const [isSendingFeedback, setIsSendingFeedback] = useState(false);
   const [tipsNotification, setTipsNotification] = useState(null);
 
+  // Settings and Difficulty States
+  const [showSettings, setShowSettings] = useState(false);
+  const [difficulty, setDifficulty] = useState(localStorage.getItem('game_difficulty') || 'medium');
+  const [useAI, setUseAI] = useState(localStorage.getItem('game_use_ai') !== 'false');
+  const [musicVolume, setMusicVolume] = useState(parseFloat(localStorage.getItem('game_music_volume') || '0.5'));
+  const [useSFX, setUseSFX] = useState(localStorage.getItem('game_use_sfx') !== 'false');
+
   const triggerTipsToast = (amount) => {
     setTipsNotification({ amount });
     setTimeout(() => {
       setTipsNotification(null);
     }, 3000);
+  };
+
+  const getDifficultyMultipliers = () => {
+    switch (difficulty) {
+      case 'easy':
+        return { stressUp: 0.7, stressDown: 1.2, repUp: 1.2, repDown: 0.7, cash: 1.2 };
+      case 'hard':
+        return { stressUp: 1.3, stressDown: 0.8, repUp: 0.8, repDown: 1.3, cash: 0.8 };
+      case 'nightmare':
+        return { stressUp: 1.7, stressDown: 0.6, repUp: 0.6, repDown: 1.7, cash: 0.5 };
+      default:
+        return { stressUp: 1.0, stressDown: 1.0, repUp: 1.0, repDown: 1.0, cash: 1.0 };
+    }
   };
 
   // Auto-play music on first click if intro is already seen
@@ -300,16 +320,26 @@ function App() {
       updatedState.cash += salary;
     }
 
+    const mult = getDifficultyMultipliers();
+
     // Apply hardcoded stat changes if they exist on the choice object
     if (choice.stress_change !== undefined) {
-      updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + choice.stress_change));
-      updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + choice.reputation_change));
-      updatedState.cash += (choice.cash_change || 0);
+      const stressDelta = choice.stress_change > 0 
+        ? choice.stress_change * mult.stressUp 
+        : choice.stress_change * mult.stressDown;
+      const repDelta = choice.reputation_change > 0
+        ? choice.reputation_change * mult.repUp
+        : choice.reputation_change * mult.repDown;
+      const cashDelta = choice.cash_change ? Math.round(choice.cash_change * mult.cash) : 0;
+
+      updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + stressDelta));
+      updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + repDelta));
+      updatedState.cash += cashDelta;
       updatedState.staffRelations = Math.max(-100, Math.min(100, updatedState.staffRelations + (choice.staff_relations_change || 0)));
       
-      if (choice.cash_change > 0) {
-        updatedState.tips = (updatedState.tips || 0) + choice.cash_change;
-        triggerTipsToast(choice.cash_change);
+      if (cashDelta > 0) {
+        updatedState.tips = (updatedState.tips || 0) + cashDelta;
+        triggerTipsToast(cashDelta);
       }
     }
 
@@ -354,7 +384,7 @@ function App() {
 
     const currentTurn = currentState.turnCount;
     // AI is used on Turn 0 (Interview) and every 5th turn (5, 10, 15, etc.) EXCEPT if there's a SPECIFIC_EVENT
-    const isAITurn = (currentTurn === 0 || currentTurn % 5 === 0) && !SPECIFIC_EVENTS[currentTurn];
+    const isAITurn = useAI && (currentTurn === 0 || currentTurn % 5 === 0) && !SPECIFIC_EVENTS[currentTurn];
 
     if (!isAITurn) {
       // Hardcoded Route
@@ -378,15 +408,28 @@ function App() {
     try {
       const response = await generateNextState(playerInput, currentState);
       
+      const mult = getDifficultyMultipliers();
+
       // Update Game State
       const newState = { ...gameState };
-      if (response.stress_change) newState.stress = Math.max(0, Math.min(100, newState.stress + response.stress_change));
-      if (response.reputation_change) newState.reputation = Math.max(0, Math.min(100, newState.reputation + response.reputation_change));
+      if (response.stress_change) {
+        const stressDelta = response.stress_change > 0 
+          ? response.stress_change * mult.stressUp 
+          : response.stress_change * mult.stressDown;
+        newState.stress = Math.max(0, Math.min(100, newState.stress + stressDelta));
+      }
+      if (response.reputation_change) {
+        const repDelta = response.reputation_change > 0
+          ? response.reputation_change * mult.repUp
+          : response.reputation_change * mult.repDown;
+        newState.reputation = Math.max(0, Math.min(100, newState.reputation + repDelta));
+      }
       if (response.cash_change) {
-        newState.cash += response.cash_change;
-        if (response.cash_change > 0) {
-          newState.tips = (newState.tips || 0) + response.cash_change;
-          triggerTipsToast(response.cash_change);
+        const cashDelta = response.cash_change > 0 ? Math.round(response.cash_change * mult.cash) : response.cash_change;
+        newState.cash += cashDelta;
+        if (cashDelta > 0) {
+          newState.tips = (newState.tips || 0) + cashDelta;
+          triggerTipsToast(cashDelta);
         }
       }
       if (response.staff_relations_change) newState.staffRelations += response.staff_relations_change;
@@ -906,6 +949,27 @@ function App() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button
+            onClick={() => setShowSettings(true)}
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--panel-border)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'var(--accent-color)',
+              boxShadow: '0 0 10px rgba(102, 252, 241, 0.2)',
+              transition: 'all 0.2s',
+              marginRight: '0.5rem'
+            }}
+            title="Settings"
+          >
+            <Settings size={18} />
+          </button>
+          <button
             onClick={() => {
               const muted = audioService.toggleMute();
               setIsAudioMuted(muted);
@@ -958,6 +1022,138 @@ function App() {
            <ShieldAlert size={16} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
            {errorMsg}
          </div>
+      )}
+      {showSettings && (
+        <div className="modal-overlay">
+          <div className="settings-modal">
+            <div className="settings-header">
+              <h2>⚙️ Ρυθμίσεις Παιχνιδιού</h2>
+              <button className="modal-close-btn" onClick={() => setShowSettings(false)}>×</button>
+            </div>
+            
+            <div className="settings-section">
+              <div className="settings-section-title">Δυσκολία (Difficulty)</div>
+              <div className="settings-row">
+                <span className="settings-label">Επίπεδο Δυσκολίας:</span>
+                <select 
+                  className="settings-select" 
+                  value={difficulty} 
+                  onChange={(e) => {
+                    setDifficulty(e.target.value);
+                    localStorage.setItem('game_difficulty', e.target.value);
+                  }}
+                >
+                  <option value="easy">HR Lover (Εύκολο)</option>
+                  <option value="medium">Normal Shift (Κανονικό)</option>
+                  <option value="hard">August Peak (Δύσκολο)</option>
+                  <option value="nightmare">Mustakas' Mood (Εφιάλτης)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="settings-section">
+              <div className="settings-section-title">Ήχος (Audio)</div>
+              <div className="settings-row">
+                <span className="settings-label">Ένταση Μουσικής:</span>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.1" 
+                  className="settings-slider" 
+                  value={musicVolume} 
+                  onChange={(e) => {
+                    const vol = parseFloat(e.target.value);
+                    setMusicVolume(vol);
+                    localStorage.setItem('game_music_volume', vol.toString());
+                    audioService.setVolume(vol);
+                  }}
+                />
+              </div>
+              <div className="settings-row">
+                <span className="settings-label">Ηχητικά Εφέ (SFX):</span>
+                <label className="switch">
+                  <input 
+                    type="checkbox" 
+                    checked={useSFX} 
+                    onChange={(e) => {
+                      setUseSFX(e.target.checked);
+                      localStorage.setItem('game_use_sfx', e.target.checked.toString());
+                    }}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div className="settings-section">
+              <div className="settings-section-title">Τεχνητή Νοημοσύνη (AI Settings)</div>
+              <div className="settings-row">
+                <span className="settings-label">Ενεργοποίηση AI Συμβάντων:</span>
+                <label className="switch">
+                  <input 
+                    type="checkbox" 
+                    checked={useAI} 
+                    onChange={(e) => {
+                      setUseAI(e.target.checked);
+                      localStorage.setItem('game_use_ai', e.target.checked.toString());
+                    }}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+              <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                <span className="settings-label" style={{ marginBottom: '0.25rem' }}>Δικό σου Gemini API Key:</span>
+                <input 
+                  type="password" 
+                  className="settings-input" 
+                  placeholder="Εισαγωγή API Key..." 
+                  value={apiKeyInput}
+                  onChange={(e) => {
+                    setApiKeyInput(e.target.value);
+                    localStorage.setItem('gemini_api_key', e.target.value);
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="settings-section">
+              <div className="settings-section-title">Δεδομένα & Πρόοδος</div>
+              <div className="settings-row">
+                <span className="settings-label">Επαναφορά Καριέρας:</span>
+                <button 
+                  className="settings-btn danger" 
+                  onClick={() => {
+                    if (confirm("Είσαι σίγουρος ότι θέλεις να διαγράψεις όλη την πρόοδό σου και να ξεκινήσεις από την αρχή;")) {
+                      localStorage.removeItem('game_difficulty');
+                      localStorage.removeItem('game_use_ai');
+                      localStorage.removeItem('game_music_volume');
+                      localStorage.removeItem('game_use_sfx');
+                      localStorage.removeItem('player_nickname');
+                      // Reset local storage states
+                      setGameState(INITIAL_STATE);
+                      setGameStarted(false);
+                      setNicknameConfirmed(false);
+                      setIsGuest(false);
+                      setShowSettings(false);
+                      alert("Η πρόοδος διαγράφηκε επιτυχώς!");
+                    }
+                  }}
+                >
+                  Clear Career
+                </button>
+              </div>
+            </div>
+
+            <button 
+              className="btn-primary" 
+              style={{ width: '100%', marginTop: '1rem' }} 
+              onClick={() => setShowSettings(false)}
+            >
+              Αποθήκευση & Κλείσιμο
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

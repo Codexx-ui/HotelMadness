@@ -113,6 +113,13 @@ export const audioService = {
     return isMuted;
   },
 
+  setVolume(vol) {
+    if (masterGain) {
+      const targetVal = isMuted ? 0 : (vol * 0.08);
+      masterGain.gain.linearRampToValueAtTime(targetVal, audioCtx.currentTime + 0.1);
+    }
+  },
+
   isMuted() {
     return isMuted;
   }

@@ -39,6 +39,24 @@ export default function Dashboard({ state, nickname }) {
           <span className="stat-label"><Briefcase size={16} color="var(--accent-color)" /> Ρόλος</span>
           <span className="stat-value">{state.role || '—'}</span>
         </div>
+        <div className="stat-item" style={{ marginTop: '0.5rem' }}>
+          <span className="stat-label">🔥 Δυσκολία</span>
+          <span className="stat-value" style={{ 
+            fontSize: '0.8rem', 
+            color: 'var(--accent-color)', 
+            textTransform: 'uppercase', 
+            fontWeight: 600, 
+            letterSpacing: '0.05em',
+            padding: '2px 8px',
+            backgroundColor: 'rgba(102, 252, 241, 0.1)',
+            borderRadius: '4px'
+          }}>
+            {localStorage.getItem('game_difficulty') === 'easy' ? 'HR Lover 💖' :
+             localStorage.getItem('game_difficulty') === 'hard' ? 'August Peak 🏖️' :
+             localStorage.getItem('game_difficulty') === 'nightmare' ? 'Mustakas Mood 💀' :
+             'Normal Shift ⚙️'}
+          </span>
+        </div>
         <div className="stat-item">
           <span className="stat-label"><Star size={16} color="var(--warning-color)" /> Βάρδια</span>
           <span className="stat-value">{state.turnCount === 0 ? 'Διαδικασία Συνέντευξης' : (state.shift || 'Καμία')}</span>
