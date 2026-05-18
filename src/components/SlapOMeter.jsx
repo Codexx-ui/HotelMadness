@@ -15,7 +15,7 @@ export default function SlapOMeter({ onClose, onResult }) {
 
     const animate = () => {
       setPosition((prev) => {
-        let next = prev + directionRef.current * 0.36; // Speed of the slider
+        let next = prev + directionRef.current * 0.70; // Speed of the slider
         if (next >= 100) {
           next = 100;
           directionRef.current = -1;
