@@ -1334,26 +1334,26 @@ function App() {
 
       {showStore && (
         <div className="modal-overlay" onClick={() => setShowStore(false)}>
-          <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: '2rem', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ margin: 0, color: '#66fcf1' }}>🛍️ Κατάστημα Faplatinca</h2>
-              <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowStore(false)}>×</button>
+          <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: 'clamp(1rem, 4vw, 2rem)', maxWidth: '700px', width: '95%', maxHeight: '90vh', display: 'flex', flexDirection: 'column', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
+              <h2 style={{ margin: 0, color: '#66fcf1', fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>🛍️ Κατάστημα Faplatinca</h2>
+              <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.5rem' }} onClick={() => setShowStore(false)}>×</button>
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
-              <div style={{ color: hasPurchasedThisTurn ? '#ff4b4b' : '#a8b2d8', fontSize: '0.95rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem', marginBottom: '1rem', flexShrink: 0 }}>
+              <div style={{ color: hasPurchasedThisTurn ? '#ff4b4b' : '#a8b2d8', fontSize: '0.9rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal', flex: '1 1 100%' }}>
                 {hasPurchasedThisTurn 
                   ? "⚠️ Έχετε ήδη πραγματοποιήσει 1 αγορά σε αυτή τη βάρδια." 
                   : "Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν."
                 }
               </div>
-              <div className="store-balance-badge">
+              <div style={{ background: 'rgba(102,252,241,0.1)', border: '1px solid #66fcf1', color: '#66fcf1', padding: '0.4rem 1rem', borderRadius: '30px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', width: '100%', justifyContent: 'center' }}>
                 <span>💵 Υπόλοιπο:</span>
                 <span>{gameState.cash.toLocaleString('el-GR')}€</span>
               </div>
             </div>
 
-            <div className="store-grid">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', overflowY: 'auto', paddingRight: '0.3rem', flex: 1 }}>
               {STORE_ITEMS.map((item) => {
                 const canAfford = gameState.cash >= item.price;
                 const isDisabled = hasPurchasedThisTurn || !canAfford;
@@ -1364,29 +1364,31 @@ function App() {
                       background: 'rgba(255,255,255,0.05)',
                       border: '1px solid rgba(102,252,241,0.2)',
                       borderRadius: '12px',
-                      padding: '1.25rem',
+                      padding: '1rem',
                       display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.75rem',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      flexWrap: 'wrap'
                     }}
                   >
-                    <div style={{ fontSize: '2.2rem', lineHeight: 1 }}>{item.emoji}</div>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>{item.name}</div>
-                    <div style={{
-                      display: 'inline-block',
-                      fontSize: '0.82rem',
-                      fontWeight: 700,
-                      color: '#4bff4b',
-                      background: 'rgba(75,255,75,0.1)',
-                      border: '1px solid rgba(75,255,75,0.3)',
-                      borderRadius: '4px',
-                      padding: '0.2rem 0.5rem',
-                      alignSelf: 'flex-start',
-                    }}>
-                      Stress: -{item.stressReduction}%
+                    <div style={{ fontSize: '2.5rem', lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>{item.emoji}</div>
+                    <div style={{ flex: '1 1 150px' }}>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.4rem' }}>{item.name}</div>
+                      <div style={{
+                        display: 'inline-block',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        color: '#4bff4b',
+                        background: 'rgba(75,255,75,0.1)',
+                        border: '1px solid rgba(75,255,75,0.3)',
+                        borderRadius: '4px',
+                        padding: '0.2rem 0.5rem',
+                      }}>
+                        Stress: -{item.stressReduction}%
+                      </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1 1 100%', justifyContent: 'space-between', marginTop: '0.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.75rem' }}>
                       <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#66fcf1' }}>
                         {item.price.toLocaleString('el-GR')}€
                       </div>
@@ -1400,13 +1402,14 @@ function App() {
                           padding: '0.5rem 1rem',
                           color: isDisabled ? '#ffffff' : '#0b0c10',
                           fontWeight: 700,
-                          fontSize: '0.9rem',
+                          fontSize: '0.85rem',
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           transition: 'all 0.2s',
                           whiteSpace: 'nowrap',
+                          minWidth: '110px'
                         }}
                       >
-                        {hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : (canAfford ? 'Αγορά' : 'Λείπουν χρήματα')}
+                        {hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : (canAfford ? 'Αγορά' : 'Δεν φτάνουν')}
                       </button>
                     </div>
                   </div>
