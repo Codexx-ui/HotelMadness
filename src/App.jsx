@@ -721,20 +721,20 @@ function App() {
     return (
       <div className="game-over-screen">
         <div className="game-over-title">
-          {gameState.stress >= 100 ? "BURNOUT GAME OVER" : 
-           gameState.reputation <= 0 ? "FIRED GAME OVER" : 
-           gameState.alcoholWarnings >= 3 ? "TERMINATION GAME OVER" : 
+          {gameState.stress >= 100 ? "BURNOUT! GAME OVER" : 
+           gameState.reputation <= 0 ? "ΑΠΟΛΥΘΗΚΕΣ! GAME OVER" : 
+           gameState.alcoholWarnings >= 3 ? "ΠΕΙΘΑΡΧΙΚΗ ΑΠΟΛΥΣΗ! GAME OVER" : 
            isSeasonEnd ? "ΤΕΛΟΣ ΣΕΖΟΝ!" : "GAME OVER"}
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
           {isSeasonEnd 
             ? "Καλό χειμώνα! Τα καταφέρατε και επιβιώσατε άλλη μια σεζόν. Ξεκουραστείτε... γιατί του χρόνου ο εφιάλτης συνεχίζεται! 🏖️🔥"
-            : "You have succumbed to the relentless pressure of modern Greek hotel management. GM Μουστάκας has already replaced you."}
+            : "Υπέκυψες στην αβάσταχτη πίεση του σύγχρονου ελληνικού ξενοδοχειακού management. Ο GM Μουστάκας σε αντικατέστησε ήδη."}
         </p>
         <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
-          <div>Final Stress: <span className="text-danger">{gameState.stress}%</span></div>
-          <div>Final Rep: <span className="text-warning">{gameState.reputation}%</span></div>
-          <div>Cash: <span className="text-success">€{gameState.cash}</span></div>
+          <div>Τελικό Άγχος: <span className="text-danger">{gameState.stress}%</span></div>
+          <div>Τελική Φήμη: <span className="text-warning">{gameState.reputation}%</span></div>
+          <div>Μετρητά: <span className="text-success">€{gameState.cash}</span></div>
         </div>
 
         {isSeasonEnd && (
@@ -794,7 +794,7 @@ function App() {
             setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); setFeedbackSent(false); setFeedbackText(''); 
           }
         }}>
-          {isSeasonEnd ? "Αίτηση για την Επόμενη Σεζόν" : "Apply for a new Job"}
+          {isSeasonEnd ? "Αίτηση για την Επόμενη Σεζόν" : "Αναζήτηση Νέας Δουλειάς"}
         </button>
       </div>
     );
