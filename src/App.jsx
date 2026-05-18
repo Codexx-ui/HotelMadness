@@ -24,7 +24,8 @@ const INITIAL_STATE = {
   thesfapaClicked: false,
   turnsSinceThesfapa: 0,
   currentDate: '2026-02-01',
-  turnCount: 0
+  turnCount: 0,
+  season: 1
 };
 
 function App() {
@@ -258,14 +259,37 @@ function App() {
     }
     
     // Calendar Progression
+    let monthChanged = false;
+    let oldMonth = -1;
+    if (updatedState.currentDate && updatedState.turnCount > 0) {
+       oldMonth = new Date(updatedState.currentDate).getMonth();
+    }
+
     if (updatedState.turnCount === 0) {
-      updatedState.currentDate = '2026-04-25';
+      const year = 2025 + (updatedState.season || 1);
+      updatedState.currentDate = `${year}-04-25`;
     } else {
       const current = new Date(updatedState.currentDate);
       current.setDate(current.getDate() + 7);
       updatedState.currentDate = current.toISOString().split('T')[0];
+      
+      const newMonth = current.getMonth();
+      if (oldMonth !== -1 && oldMonth !== newMonth) {
+        monthChanged = true;
+      }
     }
     updatedState.turnCount += 1;
+
+    // Salary Logic
+    if (monthChanged) {
+      const currentSeason = updatedState.season || 1;
+      let salary = 1000;
+      if (currentSeason === 2) salary = 1200;
+      else if (currentSeason === 3) salary = 1400;
+      else if (currentSeason >= 4) salary = 1800;
+      
+      updatedState.cash += salary;
+    }
 
     // Apply hardcoded stat changes if they exist on the choice object
     if (choice.stress_change !== undefined) {
@@ -285,7 +309,8 @@ function App() {
 
     // Check Season End
     const currentCal = new Date(currentState.currentDate);
-    const endOfSeason = new Date('2026-11-01');
+    const seasonYear = 2025 + (currentState.season || 1);
+    const endOfSeason = new Date(`${seasonYear}-11-01`);
     if (currentCal >= endOfSeason) {
       setSceneData({
         scene_title: "Τέλος Σεζόν (1η Νοεμβρίου)",
@@ -762,11 +787,58 @@ function App() {
           </div>
         )}
 
-        <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); setFeedbackSent(false); setFeedbackText(''); }}>
+        <button className="btn-restart" onClick={() => { 
+          if (isSeasonEnd) {
+            startNextSeason();
+          } else {
+            setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); setFeedbackSent(false); setFeedbackText(''); 
+          }
+        }}>
           {isSeasonEnd ? "Αίτηση για την Επόμενη Σεζόν" : "Apply for a new Job"}
         </button>
       </div>
     );
+  };
+
+  const getNextRole = (currentRole) => {
+    const ladders = {
+      'Ρεσεψιονίστ': ['Assistant FO Manager', 'FO Manager', 'Rooms Division Manager', 'Operations Manager', 'GM'],
+      'Βοηθός Σερβιτόρου': ['Head Waiter', 'Captain', "Maitre d'hotel", 'F&B Manager'],
+      'Μάγειρας': ['Section Chef', 'Sous Chef', 'Head Chef', 'Executive Chef']
+    };
+    for (const [base, progression] of Object.entries(ladders)) {
+      if (currentRole === base) return progression[0];
+      const idx = progression.indexOf(currentRole);
+      if (idx !== -1 && idx < progression.length - 1) return progression[idx + 1];
+    }
+    return currentRole;
+  };
+
+  const startNextSeason = () => {
+    const nextSeason = (gameState.season || 1) + 1;
+    const nextYear = 2025 + nextSeason;
+    const nextRole = getNextRole(gameState.role);
+    
+    const newState = {
+      ...gameState,
+      season: nextSeason,
+      role: nextRole,
+      turnCount: 1,
+      currentDate: `${nextYear}-04-25`,
+      stress: 10,
+      alcoholWarnings: 0
+    };
+    setGameState(newState);
+    setGameOver(false);
+    setFeedbackSent(false);
+    setFeedbackText('');
+    
+    setSceneData({
+      scene_title: `Καλώς Ήρθες στη Σεζόν ${nextSeason}`,
+      story_text: `Ο χειμώνας πέρασε. Επέστρεψες στην Faplatinca. Φέτος τα πράγματα αλλάζουν: Πήρες προαγωγή σε ${nextRole}! Ο Μουστάκας σε περιμένει...`,
+      active_vip_archetype: 'None',
+      choices: [{ id: 1, text: 'Πάμε γερά!' }]
+    });
   };
 
   const renderDisclaimerScreen = () => (
@@ -850,12 +922,7 @@ function App() {
         ) : (
           <>
             <Dashboard state={gameState} nickname={nickname} />
-            <EventTerminal 
-              sceneData={sceneData} 
-              onChoice={handleChoice} 
-              isLoading={isLoading}
-              onThesfapaClick={handleThesfapaClick}
-            />
+            <EventTerminal state={gameState} sceneData={sceneData} onChoice={handleChoice} isLoading={isLoading} onThesfapaClick={handleThesfapaClick} />
           </>
         )}
       </div>

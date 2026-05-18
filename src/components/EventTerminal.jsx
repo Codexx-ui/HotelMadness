@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MessageSquare, Star } from 'lucide-react';
 
-export default function EventTerminal({ sceneData, onChoice, isLoading, onThesfapaClick }) {
+export default function EventTerminal({ state, sceneData, onChoice, isLoading, onThesfapaClick }) {
   const [inputText, setInputText] = useState('');
 
   if (!sceneData) {
@@ -29,6 +29,11 @@ export default function EventTerminal({ sceneData, onChoice, isLoading, onThesfa
       )}
 
       <div>
+        {state && !sceneData.game_over && (
+          <div style={{ fontSize: '0.85rem', color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem', fontWeight: 600 }}>
+            Σεζόν {state.season || 1}, {state.turnCount === 0 ? 'Προετοιμασία' : `Εβδομάδα ${state.turnCount}`}
+          </div>
+        )}
         <div className="terminal-header">
           <h2 className="scene-title">{scene_title}</h2>
           {active_vip_archetype && active_vip_archetype !== 'None' && (
