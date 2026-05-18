@@ -65,6 +65,32 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+    // Supabase auth listener – keeps session & token in sync
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+      if (session?.access_token) {
+        localStorage.setItem('auth_token', session.access_token);
+      } else {
+        localStorage.removeItem('auth_token');
+      }
+    });
+
+    // Subscribe to auth changes (login/logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setAuthLoading(false);
+      if (session?.access_token) {
+        localStorage.setItem('auth_token', session.access_token);
+      } else {
+        localStorage.removeItem('auth_token');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Settings and Difficulty States
   const [showSettings, setShowSettings] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -264,25 +290,29 @@ function App() {
       // Keep top 100 entries
       localStorage.setItem('hotel_madness_leaderboard', JSON.stringify(updatedLeaderboard.slice(0, 100)));
 
-      // POST to global online database
-      fetch('/api/leaderboard', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          nickname: nickname || 'Guest',
-          role: roleMap[state.role] || state.role || '—',
-          turns: state.turnCount || 0,
-          season: state.season || 1,
-          cash: state.cash || 0,
-          tips: state.tips || 0,
-          difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
-          status: status,
-          success_rate: successRate,
-          evaluation: `${evalObj.grade} - ${evalObj.label}`
+        // POST to global online database (include auth token if logged in)
+        const token = localStorage.getItem('auth_token');
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        };
+        fetch('/api/leaderboard', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            nickname: nickname || 'Guest',
+            role: roleMap[state.role] || state.role || '—',
+            turns: state.turnCount || 0,
+            season: state.season || 1,
+            cash: state.cash || 0,
+            tips: state.tips || 0,
+            difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
+            status: status,
+            success_rate: successRate,
+            evaluation: `${evalObj.grade} - ${evalObj.label}`
+          })
         })
-      })
+                // Duplicate fetch handling removed – kept only one .then/.catch chain
       .then(res => res.json())
       .then(data => {
         if (data.success) {
