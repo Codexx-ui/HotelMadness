@@ -756,19 +756,19 @@ function App() {
         <div className="role-card" onClick={() => startGame('Ρεσεψιονίστ')}>
           <Hotel className="role-icon" color="var(--accent-color)" />
           <div className="role-title">Ρεσεψιονίστ</div>
-          <div className="role-desc">The Front Line. Deal with overbookings, VIPs, and corporate alignment. Path to General Manager.</div>
+          <div className="role-desc">Η πρώτη γραμμή άμυνας. Διαχειριστείτε υπερκρατήσεις, VIP πελάτες και την εταιρική ευθυγράμμιση. Ο δρόμος προς τη θέση του Γενικού Διευθυντή.</div>
         </div>
         
         <div className="role-card" onClick={() => startGame('Βοηθός Σερβιτόρου')}>
           <Coffee className="role-icon" color="var(--accent-color)" />
           <div className="role-title">Βοηθός Σερβιτόρου</div>
-          <div className="role-desc">F&B Underdog. Navigate rude guests, banquet kitchens, and tip hustling. Path to F&B Manager.</div>
+          <div className="role-desc">Ο αφανής ήρωας του F&B. Αντιμετωπίστε αγενείς πελάτες, το χάος της κουζίνας και το κυνήγι του φιλοδωρήματος. Ο δρόμος προς τη θέση του F&B Manager.</div>
         </div>
         
         <div className="role-card" onClick={() => startGame('Μάγειρας')}>
           <ChefHat className="role-icon" color="var(--accent-color)" />
           <div className="role-title">Μάγειρας</div>
-          <div className="role-desc">The Kitchen Heat. Survive broken equipment, shortages, and intense heat. Path to Executive Chef.</div>
+          <div className="role-desc">Η φωτιά της κουζίνας. Επιβιώστε από χαλασμένο εξοπλισμό, ελλείψεις υλικών και ακραίες θερμοκρασίες. Ο δρόμος προς τη θέση του Executive Chef.</div>
         </div>
       </div>
       {!isKeyConfigured && !import.meta.env.PROD && (
