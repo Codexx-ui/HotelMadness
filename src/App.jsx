@@ -583,7 +583,8 @@ function App() {
     if (!isAITurn) {
       // Hardcoded Route
       let nextScene = null;
-      if (SPECIFIC_EVENTS[currentTurn]) {
+      const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] && (currentTurn !== 7 || currentState.season === 2);
+      if (hasSpecificEvent) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
         const roleFiltered = alternatives.filter(alt => !alt.role || alt.role === currentState.role);
         const unused = roleFiltered.filter(alt => !currentState.usedEventTexts?.includes(alt.story_text));
