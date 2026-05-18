@@ -161,20 +161,7 @@ function App() {
     }
   }, [showIntro]);
 
-  const getMockLeaderboard = () => [
-    {
-      id: 'mock-1',
-      nickname: 'GM Μουστάκας',
-      role: 'Γενικός Διευθυντής 👑',
-      turns: 99,
-      season: 5,
-      cash: 15000,
-      tips: 0,
-      difficulty: 'Mustakas Mood 💀',
-      status: 'Σεζόν End 🏆',
-      date: '18/05/2026'
-    }
-  ];
+  const getMockLeaderboard = () => [];
 
   const calculateSuccessRate = (state) => {
     if (!state) return 0;
