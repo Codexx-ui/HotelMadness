@@ -585,7 +585,7 @@ function App() {
       }}>
         <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1.5rem', marginTop: 0 }}>Είσοδος στο Παιχνίδι</h3>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '1.5rem', lineHeight: '1.4' }}>
-          Συνδεθείτε με Google για να αποθηκεύεται το παιχνίδι σας.
+          Συνδεθείτε με Google για να ανανεώνεται αυτόματα το βιογραφικό σας.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
           <Auth session={session} loading={authLoading} />
