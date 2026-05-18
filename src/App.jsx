@@ -102,7 +102,7 @@ function App() {
     { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 10, emoji: '🏖️', desc: 'Χαλάρωση στον ήλιο.' },
     { id: 'drink', name: 'Ποτό στο Σκάλα', price: 15, stressReduction: 15, emoji: '🍹', desc: 'Βραδινό ποτάκι για αποσυμπίεση.' },
     { id: 'eye', name: 'Μαγικό Μάτι 🧿', price: 20, stressReduction: 0, emoji: '🧿', desc: 'Ακυρώνει αυτόματα την επόμενη αναποδιά / κακή συνέπεια.' },
-    { id: 'grandma', name: 'Χαρτζιλίκι Γιαγιάς 👵', price: 0, stressReduction: -15, emoji: '👵', desc: 'Σου δίνει +50€ cash, αλλά αυξάνει το stress κατά 15% (λόγω ερωτήσεων γάμου!).' },
+    { id: 'grandma', name: 'Χαρτζιλίκι Γιαγιάς 👵', price: 0, stressReduction: -15, emoji: '👵', desc: 'Σου δίνει +20€ cash, αλλά αυξάνει το stress κατά 15% (λόγω ερωτήσεων γάμου!).' },
     { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 20, emoji: '🩺', desc: 'Επίσημη δικαιολογία για ξεκούραση.' },
     { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 30, emoji: '🥩', desc: 'Καλό φαγητό για γερό στομάχι.' },
     { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Το απόλυτο status symbol της Faplantica.' }
@@ -138,14 +138,14 @@ function App() {
     }
 
     if (item.id === 'grandma') {
-      newState.cash += 50;
+      newState.cash += 20;
     }
 
     setGameState(newState);
     setHasPurchasedThisTurn(true);
     
     if (item.id === 'grandma') {
-      showToast("👵 Η γιαγιά σου έδωσε 50€ και σε ρώτησε πότε θα παντρευτείς!", "❤️");
+      showToast("👵 Η γιαγιά σου έδωσε 20€ και σε ρώτησε πότε θα παντρευτείς!", "❤️");
     } else if (item.id === 'eye') {
       showToast("🧿 Αγόρασες το Μαγικό Μάτι! Σε προστατεύει από την επόμενη αναποδιά.", "🔮");
     } else {
@@ -1924,7 +1924,7 @@ function App() {
                         padding: '0.2rem 0.5rem',
                         alignSelf: 'flex-start',
                       }}>
-                        💵 +50€ | 🤯 Stress +15%
+                        💵 +20€ | 🤯 Stress +15%
                       </div>
                     ) : (
                       <div style={{
