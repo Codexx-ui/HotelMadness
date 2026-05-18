@@ -1722,7 +1722,7 @@ function App() {
           </div>
         ) : (
           <>
-            <Dashboard state={gameState} nickname={nickname} onTestSlap={() => setShowSlapOMeter(true)} />
+            <Dashboard state={gameState} nickname={nickname} />
             <EventTerminal state={gameState} sceneData={sceneData} onChoice={handleChoice} isLoading={isLoading} onThesfapaClick={handleThesfapaClick} />
           </>
         )}
