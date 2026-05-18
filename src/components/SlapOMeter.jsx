@@ -15,7 +15,7 @@ export default function SlapOMeter({ onClose, onResult }) {
 
     const animate = () => {
       setPosition((prev) => {
-        let next = prev + directionRef.current * 4; // Speed of the slider
+        let next = prev + directionRef.current * 1.8; // Speed of the slider
         if (next >= 100) {
           next = 100;
           directionRef.current = -1;
@@ -80,7 +80,7 @@ export default function SlapOMeter({ onClose, onResult }) {
         
         {/* Title */}
         <h2 style={{ color: '#66fcf1', margin: '0 0 0.5rem 0', fontSize: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          <Zap size={28} fill="currentColor" /> SLAP-O-METER <Zap size={28} fill="currentColor" />
+          <Zap size={28} fill="currentColor" /> ΦαΠ-Ο-ΜΕΤΡΟ <Zap size={28} fill="currentColor" />
         </h2>
         <p style={{ color: '#a8b2d8', fontSize: '0.95rem', margin: '0 0 2rem 0' }}>
           Πέτυχε την πράσινη ζώνη στο κέντρο για το απόλυτο <strong>MEGASLAP</strong>!

@@ -968,3 +968,56 @@ input:checked + .slider:before {
     grid-template-columns: 1fr;
   }
 }
+
+/* Premium Store Item Tooltip Style */
+.store-item-card {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.store-item-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(102, 252, 241, 0.5) !important;
+  box-shadow: 0 4px 15px rgba(102, 252, 241, 0.08);
+}
+
+.store-item-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  width: 240px;
+  background: rgba(10, 10, 18, 0.96);
+  border: 1px solid rgba(102, 252, 241, 0.6);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65), 0 0 15px rgba(102, 252, 241, 0.15);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Tooltip Arrow */
+.store-item-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(102, 252, 241, 0.6) transparent transparent transparent;
+}
+
+.store-item-card:hover .store-item-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}

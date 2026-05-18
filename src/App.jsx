@@ -28,7 +28,9 @@ const INITIAL_STATE = {
   turnCount: 0,
   season: 1,
   tips: 0,
-  usedEventTexts: []
+  usedEventTexts: [],
+  magicEyePurchasedCount: 0,
+  grandmaCashPurchasedCount: 0
 };
 
 function App() {
@@ -115,6 +117,14 @@ function App() {
       showToast("Έχεις ήδη κάνει μία αγορά σε αυτή τη βάρδια!", "⚠️");
       return;
     }
+    if (item.id === 'eye' && (gameState.magicEyePurchasedCount || 0) >= 2) {
+      showToast("🧿 Έχεις ήδη αγοράσει το όριο των 2 Μαγικών Ματιών για αυτή τη σεζόν!", "⚠️");
+      return;
+    }
+    if (item.id === 'grandma' && (gameState.grandmaCashPurchasedCount || 0) >= 2) {
+      showToast("👵 Η γιαγιά ξέμεινε από μετρητά! Έχεις ήδη πάρει 2 χαρτζιλίκια για αυτή τη σεζόν!", "⚠️");
+      return;
+    }
     if (gameState.cash < item.price) {
       showToast("Δεν επαρκούν τα χρήματα!", "⚠️");
       return;
@@ -137,10 +147,12 @@ function App() {
 
     if (item.id === 'eye') {
       newState.inventory = [...newState.inventory, 'Μαγικό Μάτι 🧿'];
+      newState.magicEyePurchasedCount = (newState.magicEyePurchasedCount || 0) + 1;
     }
 
     if (item.id === 'grandma') {
       newState.cash += 20;
+      newState.grandmaCashPurchasedCount = (newState.grandmaCashPurchasedCount || 0) + 1;
     }
 
     setGameState(newState);
@@ -160,13 +172,13 @@ function App() {
   const getDifficultyMultipliers = () => {
     switch (difficulty) {
       case 'easy':
-        return { stressUp: 0.7, stressDown: 1.2, repUp: 1.2, repDown: 0.7, cash: 1.2 };
+        return { stressUp: 0.5, stressDown: 1.4, repUp: 1.4, repDown: 0.5, cash: 1.3 };
       case 'hard':
-        return { stressUp: 1.3, stressDown: 0.8, repUp: 0.8, repDown: 1.3, cash: 0.8 };
+        return { stressUp: 1.1, stressDown: 0.95, repUp: 0.95, repDown: 1.1, cash: 0.9 };
       case 'nightmare':
-        return { stressUp: 1.7, stressDown: 0.6, repUp: 0.6, repDown: 1.7, cash: 0.5 };
+        return { stressUp: 1.4, stressDown: 0.75, repUp: 0.75, repDown: 1.4, cash: 0.7 };
       default:
-        return { stressUp: 1.0, stressDown: 1.0, repUp: 1.0, repDown: 1.0, cash: 1.0 };
+        return { stressUp: 0.8, stressDown: 1.15, repUp: 1.15, repDown: 0.8, cash: 1.1 };
     }
   };
 
@@ -1371,7 +1383,9 @@ function App() {
       turnCount: 1,
       currentDate: `${nextYear}-04-25`,
       stress: 10,
-      alcoholWarnings: 0
+      alcoholWarnings: 0,
+      magicEyePurchasedCount: 0,
+      grandmaCashPurchasedCount: 0
     };
     setGameState(newState);
     setGameOver(false);
@@ -1953,22 +1967,61 @@ function App() {
             <div className="store-grid">
               {STORE_ITEMS.map((item) => {
                 const canAfford = gameState.cash >= item.price;
-                const isDisabled = hasPurchasedThisTurn || !canAfford;
+                
+                // Seasonal limits checks
+                let isLimitReached = false;
+                let limitText = null;
+                if (item.id === 'eye') {
+                  const count = gameState.magicEyePurchasedCount || 0;
+                  isLimitReached = count >= 2;
+                  limitText = `Όριο σεζόν: ${count}/2`;
+                } else if (item.id === 'grandma') {
+                  const count = gameState.grandmaCashPurchasedCount || 0;
+                  isLimitReached = count >= 2;
+                  limitText = `Όριο σεζόν: ${count}/2`;
+                }
+
+                const isDisabled = hasPurchasedThisTurn || !canAfford || isLimitReached;
+
                 return (
                   <div
                     key={item.id}
+                    className="store-item-card"
                     style={{
                       background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(102,252,241,0.2)',
+                      border: isLimitReached ? '1px solid rgba(255, 75, 75, 0.3)' : '1px solid rgba(102,252,241,0.2)',
                       borderRadius: '12px',
                       padding: '1.25rem',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '0.75rem',
+                      position: 'relative'
                     }}
                   >
+                    {/* Floating Tooltip */}
+                    <div className="store-item-tooltip">
+                      {item.desc}
+                    </div>
+
                     <div style={{ fontSize: '2.2rem', lineHeight: 1 }}>{item.emoji}</div>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>{item.name}</div>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>{item.name}</div>
+                      {limitText && (
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          color: isLimitReached ? '#ff4b4b' : '#66fcf1',
+                          background: isLimitReached ? 'rgba(255,75,75,0.1)' : 'rgba(102,252,241,0.1)',
+                          border: isLimitReached ? '1px solid rgba(255,75,75,0.3)' : '1px solid rgba(102,252,241,0.3)',
+                          borderRadius: '4px',
+                          padding: '0.1rem 0.4rem'
+                        }}>
+                          {limitText}
+                        </span>
+                      )}
+                    </div>
+
                     {item.id === 'eye' ? (
                       <div style={{
                         display: 'inline-block',
@@ -2013,10 +2066,6 @@ function App() {
                       </div>
                     )}
 
-                    <div style={{ fontSize: '0.85rem', color: '#a8b2d8', lineHeight: '1.4', marginTop: '0.25rem' }}>
-                      {item.desc}
-                    </div>
-
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '0.75rem' }}>
                       <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#66fcf1' }}>
                         {item.price.toLocaleString('el-GR')}€
@@ -2025,23 +2074,29 @@ function App() {
                         disabled={isDisabled}
                         onClick={() => buyStoreItem(item)}
                         style={{
-                          background: hasPurchasedThisTurn 
-                            ? 'rgba(255, 255, 255, 0.05)' 
-                            : (!canAfford 
-                                ? 'rgba(255, 75, 75, 0.08)' 
-                                : 'linear-gradient(135deg, #66fcf1, #45a29e)'),
-                          border: hasPurchasedThisTurn 
-                            ? '1px solid rgba(255, 255, 255, 0.15)' 
-                            : (!canAfford 
-                                ? '1px solid rgba(255, 75, 75, 0.4)' 
-                                : 'none'),
+                          background: isLimitReached 
+                            ? 'rgba(255, 75, 75, 0.08)' 
+                            : (hasPurchasedThisTurn 
+                                ? 'rgba(255, 255, 255, 0.05)' 
+                                : (!canAfford 
+                                    ? 'rgba(255, 75, 75, 0.08)' 
+                                    : 'linear-gradient(135deg, #66fcf1, #45a29e)')),
+                          border: isLimitReached 
+                            ? '1px solid rgba(255, 75, 75, 0.4)' 
+                            : (hasPurchasedThisTurn 
+                                ? '1px solid rgba(255, 255, 255, 0.15)' 
+                                : (!canAfford 
+                                    ? '1px solid rgba(255, 75, 75, 0.4)' 
+                                    : 'none')),
                           borderRadius: '6px',
                           padding: '0.5rem 1.2rem',
-                          color: hasPurchasedThisTurn 
-                            ? 'rgba(255, 255, 255, 0.4)' 
-                            : (!canAfford 
-                                ? '#ff4b4b' 
-                                : '#0b0c10'),
+                          color: isLimitReached 
+                            ? '#ff4b4b' 
+                            : (hasPurchasedThisTurn 
+                                ? 'rgba(255, 255, 255, 0.4)' 
+                                : (!canAfford 
+                                    ? '#ff4b4b' 
+                                    : '#0b0c10')),
                           fontWeight: 700,
                           fontSize: '0.9rem',
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -2049,12 +2104,12 @@ function App() {
                           whiteSpace: 'nowrap',
                           boxShadow: !isDisabled 
                             ? '0 0 10px rgba(102, 252, 241, 0.2)' 
-                            : (!canAfford && !hasPurchasedThisTurn 
+                            : (!canAfford && !hasPurchasedThisTurn && !isLimitReached 
                                 ? '0 0 10px rgba(255, 75, 75, 0.15)' 
                                 : 'none')
                         }}
                       >
-                        {hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : 'Αγορά'}
+                        {isLimitReached ? 'Όριο Σεζόν' : (hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : 'Αγορά')}
                       </button>
                     </div>
                   </div>
