@@ -687,26 +687,33 @@ function App() {
     </div>
   );
 
-  const renderGameOver = () => (
-    <div className="game-over-screen">
-      <div className="game-over-title">
-        {gameState.stress >= 100 ? "BURNOUT GAME OVER" : 
-         gameState.reputation <= 0 ? "FIRED GAME OVER" : 
-         gameState.alcoholWarnings >= 3 ? "TERMINATION GAME OVER" : 
-         "GAME OVER"}
+  const renderGameOver = () => {
+    const isSeasonEnd = new Date(gameState.currentDate) >= new Date('2026-11-01');
+
+    return (
+      <div className="game-over-screen">
+        <div className="game-over-title">
+          {gameState.stress >= 100 ? "BURNOUT GAME OVER" : 
+           gameState.reputation <= 0 ? "FIRED GAME OVER" : 
+           gameState.alcoholWarnings >= 3 ? "TERMINATION GAME OVER" : 
+           isSeasonEnd ? "ΤΕΛΟΣ ΣΕΖΟΝ!" : "GAME OVER"}
+        </div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+          {isSeasonEnd 
+            ? "Καλό χειμώνα! Τα καταφέρατε και επιβιώσατε άλλη μια σεζόν. Ξεκουραστείτε... γιατί του χρόνου ο εφιάλτης συνεχίζεται! 🏖️🔥"
+            : "You have succumbed to the relentless pressure of modern Greek hotel management. GM Μουστάκας has already replaced you."}
+        </p>
+        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
+          <div>Final Stress: <span className="text-danger">{gameState.stress}%</span></div>
+          <div>Final Rep: <span className="text-warning">{gameState.reputation}%</span></div>
+          <div>Cash: <span className="text-success">€{gameState.cash}</span></div>
+        </div>
+        <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); }}>
+          {isSeasonEnd ? "Αίτηση για την Επόμενη Σεζόν" : "Apply for a new Job"}
+        </button>
       </div>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>
-        You have succumbed to the relentless pressure of modern Greek hotel management. 
-        GM Μουστάκας has already replaced you.
-      </p>
-      <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
-        <div>Final Stress: <span className="text-danger">{gameState.stress}%</span></div>
-        <div>Final Rep: <span className="text-warning">{gameState.reputation}%</span></div>
-        <div>Cash: <span className="text-success">€{gameState.cash}</span></div>
-      </div>
-      <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); }}>Apply for a new Job</button>
-    </div>
-  );
+    );
+  };
 
   const renderDisclaimerScreen = () => (
     <div className="intro-screen">
