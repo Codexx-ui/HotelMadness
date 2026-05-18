@@ -198,6 +198,7 @@ p {
   margin-bottom: 1.5rem;
   overflow-y: auto;
   padding-right: 1rem;
+  max-width: 700px;
 }
 
 /* Trip Advisor Card */
@@ -223,6 +224,8 @@ p {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-width: 700px;
+  width: 100%;
 }
 
 .choice-btn {
