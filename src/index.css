@@ -771,51 +771,46 @@ input:checked + .slider:before {
 }
 
 @media (max-width: 900px) {
-  .mobile-dashboard-toggle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    background: rgba(102, 252, 241, 0.03);
-    border-radius: 8px;
-    border: 1px dashed rgba(102, 252, 241, 0.2);
-    box-shadow: 0 0 10px rgba(102, 252, 241, 0.05);
-    user-select: none;
-    transition: background 0.2s;
-  }
-
-  .mobile-dashboard-toggle:hover {
-    background: rgba(102, 252, 241, 0.08);
-  }
-
-  .dashboard-content-wrapper {
-    display: block;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s ease, opacity 0.3s ease;
-    opacity: 0;
-    padding-top: 0;
-  }
-
-  /* Expanded state on mobile */
-  .dashboard-panel.mobile-expanded .dashboard-content-wrapper {
-    max-height: 1000px;
-    opacity: 1;
-    padding-top: 1rem;
-    border-top: 1px solid var(--panel-border);
-    margin-top: 0.75rem;
-  }
-
-  /* Reduce gap on mobile layout */
   .game-layout {
+    grid-template-columns: minmax(130px, 1.1fr) 2fr !important;
+    grid-template-rows: none !important;
     gap: 0.75rem !important;
-    grid-template-rows: auto auto !important; /* Stack neatly */
   }
 
-  /* Compact the padding of panels on mobile to fit the viewport nicely */
   .panel {
-    padding: 1rem !important;
+    padding: 0.75rem !important;
+  }
+
+  /* Scale down the dashboard sidebar on mobile to fit perfectly side-by-side */
+  .dashboard-panel {
+    font-size: 0.72rem !important;
+  }
+  .dashboard-panel .stat-group {
+    margin-bottom: 1rem !important;
+  }
+  .dashboard-panel .stat-group-title {
+    font-size: 0.65rem !important;
+    margin-bottom: 0.4rem !important;
+    padding-bottom: 0.2rem !important;
+  }
+  .dashboard-panel .stat-item {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.72rem !important;
+  }
+  .dashboard-panel .stat-label {
+    gap: 0.2rem !important;
+  }
+  .dashboard-panel svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+  .dashboard-panel .progress-bar-container {
+    height: 5px !important;
+    margin-top: 0.2rem !important;
+  }
+  .dashboard-panel .inventory-item {
+    font-size: 0.65rem !important;
+    padding: 0.1rem 0.3rem !important;
   }
 }
 

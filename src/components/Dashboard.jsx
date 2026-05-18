@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Briefcase, Coins, HeartPulse, Star, Users, AlertTriangle, ShieldAlert, BarChart3, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
 export default function Dashboard({ state, nickname }) {
-  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   // Helpers for progress colors
   const getStressColor = (val) => {
@@ -24,30 +23,8 @@ export default function Dashboard({ state, nickname }) {
   };
 
   return (
-    <div className={`panel dashboard-panel ${isMobileExpanded ? 'mobile-expanded' : ''}`}>
-      {/* Mobile Toggle Bar */}
-      <div 
-        className="mobile-dashboard-toggle" 
-        onClick={() => setIsMobileExpanded(!isMobileExpanded)}
-      >
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', fontSize: '0.9rem', fontWeight: 600 }}>
-          <span>📊 Στατιστικά:</span>
-          <span>😰 <span style={{ color: getStressColor(state.stress) }}>{state.stress}%</span></span>
-          <span>⭐ <span style={{ color: getReputationColor(state.reputation) }}>{state.reputation}%</span></span>
-          <span>💶 <span style={{ color: 'var(--success-color)' }}>€{state.cash}</span></span>
-        </div>
-        <span style={{ 
-          fontSize: '0.8rem', 
-          color: 'var(--accent-color)', 
-          transition: 'transform 0.3s', 
-          transform: isMobileExpanded ? 'rotate(180deg)' : 'rotate(0deg)' 
-        }}>
-          ▼
-        </span>
-      </div>
-
-      <div className="dashboard-content-wrapper">
-        <div className="stat-group">
+    <div className="panel dashboard-panel">
+      <div className="stat-group">
           <div className="stat-group-title">Προφίλ Παίκτη</div>
           {nickname && (
             <div className="stat-item">
@@ -161,6 +138,5 @@ export default function Dashboard({ state, nickname }) {
           </div>
         </div>
       </div>
-    </div>
   );
 }
