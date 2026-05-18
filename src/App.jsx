@@ -696,18 +696,18 @@ function App() {
 
   const renderNicknameScreen = () => (
     <div className="role-selection">
-      <h2 style={{ fontSize: '2.5rem', color: 'var(--accent-color)', marginBottom: '1rem' }}>Καλώς ήρθατε</h2>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '1.45rem', marginBottom: '2rem' }}>Πώς σε λένε, νέε υπάλληλε;</p>
+      <h2 style={{ fontSize: '2.2rem', color: 'var(--accent-color)', marginBottom: '0.5rem' }}>Καλώς ήρθατε</h2>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '1.35rem', marginBottom: '1.25rem' }}>Πώς σε λένε, νέε υπάλληλε;</p>
       <div style={{
         backgroundColor: 'rgba(255, 255, 255, 0.03)',
         border: '1px solid var(--panel-border)',
         borderRadius: '12px',
-        padding: '3rem 2rem',
-        maxWidth: '500px',
-        margin: '2rem auto',
+        padding: '2rem 2rem',
+        maxWidth: '480px',
+        margin: '1rem auto',
         textAlign: 'center'
       }}>
-        <label style={{ display: 'block', fontSize: '1.05rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: '1.2rem', fontWeight: 600 }}>
+        <label style={{ display: 'block', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: '0.75rem', fontWeight: 600 }}>
           Nickname
         </label>
         <input
@@ -723,10 +723,10 @@ function App() {
             backgroundColor: 'rgba(0, 0, 0, 0.4)',
             border: '1px solid var(--accent-color)',
             borderRadius: '6px',
-            padding: '1rem 1.5rem',
+            padding: '0.8rem 1.2rem',
             color: '#fff',
             fontFamily: 'inherit',
-            fontSize: '1.35rem',
+            fontSize: '1.25rem',
             textAlign: 'center',
             outline: 'none',
             boxSizing: 'border-box'
@@ -736,13 +736,13 @@ function App() {
           onClick={() => { localStorage.setItem('player_nickname', nickname.trim()); setNicknameConfirmed(true); }}
           disabled={!nickname.trim()}
           style={{
-            marginTop: '2rem',
+            marginTop: '1.25rem',
             backgroundColor: nickname.trim() ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
             border: 'none',
             borderRadius: '6px',
-            padding: '0.95rem 3rem',
+            padding: '0.85rem 2.5rem',
             color: '#fff',
-            fontSize: '1.2rem',
+            fontSize: '1.15rem',
             fontWeight: 600,
             cursor: nickname.trim() ? 'pointer' : 'not-allowed',
             transition: 'all 0.2s',
@@ -804,8 +804,8 @@ function App() {
   );
 
   const renderLoginScreen = () => (
-    <div className="role-selection" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '3rem auto 1.2rem auto', lineHeight: '1.6' }}>
+    <div className="role-selection" style={{ textAlign: 'center', padding: '1.5rem 1.5rem' }}>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '1.35rem', maxWidth: '750px', margin: '1.5rem auto 1.5rem auto', lineHeight: '1.6' }}>
         Καλώς ήρθατε στον κορυφαίο εξομοιωτή Ελληνικής Φιλοξενίας. Επιβιώστε από τον GM Μουστάκα, διαχειριστείτε υπερκρατήσεις, αγενείς VIP και το ακραίο εργασιακό stress.
       </p>
       
@@ -813,28 +813,28 @@ function App() {
         backgroundColor: 'rgba(255, 255, 255, 0.03)',
         border: '1px solid var(--panel-border)',
         borderRadius: '12px',
-        padding: '2.5rem 2rem',
-        maxWidth: '450px',
+        padding: '2rem 2rem',
+        maxWidth: '480px',
         margin: '0 auto',
         boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
       }}>
-        <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1.5rem', marginTop: 0 }}>Είσοδος στο Παιχνίδι</h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+        <h3 style={{ color: '#fff', fontSize: '1.45rem', marginBottom: '1rem', marginTop: 0 }}>Είσοδος στο Παιχνίδι</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '1.25rem', lineHeight: '1.5' }}>
           Συνδεθείτε με Google για να ανανεώνεται αυτόματα το βιογραφικό σας.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
           <Auth session={session} loading={authLoading} />
         </div>
-        <div style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
+        <div style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '1.25rem' }}>
           <button
             onClick={() => setIsGuest(true)}
             style={{
               backgroundColor: 'transparent',
               border: '1px solid var(--text-secondary)',
               borderRadius: '6px',
-              padding: '0.6rem 1.5rem',
+              padding: '0.75rem 1.5rem',
               color: 'var(--text-secondary)',
-              fontSize: '0.95rem',
+              fontSize: '1.05rem',
               fontWeight: 500,
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -850,43 +850,45 @@ function App() {
 
   const renderIntroScreen = () => (
     <div className="intro-overlay">
-      <div className="intro-content">
-        <div className="intro-subtitle" style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', letterSpacing: '0.25em', marginBottom: '2rem', animation: 'fadeUp 1.5s ease-out' }}>GREEK TOURISM RPG</div>
-        <h1 className="intro-main-title" style={{ fontSize: '4.2rem', textShadow: '0 0 20px rgba(102, 252, 241, 0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '2.5rem', animation: 'fadeUp 2s ease-out' }}>HOTEL MADNESS</h1>
+      <div className="intro-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80vh', padding: '1rem 0' }}>
+        <div className="intro-subtitle" style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', letterSpacing: '0.25em', marginBottom: '1rem', animation: 'fadeUp 1.5s ease-out' }}>GREEK TOURISM RPG</div>
+        <h1 className="intro-main-title" style={{ fontSize: '3.6rem', textShadow: '0 0 20px rgba(102, 252, 241, 0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', animation: 'fadeUp 2s ease-out' }}>HOTEL MADNESS</h1>
         
-        <div className="intro-narrative" style={{ display: 'flex', flexDirection: 'column', gap: '1.8rem', marginBottom: '3.5rem' }}>
-          <div className="intro-line line-1" style={{ fontSize: '1.5rem', color: 'var(--text-primary)' }}>ΕΛΛΗΝΙΚΟΣ ΤΟΥΡΙΣΜΟΣ. 2026.</div>
-          <div className="intro-line line-2" style={{ fontSize: '1.5rem', color: 'var(--text-primary)' }}>Υψηλές προσδοκίες. Ακραίο Stress. Ατελείωτες βάρδιες.</div>
-          <div className="intro-line line-3" style={{ fontSize: '1.5rem', color: 'var(--text-primary)' }}>Ο GM Μουστάκας παρακολουθεί κάθε σου κίνηση...</div>
-          <div className="intro-line line-4" style={{ fontSize: '1.55rem', color: 'var(--accent-color)', fontWeight: 600, textShadow: '0 0 10px rgba(102, 252, 241, 0.2)' }}>Είσαι έτοιμος να επιβιώσεις στη "Βαριά Βιομηχανία" της χώρας;</div>
+        <div className="intro-narrative" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2rem' }}>
+          <div className="intro-line line-1" style={{ fontSize: '1.45rem', color: 'var(--text-primary)' }}>ΕΛΛΗΝΙΚΟΣ ΤΟΥΡΙΣΜΟΣ. 2026.</div>
+          <div className="intro-line line-2" style={{ fontSize: '1.45rem', color: 'var(--text-primary)' }}>Υψηλές προσδοκίες. Ακραίο Stress. Ατελείωτες βάρδιες.</div>
+          <div className="intro-line line-3" style={{ fontSize: '1.45rem', color: 'var(--text-primary)' }}>Ο GM Μουστάκας παρακολουθεί κάθε σου κίνηση...</div>
+          <div className="intro-line line-4" style={{ fontSize: '1.5rem', color: 'var(--accent-color)', fontWeight: 600, textShadow: '0 0 10px rgba(102, 252, 241, 0.2)' }}>Είσαι έτοιμος να επιβιώσεις στη "Βαριά Βιομηχανία" της χώρας;</div>
         </div>
 
-        <button
-          className="intro-btn"
-          onClick={() => {
-            sessionStorage.setItem('hotel_intro_seen', 'true');
-            setShowIntro(false);
-            audioService.start();
-          }}
-          style={{
-            backgroundColor: 'var(--accent-color)',
-            border: 'none',
-            borderRadius: '8px',
-            color: '#050608',
-            padding: '1.2rem 3rem',
-            fontSize: '1.2rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            cursor: 'pointer',
-            boxShadow: '0 0 25px rgba(102, 252, 241, 0.4)',
-            transition: 'all 0.3s ease'
-          }}
-        >
-          ΕΙΣΟΔΟΣ ΣΤΗΝ ΕΠΙΧΕΙΡΗΣΗ →
-        </button>
+        <div>
+          <button
+            className="intro-btn"
+            onClick={() => {
+              sessionStorage.setItem('hotel_intro_seen', 'true');
+              setShowIntro(false);
+              audioService.start();
+            }}
+            style={{
+              backgroundColor: 'var(--accent-color)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#050608',
+              padding: '0.9rem 2.5rem',
+              fontSize: '1.15rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              cursor: 'pointer',
+              boxShadow: '0 0 25px rgba(102, 252, 241, 0.4)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            ΕΙΣΟΔΟΣ ΣΤΗΝ ΕΠΙΧΕΙΡΗΣΗ →
+          </button>
+        </div>
 
-        <div style={{ marginTop: '1.5rem' }}>
+        <div style={{ marginTop: '1rem' }}>
           <button
             className="intro-skip-btn"
             onClick={() => {
@@ -898,7 +900,7 @@ function App() {
               background: 'transparent',
               border: 'none',
               color: 'var(--text-secondary)',
-              fontSize: '0.95rem',
+              fontSize: '0.9rem',
               textDecoration: 'underline',
               cursor: 'pointer',
               opacity: 0.6,
@@ -1152,16 +1154,18 @@ function App() {
 
   const renderDisclaimerScreen = () => (
     <div className="intro-screen">
-      <div className="intro-content" style={{ textAlign: 'center' }}>
-        <h1>Καλώς ήρθες στην Οικογένεια της Faplantica</h1>
-        <p style={{ marginTop: '2rem', fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '2rem auto' }}>
+      <div className="intro-content" style={{ textAlign: 'center', padding: '1rem 0' }}>
+        <h1 style={{ fontSize: '2.2rem', color: '#fff', textShadow: '0 0 15px rgba(102, 252, 241, 0.3)', marginBottom: '1rem', marginTop: 0 }}>
+          Καλώς ήρθες στην Οικογένεια της Faplantica
+        </h1>
+        <p style={{ marginTop: '1.25rem', fontSize: '1.35rem', color: 'var(--text-secondary)', maxWidth: '700px', margin: '1.25rem auto', lineHeight: '1.65' }}>
           Οποιαδήποτε ομοιότητα με πρόσωπα, καταστάσεις ή γεγονότα είναι εντελώς συμπτωματική και δεν ανταποκρίνεται στην πραγματικότητα.
           <br /><br />
           Αν όμως νομίζεις ότι κάτι σου θυμίζει... μάλλον έχεις δίκιο.
         </p>
         <button 
           className="btn-primary" 
-          style={{ marginTop: '2rem', padding: '1rem 3rem', fontSize: '1.2rem' }}
+          style={{ marginTop: '1.5rem', padding: '0.85rem 3rem', fontSize: '1.2rem', borderRadius: '30px' }}
           onClick={async () => {
              setShowDisclaimer(false);
              setGameStarted(true);
