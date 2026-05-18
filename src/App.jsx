@@ -1014,7 +1014,7 @@ function App() {
     <div className="intro-overlay">
       <div className="intro-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80vh', padding: '1rem 0' }}>
         <div className="intro-subtitle" style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', letterSpacing: '0.25em', marginBottom: '1rem', animation: 'fadeUp 1.5s ease-out' }}>GREEK TOURISM RPG</div>
-        <h1 className="intro-main-title" style={{ fontSize: '3.6rem', textShadow: '0 0 20px rgba(102, 252, 241, 0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', animation: 'fadeUp 2s ease-out' }}>HOTEL MADNESS</h1>
+        <h1 className="intro-main-title" style={{ fontSize: '3.6rem', textShadow: '0 0 20px rgba(102, 252, 241, 0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', animation: 'fadeUp 2s ease-out' }}>ΦαΠ Ο ΜΕΤΡΟ</h1>
         
         <div className="intro-narrative" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2rem' }}>
           <div className="intro-line line-1" style={{ fontSize: '1.45rem', color: 'var(--text-primary)' }}>ΕΛΛΗΝΙΚΟΣ ΤΟΥΡΙΣΜΟΣ. 2026.</div>
@@ -1587,7 +1587,7 @@ function App() {
             onClick={resetToHome}
           >
             <span style={{ fontSize: '1.6rem', filter: 'drop-shadow(0 0 8px rgba(255, 75, 75, 0.4))' }}>🏨</span>
-            <span>Hotel Madness</span>
+            <span>ΦαΠ Ο Μέτρο</span>
           </h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
