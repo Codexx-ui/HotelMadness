@@ -297,5 +297,264 @@ export const GENERAL_EVENTS = [
       { id: 2, text: "Πηγαίνω στην ουρά και τους κερνάω prosecco/χυμούς για να ηρεμήσω τα πνεύματα.", stress_change: 15, reputation_change: 20, cash_change: -20, staff_relations_change: 15 },
       { id: 3, text: "Τους λέω ψυχρά ότι αν δεν έχουν κράτηση θα πρέπει να περιμένουν τουλάχιστον μία ώρα.", stress_change: 10, reputation_change: -25, cash_change: 0, staff_relations_change: -10 }
     ]
+  },
+  // --- ΡΕΣΕΨΙΟΝΙΣΤ EVENTS ---
+  {
+    scene_title: "VIP με 5 Σκυλιά",
+    role: "Ρεσεψιονίστ",
+    story_text: "Ένας εκκεντρικός VIP πελάτης σκάει στη ρεσεψιόν με 5 θορυβώδη σκυλιά Chihuahua, απαιτώντας να μείνουν μαζί του, παρόλο που το ξενοδοχείο απαγορεύει αυστηρά τα κατοικίδια.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Κάνω τα στραβά μάτια επειδή είναι VIP και του χρεώνω ειδικό Pet Fee.", stress_change: 15, reputation_change: 15, cash_change: 50 },
+      { id: 2, text: "Του αρνούμαι κατηγορηματικά, προτείνοντας να τα αφήσει σε κοντινό ξενοδοχείο ζώων.", stress_change: 25, reputation_change: -10, cash_change: 0 },
+      { id: 3, text: "Καλώ τον Μουστάκα να βγάλει το φίδι από την τρύπα.", stress_change: 10, reputation_change: 5, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Ο Έλεγχος του Booking.com",
+    role: "Ρεσεψιονίστ",
+    story_text: "Ένας μυστήριος πελάτης σου ψιθυρίζει ότι είναι κρυφός επιθεωρητής της Booking.com. Απαιτεί δωρεάν αναβάθμιση σε σουίτα, αλλιώς απειλεί να ρίξει τη βαθμολογία μας.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Του δίνω αμέσως την αναβάθμιση για να σώσω τη βαθμολογία.", stress_change: 10, reputation_change: 15, cash_change: -30 },
+      { id: 2, text: "Του ζητώ επίσημα διαπιστευτήρια, αλλιώς αρνούμαι την αναβάθμιση.", stress_change: 20, reputation_change: 5, cash_change: 0 },
+      { id: 3, text: "Του λέω ειρωνικά ότι κι εγώ είμαι ο κρυφός ιδιοκτήτης του Booking.", stress_change: 30, reputation_change: -20, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Η Κλοπή της Πετσέτας",
+    role: "Ρεσεψιονίστ",
+    story_text: "Μια ηλικιωμένη VIP πελάτισσα κατηγορεί την καμαριέρα ότι της έκλεψε μια «συλλεκτική» πετσέτα θαλάσσης, απειλώντας να φωνάξει την αστυνομία.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Της δίνω μια καινούργια πετσέτα του ξενοδοχείου και ζητώ συγγνώμη.", stress_change: 10, reputation_change: 10, cash_change: -10 },
+      { id: 2, text: "Υπερασπίζομαι την καμαριέρα λέγοντας ότι δουλεύει 10 χρόνια εδώ και είναι τίμια.", stress_change: 15, reputation_change: 5, cash_change: 0 },
+      { id: 3, text: "Υπόσχομαι να κάνω σωματικό έλεγχο σε όλο το προσωπικό προσωπικά.", stress_change: 25, reputation_change: -15, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Το Λάθος Overbooking του Μουστάκα",
+    role: "Ρεσεψιονίστ",
+    story_text: "Ο Μουστάκας έκανε ο ίδιος κράτηση για τον κουμπάρο του αλλά ξέχασε να την περάσει. Τώρα το ξενοδοχείο είναι 110% γεμάτο και ο κουμπάρος απαιτεί δωμάτιο.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Μεταφέρω έναν απλό πελάτη σε διπλανό μοτέλ για να βολευτεί ο κουμπάρος.", stress_change: 20, reputation_change: -10, cash_change: -20 },
+      { id: 2, text: "Τηλεφωνώ στον Μουστάκα να του πω ότι δεν υπάρχει χώρος ούτε για δείγμα.", stress_change: 30, reputation_change: 10, cash_change: 0 },
+      { id: 3, text: "Στήνω ένα ράντζο στο γραφείο κρατήσεων και το παρουσιάζω ως VIP Office Experience.", stress_change: 15, reputation_change: 5, cash_change: 10 }
+    ]
+  },
+  {
+    scene_title: "Ο Influencer με 50 Followers",
+    role: "Ρεσεψιονίστ",
+    story_text: "Ένας τύπος στη ρεσεψιόν απαιτεί δωρεάν διαμονή 3 ημερών δείχνοντάς σου το προφίλ του στο TikTok με... 54 followers.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Του γελάω κατάμουτρα και του δίνω κανονικό τιμολόγιο.", stress_change: 10, reputation_change: -5, cash_change: 15 },
+      { id: 2, text: "Του προσφέρω ευγενικά ένα δωρεάν κοκτέιλ στο μπαρ αντί για δωμάτιο.", stress_change: 15, reputation_change: 10, cash_change: -5 },
+      { id: 3, text: "Του προτείνω να κάνει live stream καθαρίζοντας τις τουαλέτες για promotion.", stress_change: 20, reputation_change: -15, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Η Καταιγίδα και η Διαρροή",
+    role: "Ρεσεψιονίστ",
+    story_text: "Μια ξαφνική μπόρα πλημμυρίζει το lobby και το νερό στάζει πάνω στο πληκτρολόγιο της ρεσεψιόν, απειλώντας να κάψει το σύστημα κρατήσεων.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Βάζω κουβάδες, σκεπάζω τα PC με σακούλες σκουπιδιών και συνεχίζω με το χέρι.", stress_change: 30, reputation_change: 10, cash_change: 0 },
+      { id: 2, text: "Φωνάζω έξαλλος τη συντήρηση και σταματάω τα check-in.", stress_change: 20, reputation_change: -10, cash_change: 0 },
+      { id: 3, text: "Ανοίγω ομπρέλα μέσα στη ρεσεψιόν και το παρουσιάζω ως Rain Theme Day.", stress_change: 15, reputation_change: 5, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Ο Απαιτητικός Συνεδριακός",
+    role: "Ρεσεψιονίστ",
+    story_text: "Ένας VIP διοργανωτής συνεδρίου απαιτεί να αλλάξουμε το setup της αίθουσας 30 λεπτά πριν την έναρξη επειδή η τρέχουσα διάταξη «δεν έχει καλό φενγκ σούι».",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τρέχω μαζί με τους bellboys να αλλάξουμε 150 καρέκλες σε χρόνο dt.", stress_change: 35, reputation_change: 20, cash_change: 0 },
+      { id: 2, text: "Του εξηγώ ευγενικά ότι η αλλαγή είναι αδύνατη λόγω κανονισμών ασφαλείας.", stress_change: 20, reputation_change: -5, cash_change: 0 },
+      { id: 3, text: "Του ζητάω extra χρέωση 200€ για 'Emergency Feng Shui Setup'.", stress_change: 15, reputation_change: 15, cash_change: 50 }
+    ]
+  },
+  {
+    scene_title: "Η Χαμένη Βαλίτσα",
+    role: "Ρεσεψιονίστ",
+    story_text: "Ένας VIP πελάτης ουρλιάζει επειδή ο bellboy έχασε τη βαλίτσα του, η οποία περιέχει «ανεκτίμητης αξίας» έγγραφα.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Ψάχνω προσωπικά σε όλες τις αποθήκες και τα δωμάτια του lobby.", stress_change: 30, reputation_change: 10, cash_change: 0 },
+      { id: 2, text: "Ρίχνω την ευθύνη στον bellboy και του λέω να περιμένει την αστυνομία.", stress_change: 20, reputation_change: -20, cash_change: 0 },
+      { id: 3, text: "Του προσφέρω 50€ cash από το ταμείο για να αγοράσει ρούχα μέχρι να βρεθεί.", stress_change: 15, reputation_change: 5, cash_change: -25 }
+    ]
+  },
+  {
+    scene_title: "Ύποπτος Νυχτερινός Επισκέπτης",
+    role: "Ρεσεψιονίστ",
+    story_text: "Στη νυχτερινή βάρδια, ένας πελάτης εμφανίζεται φορώντας γυαλιά ηλίου και ζητάει δωμάτιο με ψεύτικο όνομα, προσφέροντας 200€ μετρητά χωρίς απόδειξη.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Του αρνούμαι κατηγορηματικά, τηρώντας τον νόμο και την ασφάλεια.", stress_change: 15, reputation_change: 10, cash_change: 0 },
+      { id: 2, text: "Παίρνω τα μετρητά, τον βάζω σε δωμάτιο που φαίνεται κενό και τσεπώνω τα λεφτά.", stress_change: 30, reputation_change: -25, cash_change: 100 },
+      { id: 3, text: "Του λέω ότι η ταρίφα για 'μυστικά δωμάτια' είναι τουλάχιστον 400€.", stress_change: 25, reputation_change: -30, cash_change: 200 }
+    ]
+  },
+  {
+    scene_title: "Check-Out του Κακού Πληρωτή",
+    role: "Ρεσεψιονίστ",
+    story_text: "Ένας πελάτης κάνει check-out και ισχυρίζεται ότι η πιστωτική του κάρτα μπλοκαρίστηκε. Υπόσχεται να στείλει έμβασμα μόλις γυρίσει στην πατρίδα του.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τον κρατάω στη ρεσεψιόν και καλώ αμέσως τη διοίκηση ή την αστυνομία.", stress_change: 35, reputation_change: 10, cash_change: 0 },
+      { id: 2, text: "Τον αφήνω να φύγει παίρνοντας υπογραφή σε υπεύθυνη δήλωση.", stress_change: 20, reputation_change: -15, cash_change: -50 },
+      { id: 3, text: "Του ζητάω να αφήσει το πανάκριβο ρολόι του ως εγγύηση.", stress_change: 15, reputation_change: 5, cash_change: 30 }
+    ]
+  },
+
+  // --- ΜΑΓΕΙΡΑΣ EVENTS ---
+  {
+    scene_title: "Το Χαλασμένο Πλυντήριο Πιάτων",
+    role: "Μάγειρας",
+    story_text: "Το κεντρικό πλυντήριο πιάτων της κουζίνας σκάει βγάζοντας καπνούς εν μέσω banquet 150 ατόμων. Τα καθαρά πιάτα τελειώνουν!",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Βάζω όλη την ομάδα (ακόμα και τους βοηθούς) να πλένουν στο χέρι με τρελούς ρυθμούς.", stress_change: 35, reputation_change: 15, cash_change: 0 },
+      { id: 2, text: "Σερβίρω τα ορεκτικά σε ξύλινες σανίδες κοπής για να γλιτώσω πιάτα.", stress_change: 15, reputation_change: 5, cash_change: 10 },
+      { id: 3, text: "Σταματάω τη ροή του φαγητού και ενημερώνω ότι έχουμε τεχνικό πρόβλημα.", stress_change: 25, reputation_change: -20, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Η Έλλειψη Φρέσκου Αστακού",
+    role: "Μάγειρας",
+    story_text: "Ένας VIP πελάτης απαιτεί αστακομακαρονάδα, αλλά ο προμηθευτής δεν έφερε αστακούς σήμερα. Έχουμε μόνο κατεψυγμένες γαρίδες.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Πηγαίνω ο ίδιος στο τραπέζι και του προτείνω ένα φρέσκο ψάρι ημέρας.", stress_change: 15, reputation_change: 15, cash_change: 0 },
+      { id: 2, text: "Φτιάχνω το πιάτο με τις γαρίδες και το σερβίρω ως 'Μικρασιάτικο Αστακό'.", stress_change: 25, reputation_change: -15, cash_change: 20 },
+      { id: 3, text: "Του στέλνω σκέτη μακαρονάδα με σάλτσα ντομάτας χρεώνοντας κανονικά.", stress_change: 30, reputation_change: -30, cash_change: 10 }
+    ]
+  },
+  {
+    scene_title: "Η Φωτιά στο Τηγάνι",
+    role: "Μάγειρας",
+    story_text: "Ένας νέος βοηθός βάζει φωτιά σε ένα τηγάνι με λάδι. Ο καπνός είναι πυκνός και κινδυνεύει να ανάψει το αυτόματο σύστημα πυρόσβεσης.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Σκεπάζω αμέσως το τηγάνι με μεταλλικό καπάκι και σβήνω τη φωτιά.", stress_change: 25, reputation_change: 15, cash_change: 0 },
+      { id: 2, text: "Πετάω νερό στο τηγάνι (πράγμα εξαιρετικά επικίνδυνο!).", stress_change: 50, reputation_change: -30, cash_change: -50 },
+      { id: 3, text: "Τρέχω έξω φωνάζοντας 'ΦΩΤΙΑ' και πανικοβάλλω τη σάλα.", stress_change: 40, reputation_change: -40, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Ο Chef Αντώνης Σάββας σε Κρίση",
+    role: "Μάγειρας",
+    story_text: "Ο Executive Chef Αντώνης Σάββας ουρλιάζει στους πάντες επειδή κάποιος του πήρε το καλό του μαχαίρι. Απειλεί να απολύσει όλη τη βάρδια.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Του προσφέρω το δικό μου μαχαίρι για να τον ηρεμήσω.", stress_change: 15, reputation_change: 10, cash_change: 0 },
+      { id: 2, text: "Ψάχνω κρυφά στην κουζίνα μέχρι να βρω το μαχαίρι του.", stress_change: 25, reputation_change: 5, cash_change: 0 },
+      { id: 3, text: "Του λέω ότι η υστερία του δεν βοηθάει καθόλου τη δουλειά.", stress_change: 35, reputation_change: -15, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Το Καμένο Φιλέτο του Μουστάκα",
+    role: "Μάγειρας",
+    story_text: "Το φιλέτο rib-eye για το τραπέζι του GM Μουστάκα κάηκε επειδή ξεχάστηκες μιλώντας στο τηλέφωνο. Ο Μουστάκας περιμένει ήδη 20 λεπτά.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Πετάω το καμένο, βάζω νέο φιλέτο στη σχάρα και τρέχω τη φωτιά στο full.", stress_change: 30, reputation_change: 5, cash_change: -10 },
+      { id: 2, text: "Κόβω τα καμένα μέρη, βάζω πολύ σάλτσα από πάνω και το στέλνω έτσι.", stress_change: 20, reputation_change: -20, cash_change: 0 },
+      { id: 3, text: "Λέω ότι το κρέας είχε πρόβλημα και του προτείνω κοτόπουλο.", stress_change: 15, reputation_change: -5, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Ο Vegan με Αλλεργία στη Γλουτένη",
+    role: "Μάγειρας",
+    story_text: "Ένας πελάτης ζητάει gluten-free vegan μουσακά (που δεν υπάρχει). Απειλεί να πάθει αναφυλαξία αν βρει ίχνος ζωικού προϊόντος ή γλουτένης.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Του φτιάχνω επί τόπου μια ειδική σαλάτα με ψητά λαχανικά και κινόα.", stress_change: 20, reputation_change: 15, cash_change: 0 },
+      { id: 2, text: "Του σερβίρω τον κανονικό μουσακά λέγοντας ψέματα ότι είναι vegan.", stress_change: 35, reputation_change: -35, cash_change: 10 },
+      { id: 3, text: "Του λέω ευγενικά ότι δεν μπορούμε να εγγυηθούμε 100% απουσία γλουτένης.", stress_change: 15, reputation_change: 10, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Έφοδος του Μουστάκα στην Κουζίνα",
+    role: "Μάγειρας",
+    story_text: "Ο Μουστάκας μπαίνει στην κουζίνα με άσπρο γάντι για να ελέγξει αν υπάρχει σκόνη πάνω από τα ψυγεία. Αν βρει κάτι, θα γίνει χαμός.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τρέχω μπροστά του και σκουπίζω γρήγορα με ένα πανί.", stress_change: 25, reputation_change: 10, cash_change: 0 },
+      { id: 2, text: "Του λέω ότι η κουζίνα καθαρίζεται στο τέλος της βάρδιας βάσει HACCAP.",
+        stress_change: 15, reputation_change: 5, cash_change: 0 },
+      { id: 3, text: "Του ρίχνω επίτηδες λίγο αλεύρι στο σακάκι για να αποσπάσω την προσοχή του.", stress_change: 30, reputation_change: -15, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Διακοπή Νερού στην Κουζίνα",
+    role: "Μάγειρας",
+    story_text: "Το νερό κόβεται ξαφνικά στο pick της προετοιμασίας για το βραδινό buffet. Δεν μπορούμε να πλύνουμε λαχανικά ούτε να βράσουμε ζυμαρικά!",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Χρησιμοποιώ εμφιαλωμένα νερά από το μπαρ για τις βασικές ανάγκες.", stress_change: 30, reputation_change: 15, cash_change: -20 },
+      { id: 2, text: "Σταματάω τα βραστά και το γυρνάω αποκλειστικά σε ψητά και τηγανητά.", stress_change: 20, reputation_change: 5, cash_change: 0 },
+      { id: 3, text: "Κηρύσσω στάση εργασίας στην κουζίνα μέχρι να φτιαχτεί η βλάβη.", stress_change: 15, reputation_change: -25, cash_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Κλοπή των Φιλέτων",
+    role: "Μάγειρας",
+    story_text: "Παρατηρείς ότι ένας συνάδελφός σου κρύβει ακριβά φιλέτα rib-eye στην τσάντα του πριν σχολάσει. Αν τον καρφώσεις θα σε πουν ρουφιάνο, αν όχι θα έχουμε έλλειμμα.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Του μιλάω κατ' ιδίαν και του λέω να τα επιστρέψει αμέσως.", stress_change: 20, reputation_change: 5, cash_change: 0 },
+      { id: 2, text: "Πηγαίνω στον Chef Σάββα και τον ενημερώνω κρυφά.", stress_change: 15, reputation_change: 10, cash_change: 0 },
+      { id: 3, text: "Του ζητάω να μοιραστούμε τη λεία για να κρατήσω το στόμα μου κλειστό.", stress_change: 25, reputation_change: -20, cash_change: 30 }
+    ]
+  },
+  {
+    scene_title: "Η Χαλασμένη Κατάψυξη",
+    role: "Μάγειρας",
+    story_text: "Η κεντρική κατάψυξη της κουζίνας ανέβασε θερμοκρασία στους +5 βαθμούς. Κρέατα και θαλασσινά αξίας 5.000€ κινδυνεύουν να χαλάσουν.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Μεταφέρω όλα τα ευπαθή προϊόντα στις καταψύξεις του μπαρ και των lobby.", stress_change: 35, reputation_change: 15, cash_change: 0 },
+      { id: 2, text: "Καλώ αμέσως επείγουσα τεχνική υποστήριξη με δικά μας έξοδα.", stress_change: 20, reputation_change: 10, cash_change: -50 },
+      { id: 3, text: "Τα αφήνω έτσι ελπίζοντας ότι θα φτιαχτεί μόνο του μέχρι το πρωί.", stress_change: 45, reputation_change: -35, cash_change: 0 }
+    ]
+  },
+
+  // --- ΕΠΙΠΛΕΟΝ ΣΕΡΒΙΤΟΡΟΣ EVENTS ---
+  {
+    scene_title: "Ο VIP που δεν Αφήνει Τιπ",
+    role: "Σερβιτόρος",
+    story_text: "Ένα τραπέζι VIP με λογαριασμό 500€ σε κράτησε στο πόδι 3 ώρες με παράλογες απαιτήσεις. Στο τέλος, πληρώνουν με κάρτα και δεν αφήνουν ούτε σεντ τιπ.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τους ευχαριστώ με το πιο ψεύτικο corporate χαμόγελο και υποκλίνομαι.", stress_change: 25, reputation_change: 15, cash_change: 0 },
+      { id: 2, text: "Τους λέω ειρωνικά: 'Ελπίζω η υπηρεσία μας να μην επιβάρυνε τον προϋπολογισμό σας'.", stress_change: 15, reputation_change: -10, cash_change: 0 },
+      { id: 3, text: "«Ξεχνάω» να τους φέρω τα ρέστα από τα μετρητά που άφησαν για το πάρκινγκ.", stress_change: 20, reputation_change: -15, cash_change: 15 }
+    ]
+  },
+  {
+    scene_title: "Ατύχημα με το Δίσκο",
+    role: "Σερβιτόρος",
+    story_text: "Σκοντάφτεις πάνω σε μια ξαπλώστρα στην πισίνα και ο δίσκος με τις 4 μπίρες προσγειώνεται πάνω στην πανάκριβη τσάντα μιας VIP πελάτισσας.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Ζητώ χίλια συγγνώμη, παίρνω την τσάντα και τρέχω να την καθαρίσω στο στεγνό καθάρισμα.", stress_change: 30, reputation_change: 10, cash_change: -15 },
+      { id: 2, text: "Ρίχνω το φταίξιμο στον πελάτη που άφησε την ξαπλώστρα στη μέση του διαδρόμου.", stress_change: 25, reputation_change: -20, cash_change: 0 },
+      { id: 3, text: "Προσφέρω δωρεάν μπουκάλι σαμπάνιας για να ξεχαστεί το συμβάν.", stress_change: 15, reputation_change: 15, cash_change: -40 }
+    ]
+  },
+  {
+    scene_title: "Το Πιστόλι του Πελάτη",
+    role: "Σερβιτόρος",
+    story_text: "Ένα τραπέζι έφαγε κανονικά και έφυγε κρυφά («πιστόλι») εκμεταλλευόμενο το ότι έτρεχες να πάρεις άλλη παραγγελία. Ο λογαριασμός είναι 80€.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Το αναφέρω στη διοίκηση και δέχομαι να αφαιρεθεί το ποσό από τον μισθό μου.", stress_change: 20, reputation_change: 10, cash_change: -40 },
+      { id: 2, text: "Τρέχω στο parking να τους προλάβω πριν μπουν στο αυτοκίνητο.", stress_change: 35, reputation_change: 5, cash_change: 0 },
+      { id: 3, text: "Χρεώνω τα πιάτα τους κρυφά στο δωμάτιο ενός άλλου VIP που δεν ελέγχει ποτέ.", stress_change: 25, reputation_change: -25, cash_change: 40 }
+    ]
   }
 ];
