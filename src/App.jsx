@@ -75,9 +75,9 @@ function App() {
   };
 
   const STORE_ITEMS = [
-    { id: 'coffee', name: 'Καφές', price: 5, stressReduction: 10, emoji: '☕' },
-    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 25, emoji: '🏖️' },
-    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹' },
+    { id: 'coffee', name: 'Καφές στο Roi Mat', price: 5, stressReduction: 10, emoji: '☕' },
+    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 10, emoji: '🏖️' },
+    { id: 'drink', name: 'Ποτό στο Σκάλα', price: 15, stressReduction: 25, emoji: '🍹' },
     { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺' },
     { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩' },
     { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗' }
