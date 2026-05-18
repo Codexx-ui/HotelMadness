@@ -6,13 +6,70 @@ let oscillators = [];
 let isPlaying = false;
 let isMuted = false;
 let chordInterval = null;
+let currentPlaylist = localStorage.getItem('game_music_playlist') || 'faplantica';
 
-const CHORDS = [
-  [110, 130.81, 164.81], // Am (A2, C3, E3)
-  [87.31, 130.81, 174.61], // F (F2, C3, F3)
-  [130.81, 164.81, 196.00], // C (C3, E3, G3)
-  [82.41, 123.47, 164.81]  // E (E2, B2, E3)
-];
+export const PLAYLISTS = {
+  faplantica: {
+    name: 'Faplantica Ambient (Original) 🏝️',
+    oscType: 'triangle',
+    droneFreq: 55,
+    chordInterval: 4000,
+    chords: [
+      [110, 130.81, 164.81], // Am
+      [87.31, 130.81, 174.61], // F
+      [130.81, 164.81, 196.00], // C
+      [82.41, 123.47, 164.81]  // E
+    ]
+  },
+  synthwave: {
+    name: 'Retro Greek Synthwave 80s 🕶️',
+    oscType: 'sawtooth',
+    droneFreq: 41.20, // Low E1
+    chordInterval: 2500, // Faster, energetic synthwave
+    chords: [
+      [110, 130.81, 196.00], // Am7
+      [98.00, 116.54, 174.61], // Gm7
+      [87.31, 103.83, 155.56], // Fm7
+      [82.41, 98.00, 146.83]    // Em7
+    ]
+  },
+  lounge: {
+    name: 'Elevator Lounge Jazz 🍸',
+    oscType: 'sine',
+    droneFreq: 65.41, // C2
+    chordInterval: 5000, // Very slow and soothing
+    chords: [
+      [130.81, 164.81, 196.00, 246.94], // Cmaj7
+      [146.83, 174.61, 220.00, 261.63], // Dmin7
+      [98.00, 123.47, 146.83, 196.00],   // G7
+      [110, 130.81, 164.81, 196.00]      // Amin7
+    ]
+  },
+  panic: {
+    name: 'August Rush (Panic Beat) 🥵',
+    oscType: 'square',
+    droneFreq: 58.27, // A#1
+    chordInterval: 1200, // Intense, fast, high-stress
+    chords: [
+      [110, 116.54, 123.47], // Tense dissonant cluster
+      [116.54, 123.47, 130.81],
+      [123.47, 130.81, 138.59],
+      [130.81, 138.59, 146.83]
+    ]
+  },
+  reggae: {
+    name: 'Chill Aegon Reggae 🍹',
+    oscType: 'triangle',
+    droneFreq: 65.41, // C2
+    chordInterval: 3000, // Laid-back reggae beat
+    chords: [
+      [130.81, 164.81, 196.00], // C
+      [98.00, 123.47, 146.83],   // G
+      [110, 130.81, 164.81],     // Am
+      [87.31, 110, 130.81]       // F
+    ]
+  }
+};
 
 export const audioService = {
   init() {
@@ -22,7 +79,7 @@ export const audioService = {
     
     audioCtx = new AudioContextClass();
     masterGain = audioCtx.createGain();
-    masterGain.gain.setValueAtTime(0.04, audioCtx.currentTime); // Soft ambient volume
+    masterGain.gain.setValueAtTime(0.04, audioCtx.currentTime); // Soft master gain
     masterGain.connect(audioCtx.destination);
   },
 
@@ -37,19 +94,21 @@ export const audioService = {
     isPlaying = true;
     oscillators = [];
     
+    const playlist = PLAYLISTS[currentPlaylist] || PLAYLISTS.faplantica;
+    
     // Create soft ambient drone
     const droneOsc = audioCtx.createOscillator();
     const droneGain = audioCtx.createGain();
     
-    droneOsc.type = 'sawtooth';
-    droneOsc.frequency.setValueAtTime(55, audioCtx.currentTime); // Low A1 drone
+    droneOsc.type = playlist.oscType === 'sine' ? 'sine' : 'sawtooth';
+    droneOsc.frequency.setValueAtTime(playlist.droneFreq, audioCtx.currentTime);
     
     // Lowpass filter to make it soft and warm
     const filter = audioCtx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(120, audioCtx.currentTime);
+    filter.frequency.setValueAtTime(playlist.oscType === 'sawtooth' ? 100 : 180, audioCtx.currentTime);
     
-    droneGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    droneGain.gain.setValueAtTime(playlist.oscType === 'square' ? 0.08 : 0.25, audioCtx.currentTime);
     
     droneOsc.connect(filter);
     filter.connect(droneGain);
@@ -61,33 +120,36 @@ export const audioService = {
     // Pulse/Arpeggio Chord loop
     let currentChordIndex = 0;
     const playChordStep = () => {
-      const chord = CHORDS[currentChordIndex];
+      const activePlaylist = PLAYLISTS[currentPlaylist] || PLAYLISTS.faplantica;
+      const chord = activePlaylist.chords[currentChordIndex];
       const now = audioCtx.currentTime;
+      const duration = activePlaylist.chordInterval / 1000;
       
-      chord.forEach((freq, idx) => {
+      chord.forEach((freq) => {
         const osc = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq * 2, now); // Pitch up by 1 octave for nice warmth
+        osc.type = activePlaylist.oscType;
+        const multiplier = activePlaylist.oscType === 'sine' ? 2 : 2;
+        osc.frequency.setValueAtTime(freq * multiplier, now);
         
         // Attack-decay envelope for pulsing synth pad
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.25, now + 1.5);
-        gainNode.gain.linearRampToValueAtTime(0, now + 4.0);
+        gainNode.gain.linearRampToValueAtTime(activePlaylist.oscType === 'square' ? 0.06 : 0.2, now + (duration * 0.3));
+        gainNode.gain.linearRampToValueAtTime(0, now + duration);
         
         osc.connect(gainNode);
         gainNode.connect(masterGain);
         
         osc.start();
-        osc.stop(now + 4.0);
+        osc.stop(now + duration);
       });
       
-      currentChordIndex = (currentChordIndex + 1) % CHORDS.length;
+      currentChordIndex = (currentChordIndex + 1) % activePlaylist.chords.length;
     };
     
     playChordStep();
-    chordInterval = setInterval(playChordStep, 4000);
+    chordInterval = setInterval(playChordStep, playlist.chordInterval);
   },
 
   stop() {
@@ -106,7 +168,6 @@ export const audioService = {
   toggleMute() {
     isMuted = !isMuted;
     if (masterGain) {
-      // Smooth fade-in/fade-out
       const targetVolume = isMuted ? 0 : 0.04;
       masterGain.gain.linearRampToValueAtTime(targetVolume, audioCtx.currentTime + 0.5);
     }
@@ -118,6 +179,21 @@ export const audioService = {
       const targetVal = isMuted ? 0 : (vol * 0.08);
       masterGain.gain.linearRampToValueAtTime(targetVal, audioCtx.currentTime + 0.1);
     }
+  },
+
+  setPlaylist(playlistId) {
+    if (!PLAYLISTS[playlistId]) return;
+    currentPlaylist = playlistId;
+    localStorage.setItem('game_music_playlist', playlistId);
+    
+    if (isPlaying) {
+      this.stop();
+      this.start();
+    }
+  },
+
+  getPlaylist() {
+    return currentPlaylist;
   },
 
   isMuted() {
@@ -151,7 +227,6 @@ export const audioService = {
     if (isMuted || !audioCtx || !masterGain) return;
     const now = audioCtx.currentTime;
     
-    // First high beep
     const osc1 = audioCtx.createOscillator();
     const gain1 = audioCtx.createGain();
     osc1.type = 'square';
@@ -163,7 +238,6 @@ export const audioService = {
     osc1.start(now);
     osc1.stop(now + 0.08);
     
-    // Second even higher beep
     const osc2 = audioCtx.createOscillator();
     const gain2 = audioCtx.createGain();
     osc2.type = 'square';

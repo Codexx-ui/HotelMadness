@@ -83,6 +83,7 @@ function App() {
   const [useAI, setUseAI] = useState(localStorage.getItem('game_use_ai') !== 'false');
   const [musicVolume, setMusicVolume] = useState(parseFloat(localStorage.getItem('game_music_volume') || '0.5'));
   const [useSFX, setUseSFX] = useState(localStorage.getItem('game_use_sfx') !== 'false');
+  const [musicPlaylist, setMusicPlaylist] = useState(audioService.getPlaylist());
 
   const showToast = (text, icon = '💵') => {
     setToastMessage({ text, icon });
@@ -1713,6 +1714,35 @@ function App() {
                   />
                   <span className="slider"></span>
                 </label>
+              </div>
+              <div className="settings-row" style={{ marginTop: '0.75rem' }}>
+                <span className="settings-label">Κανάλι Μουσικής:</span>
+                <select 
+                  className="settings-select" 
+                  value={musicPlaylist} 
+                  onChange={(e) => {
+                    const pl = e.target.value;
+                    setMusicPlaylist(pl);
+                    audioService.setPlaylist(pl);
+                  }}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid var(--panel-border)',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    padding: '0.4rem 0.8rem',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    width: '60%'
+                  }}
+                >
+                  <option value="faplantica" style={{ background: '#0b0c10' }}>Faplantica Ambient (Original) 🏝️</option>
+                  <option value="synthwave" style={{ background: '#0b0c10' }}>Retro Greek Synthwave 80s 🕶️</option>
+                  <option value="lounge" style={{ background: '#0b0c10' }}>Elevator Lounge Jazz 🍸</option>
+                  <option value="panic" style={{ background: '#0b0c10' }}>August Rush (Panic Beat) 🥵</option>
+                  <option value="reggae" style={{ background: '#0b0c10' }}>Chill Aegon Reggae 🍹</option>
+                </select>
               </div>
             </div>
 
