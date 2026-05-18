@@ -59,6 +59,8 @@ function App() {
   // Settings and Difficulty States
   const [showSettings, setShowSettings] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [onlineScores, setOnlineScores] = useState([]);
+  const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
   const [difficulty, setDifficulty] = useState(localStorage.getItem('game_difficulty') || 'medium');
   const [useAI, setUseAI] = useState(localStorage.getItem('game_use_ai') !== 'false');
   const [musicVolume, setMusicVolume] = useState(parseFloat(localStorage.getItem('game_music_volume') || '0.5'));
@@ -255,10 +257,59 @@ function App() {
 
       // Keep top 100 entries
       localStorage.setItem('hotel_madness_leaderboard', JSON.stringify(updatedLeaderboard.slice(0, 100)));
+
+      // POST to global online database
+      fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          nickname: nickname || 'Guest',
+          role: roleMap[state.role] || state.role || '—',
+          turns: state.turnCount || 0,
+          season: state.season || 1,
+          cash: state.cash || 0,
+          tips: state.tips || 0,
+          difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
+          status: status
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          console.log('Saved score to global online database!');
+        }
+      })
+      .catch(err => console.warn('Failed to save score online, saved locally:', err));
     } catch (e) {
       console.error('Failed to save to leaderboard:', e);
     }
   };
+
+  const fetchOnlineLeaderboard = async () => {
+    setIsLeaderboardLoading(true);
+    try {
+      const res = await fetch('/api/leaderboard');
+      const data = await res.json();
+      if (data.success && data.scores && data.scores.length > 0) {
+        setOnlineScores(data.scores);
+      } else {
+        setOnlineScores([]);
+      }
+    } catch (e) {
+      console.warn('Failed to fetch online leaderboard, using offline fallback:', e);
+      setOnlineScores([]);
+    } finally {
+      setIsLeaderboardLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showLeaderboard) {
+      fetchOnlineLeaderboard();
+    }
+  }, [showLeaderboard]);
 
   // Fireworks effect for Disclaimer Screen
   useEffect(() => {
@@ -1158,14 +1209,23 @@ function App() {
 
   const renderLeaderboardModal = () => {
     if (!showLeaderboard) return null;
-    const list = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
+    const offlineList = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
+    const list = onlineScores.length > 0 ? onlineScores : offlineList;
+    const isOnline = onlineScores.length > 0;
 
     return (
       <div className="store-modal-overlay" style={{ zIndex: 1100 }}>
-        <div className="store-modal" style={{ maxWidth: '800px', width: '90%' }}>
+        <div className="store-modal" style={{ maxWidth: '850px', width: '95%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
-            <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Trophy color="var(--warning-color)" /> Hall of Fame - Κατάταξη
+            <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <Trophy color="var(--warning-color)" /> Hall of Fame - Κατάταξη 
+              {isLeaderboardLoading ? (
+                <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'rgba(102, 252, 241, 0.1)', border: '1px solid var(--accent-color)', padding: '0.2rem 0.6rem', borderRadius: '12px', marginLeft: '0.5rem', fontWeight: 600 }}>ΑΝΑΝΕΩΣΗ... ⏳</span>
+              ) : isOnline ? (
+                <span style={{ fontSize: '0.8rem', color: '#4bff4b', background: 'rgba(75, 255, 75, 0.1)', border: '1px solid #4bff4b', padding: '0.2rem 0.6rem', borderRadius: '12px', marginLeft: '0.5rem', fontWeight: 600 }}>ONLINE 🌐</span>
+              ) : (
+                <span style={{ fontSize: '0.8rem', color: 'var(--warning-color)', background: 'rgba(255, 170, 0, 0.1)', border: '1px solid var(--warning-color)', padding: '0.2rem 0.6rem', borderRadius: '12px', marginLeft: '0.5rem', fontWeight: 600 }}>LOCAL 📂</span>
+              )}
             </h3>
             <button 
               onClick={() => setShowLeaderboard(false)}
