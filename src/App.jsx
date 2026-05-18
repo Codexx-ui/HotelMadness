@@ -1319,10 +1319,13 @@ function App() {
     return renderIntroScreen();
   }
 
+  const isMobileDevice = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  const showMobileSpacer = isMobileLayout || isMobileDevice;
+
   return (
     <div className="app-container">
-      {isMobileLayout && (
-        <div className="mobile-vertical-spacer" style={{ height: '3rem' }} />
+      {showMobileSpacer && (
+        <div className="mobile-vertical-spacer" style={{ height: '3.5rem' }} />
       )}
       {toastMessage && (
         <div className="tips-toast">
