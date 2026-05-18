@@ -1272,7 +1272,7 @@ function App() {
         <div className="role-card" onClick={() => startGame('Σερβιτόρος')}>
           <Coffee className="role-icon" color="var(--accent-color)" />
           <div className="role-title">Σερβιτόρος</div>
-          <div className="role-desc">Ο αφανής ήρωας του F&B. Αντιμετωπίστε αγενείς πελάτες, το χάος της κουζίνας και το κυνήγι του φιλοδωρήματος.</div>
+          <div className="role-desc">Ο αφανής ήρωας του F&B. Αντιμετωπίστε αγενείς πελάτες, το χάος της σάλας και το κυνήγι του φιλοδωρήματος.</div>
         </div>
         
         <div className="role-card" onClick={() => startGame('Μάγειρας')}>
