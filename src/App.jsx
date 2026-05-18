@@ -284,7 +284,7 @@ function App() {
     const currentCal = new Date(currentState.currentDate);
     const endOfSeason = new Date('2026-11-01');
     if (currentCal >= endOfSeason) {
-      setCurrentScene({
+      setSceneData({
         scene_title: "Τέλος Σεζόν (1η Νοεμβρίου)",
         story_text: "Τα καταφέρατε! Το ξενοδοχείο κλείνει για το χειμώνα. Επιβιώσατε μιας ακόμα εξαντλητικής σεζόν χωρίς να απολυθείτε.",
         choices: [],
@@ -298,7 +298,7 @@ function App() {
 
     // Check standard Game Over conditions
     if (currentState.stress >= 100 || currentState.reputation <= 0 || currentState.alcoholWarnings >= 3) {
-      setCurrentScene({
+      setSceneData({
         scene_title: "Απόλυση",
         story_text: "Η κατάσταση βγήκε εκτός ελέγχου (υπερβολικό άγχος, κάκιστη φήμη ή πειθαρχικά παραπτώματα). Η διοίκηση αποφάσισε την άμεση απομάκρυνσή σου.",
         choices: [],
@@ -327,7 +327,7 @@ function App() {
 
       // Simulate network delay for UI smoothness
       setTimeout(() => {
-        setCurrentScene(nextScene);
+        setSceneData(nextScene);
         setIsLoading(false);
       }, 500);
       return;
@@ -362,7 +362,7 @@ function App() {
       console.warn("AI Generation failed. Falling back to a hardcoded generic event.", error);
       // Fallback to GENERAL_EVENTS to prevent the game from getting stuck
       const randomGen = GENERAL_EVENTS[Math.floor(Math.random() * GENERAL_EVENTS.length)];
-      setCurrentScene({ ...randomGen });
+      setSceneData({ ...randomGen });
     } finally {
       setIsLoading(false);
     }
