@@ -1,7 +1,7 @@
 import React from 'react';
 import { Briefcase, Coins, HeartPulse, Star, Users, AlertTriangle, ShieldAlert, BarChart3, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
-export default function Dashboard({ state, nickname }) {
+export default function Dashboard({ state, nickname, onTestSlap }) {
 
   // Helpers for progress colors
   const getStressColor = (val) => {
@@ -24,6 +24,26 @@ export default function Dashboard({ state, nickname }) {
 
   return (
     <div className="panel dashboard-panel">
+      {onTestSlap && (
+        <button 
+          id="test-slapometer-btn"
+          onClick={onTestSlap} 
+          style={{
+            width: '100%',
+            background: 'linear-gradient(135deg, #e056fd, #be2edd)',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.6rem',
+            color: '#fff',
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            cursor: 'pointer',
+            boxShadow: '0 0 10px rgba(190, 46, 221, 0.4)'
+          }}
+        >
+          ⚡ TEST SLAP-O-METER
+        </button>
+      )}
       <div className="stat-group">
           <div className="stat-group-title">Προφίλ Παίκτη</div>
           {nickname && (

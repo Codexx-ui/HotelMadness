@@ -1722,7 +1722,7 @@ function App() {
           </div>
         ) : (
           <>
-            <Dashboard state={gameState} nickname={nickname} />
+            <Dashboard state={gameState} nickname={nickname} onTestSlap={() => setShowSlapOMeter(true)} />
             <EventTerminal state={gameState} sceneData={sceneData} onChoice={handleChoice} isLoading={isLoading} onThesfapaClick={handleThesfapaClick} />
           </>
         )}
@@ -1854,6 +1854,37 @@ function App() {
                     localStorage.setItem('gemini_api_key', e.target.value);
                   }}
                 />
+              </div>
+            </div>
+
+            <div className="settings-section">
+              <div className="settings-section-title">Slap-O-Meter Playground 🤚</div>
+              <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
+                <span className="settings-label" style={{ textAlign: 'center', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#a8b2d8' }}>
+                  Δοκίμασε τα αντανακλαστικά σου στο Slap-O-Meter οποιαδήποτε στιγμή!
+                </span>
+                <button
+                  className="settings-btn"
+                  style={{
+                    background: 'linear-gradient(135deg, #66fcf1, #45a29e)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.5rem',
+                    color: '#0b0c10',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 10px rgba(102, 252, 241, 0.3)',
+                    transition: 'all 0.2s',
+                    width: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                  onClick={() => {
+                    setShowSettings(false);
+                    setShowSlapOMeter(true);
+                  }}
+                >
+                  ⚡ ΠΑΙΞΕ SLAP-O-METER
+                </button>
               </div>
             </div>
 

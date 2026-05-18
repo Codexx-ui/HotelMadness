@@ -104,9 +104,12 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
                       href={cleanHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => {
-                        if (isThesfapa && onThesfapaClick) {
-                          onThesfapaClick();
+                      onClick={(e) => {
+                        if (isThesfapa) {
+                          e.preventDefault();
+                          if (onThesfapaClick) {
+                            onThesfapaClick();
+                          }
                         }
                       }}
                       style={{
