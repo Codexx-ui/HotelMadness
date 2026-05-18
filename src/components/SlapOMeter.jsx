@@ -112,7 +112,7 @@ export default function SlapOMeter({ onClose, onResult }) {
             borderRadius: '5px',
             boxShadow: '0 0 12px rgba(255,255,255,0.9), 0 0 4px #000',
             transform: 'translateX(-50%)',
-            transition: isSlapped ? 'none' : 'left 0.03s linear',
+            transition: 'none',
             zIndex: 10
           }}>
             {/* Pointer arrow */}
