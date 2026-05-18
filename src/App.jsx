@@ -340,7 +340,7 @@ function App() {
       const res = await fetch('/api/leaderboard');
       const data = await res.json();
       if (data.success && data.scores) {
-        setOnlineScores(data.scores);
+        setOnlineScores(data.scores.filter(s => s.nickname !== '__MOTD__'));
         setIsOnlineConnected(true);
       } else {
         setOnlineScores([]);
@@ -360,6 +360,24 @@ function App() {
       fetchOnlineLeaderboard();
     }
   }, [showLeaderboard]);
+
+  useEffect(() => {
+    fetch('/api/leaderboard')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.scores) {
+          const motdEntry = data.scores.find(s => s.nickname === '__MOTD__');
+          if (motdEntry && motdEntry.status) {
+            setGlobalMotd(motdEntry.status);
+            setTimeout(() => {
+              showToast("📢 Ανακοίνωση Διοίκησης: " + motdEntry.status, "🔔");
+            }, 1500);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
 
   // Fireworks effect for Disclaimer Screen
   useEffect(() => {
@@ -704,6 +722,81 @@ function App() {
 
     setGameState(updatedState);
     await processTurn(`I choose option ${choice.id}: ${choice.text}`, updatedState);
+  };
+
+
+  const [fakeScore, setFakeScore] = useState({ nickname: 'Μουστάκας Θεός', cash: 9999999, turns: 50, season: 2 });
+  const [motdInput, setMotdInput] = useState('');
+  
+  const injectFakeScore = async () => {
+    try {
+      const payload = {
+        nickname: fakeScore.nickname,
+        role: 'GM',
+        turns: fakeScore.turns,
+        season: fakeScore.season,
+        cash: fakeScore.cash,
+        tips: 0,
+        difficulty: 'Hard',
+        status: 'HACKED'
+      };
+      await fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      showToast("☠️ Το ψεύτικο σκορ ενέθηκε επιτυχώς στη βάση!", "👑");
+    } catch (e) {
+      showToast("❌ Σφάλμα!", "⛔");
+    }
+  };
+
+  const deleteScore = async (id) => {
+    if (!window.confirm('Διαγραφή αυτού του σκορ από τη βάση;')) return;
+    try {
+      await fetch('/api/leaderboard?id=' + id, { method: 'DELETE' });
+      showToast("🗑️ Το σκορ διαγράφηκε!", "✨");
+      fetchOnlineLeaderboard();
+    } catch (e) {
+      showToast("❌ Σφάλμα διαγραφής!", "⛔");
+    }
+  };
+
+  const setGlobalMessage = async () => {
+    try {
+      // First try to find existing MOTD to delete it
+      const res = await fetch('/api/leaderboard');
+      const data = await res.json();
+      if (data.success && data.scores) {
+        const existing = data.scores.find(s => s.nickname === '__MOTD__');
+        if (existing) {
+          await fetch('/api/leaderboard?id=' + existing.id, { method: 'DELETE' });
+        }
+      }
+      
+      if (motdInput.trim() !== '') {
+        const payload = {
+          nickname: '__MOTD__',
+          role: 'ADMIN',
+          turns: 0,
+          season: 1,
+          cash: 0,
+          tips: 0,
+          difficulty: 'Normal',
+          status: motdInput
+        };
+        await fetch('/api/leaderboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        showToast("📢 Η ανακοίνωση στάλθηκε σε όλους τους παίκτες!", "🔔");
+      } else {
+        showToast("🗑️ Η ανακοίνωση καθαρίστηκε!", "✨");
+      }
+    } catch (e) {
+      showToast("❌ Σφάλμα!", "⛔");
+    }
   };
 
   const processTurn = async (playerInput, currentState) => {
@@ -2075,6 +2168,47 @@ function App() {
                   </button>
                 </div>
               </div>
+
+              {/* Multiplayer / Supabase Admin */}
+              <div className="settings-section" style={{ border: '1px solid rgba(179, 136, 255, 0.2)', background: 'rgba(179, 136, 255, 0.05)', padding: '1rem', borderRadius: '8px' }}>
+                <div className="settings-section-title" style={{ color: '#b388ff', borderBottom: '1px solid rgba(179, 136, 255, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
+                  🌐 Online Multiplayer Control
+                </div>
+                
+                {/* MOTD */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'block', marginBottom: '0.3rem' }}>Παγκόσμια Ανακοίνωση (MOTD):</label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Μήνυμα σε όλους τους παίκτες..."
+                      value={motdInput}
+                      onChange={(e) => setMotdInput(e.target.value)}
+                      style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #b388ff', background: 'rgba(0,0,0,0.3)', color: '#fff' }}
+                    />
+                    <button onClick={setGlobalMessage} style={{ background: '#b388ff', border: 'none', color: '#000', padding: '0.5rem 1rem', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Αποστολή</button>
+                  </div>
+                </div>
+
+                {/* Fake Score Injection */}
+                <div style={{ marginBottom: '1rem', borderTop: '1px dashed rgba(179, 136, 255, 0.3)', paddingTop: '1rem' }}>
+                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'block', marginBottom: '0.3rem' }}>Ένεση Ψεύτικου Σκορ (Trolling):</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <input type="text" value={fakeScore.nickname} onChange={e => setFakeScore({...fakeScore, nickname: e.target.value})} placeholder="Όνομα" style={{ width: '120px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #45a29e', background: 'rgba(0,0,0,0.3)', color: '#fff' }} />
+                    <input type="number" value={fakeScore.cash} onChange={e => setFakeScore({...fakeScore, cash: parseInt(e.target.value)})} placeholder="Χρήματα" style={{ width: '100px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #45a29e', background: 'rgba(0,0,0,0.3)', color: '#fff' }} />
+                    <button onClick={injectFakeScore} style={{ background: 'rgba(69, 162, 158, 0.2)', border: '1px solid #45a29e', color: '#45a29e', padding: '0.4rem 1rem', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Inject</button>
+                  </div>
+                </div>
+                
+                {/* Leaderboard Wipe */}
+                <div style={{ borderTop: '1px dashed rgba(179, 136, 255, 0.3)', paddingTop: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Διαχείριση Κατάταξης:</label>
+                    <button onClick={() => { setShowLeaderboard(true); fetchOnlineLeaderboard(); }} style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}>Φόρτωση / Διαγραφή</button>
+                  </div>
+                </div>
+              </div>
+
 
               {/* Force Events */}
               <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
