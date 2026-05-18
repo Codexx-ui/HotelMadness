@@ -53,6 +53,7 @@ function App() {
   const [tipsNotification, setTipsNotification] = useState(null); // Keep for backwards compatibility if needed
   const [showStore, setShowStore] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [hasPurchasedThisTurn, setHasPurchasedThisTurn] = useState(false);
 
   // Settings and Difficulty States
   const [showSettings, setShowSettings] = useState(false);
@@ -81,6 +82,10 @@ function App() {
   ];
 
   const buyStoreItem = (item) => {
+    if (hasPurchasedThisTurn) {
+      showToast("Έχεις ήδη κάνει μία αγορά σε αυτή τη βάρδια!", "⚠️");
+      return;
+    }
     if (gameState.cash < item.price) {
       showToast("Δεν επαρκούν τα χρήματα!", "⚠️");
       return;
@@ -102,6 +107,7 @@ function App() {
     }
 
     setGameState(newState);
+    setHasPurchasedThisTurn(true);
     showToast(`Αγόρασες ${item.name}!`, item.emoji);
   };
 
@@ -321,6 +327,7 @@ function App() {
   };
 
   const handleChoice = async (choice) => {
+    setHasPurchasedThisTurn(false);
     const updatedState = { ...gameState };
     if (updatedState.thesfapaClicked) {
       updatedState.turnsSinceThesfapa += 1;
@@ -1249,8 +1256,11 @@ function App() {
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem' }}>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-                Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν.
+              <div style={{ color: hasPurchasedThisTurn ? 'var(--danger-color)' : 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal', transition: 'color 0.3s' }}>
+                {hasPurchasedThisTurn 
+                  ? "⚠️ Έχετε ήδη πραγματοποιήσει 1 αγορά σε αυτή τη βάρδια. Περιμένετε το επόμενο act/απόφαση για να ξαναψωνίσετε!" 
+                  : "Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν."
+                }
               </div>
               <div className="store-balance-badge">
                 <span>💵 Υπόλοιπο:</span>
@@ -1276,10 +1286,13 @@ function App() {
                       <div className="store-price-tag">{item.price.toLocaleString('el-GR')}€</div>
                       <button 
                         className="store-buy-btn" 
-                        disabled={!canAfford}
+                        disabled={hasPurchasedThisTurn || !canAfford}
                         onClick={() => buyStoreItem(item)}
                       >
-                        {canAfford ? 'Αγορά' : 'Μη επαρκές ποσό'}
+                        {hasPurchasedThisTurn 
+                          ? 'Όριο αγοράς' 
+                          : canAfford ? 'Αγορά' : 'Μη επαρκές ποσό'
+                        }
                       </button>
                     </div>
                   </div>
