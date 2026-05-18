@@ -75,12 +75,12 @@ function App() {
   };
 
   const STORE_ITEMS = [
-    { id: 'coffee', name: 'Καφέ', price: 5, stressReduction: 10, emoji: '☕', desc: 'Να πάει για Καφέ που θα έχει κόστος 5 ευρώ.' },
-    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 15, emoji: '🏖️', desc: 'Να πάει στην παραλία για χαλάρωση.' },
-    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹', desc: 'Να πάει για ποτό με κόστος 15 ευρώ.' },
-    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺', desc: 'Να πάρει αναρρωτική από τον Γιατρό Σωτήρη 30 ευρώ.' },
-    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩', desc: 'Να πάει να φάει στον Λάμπρο Steakhouse 100 ευρώ.' },
-    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Να αγοράσει αυτοκίνητο 15.000 ευρώ.' }
+    { id: 'coffee', name: 'Καφές στο Roi Mat', price: 5, stressReduction: 5, emoji: '☕' },
+    { id: 'beach', name: 'Παραλία', price: 10, stressReduction: 10, emoji: '🏖️' },
+    { id: 'drink', name: 'Ποτό στο Σκάλα', price: 15, stressReduction: 15, emoji: '🍹' },
+    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 20, emoji: '🩺' },
+    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 30, emoji: '🥩' },
+    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗' }
   ];
 
   const buyStoreItem = (item) => {
@@ -1334,20 +1334,20 @@ function App() {
 
       {showStore && (
         <div className="modal-overlay" onClick={() => setShowStore(false)}>
-          <div className="store-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="settings-header">
-              <h2>🛍️ Κατάστημα Faplantica</h2>
-              <button className="modal-close-btn" onClick={() => setShowStore(false)}>×</button>
+          <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: '2rem', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ margin: 0, color: '#66fcf1' }}>🛍️ Κατάστημα Faplantica</h2>
+              <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowStore(false)}>×</button>
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem', marginBottom: '1rem', flexShrink: 0 }}>
-              <div style={{ color: hasPurchasedThisTurn ? '#ff4b4b' : '#a8b2d8', fontSize: '0.9rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal', flex: '1 1 100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ color: hasPurchasedThisTurn ? '#ff4b4b' : '#a8b2d8', fontSize: '0.95rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal' }}>
                 {hasPurchasedThisTurn 
                   ? "⚠️ Έχετε ήδη πραγματοποιήσει 1 αγορά σε αυτή τη βάρδια." 
                   : "Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν."
                 }
               </div>
-              <div className="store-balance-badge" style={{ width: '100%', justifyContent: 'center' }}>
+              <div className="store-balance-badge">
                 <span>💵 Υπόλοιπο:</span>
                 <span>{gameState.cash.toLocaleString('el-GR')}€</span>
               </div>
@@ -1358,27 +1358,55 @@ function App() {
                 const canAfford = gameState.cash >= item.price;
                 const isDisabled = hasPurchasedThisTurn || !canAfford;
                 return (
-                  <div className="store-card" key={item.id}>
-                    <div>
-                      <div className="store-item-emoji">{item.emoji}</div>
-                      <div className="store-item-title">{item.name}</div>
-                      <div className="store-item-desc">{item.desc}</div>
-                      <div className="store-item-stat-badge stress-reduction">
-                        Stress: -{item.stressReduction}%
-                      </div>
+                  <div
+                    key={item.id}
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(102,252,241,0.2)',
+                      borderRadius: '12px',
+                      padding: '1.25rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem',
+                    }}
+                  >
+                    <div style={{ fontSize: '2.2rem', lineHeight: 1 }}>{item.emoji}</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>{item.name}</div>
+                    <div style={{
+                      display: 'inline-block',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      color: '#4bff4b',
+                      background: 'rgba(75,255,75,0.1)',
+                      border: '1px solid rgba(75,255,75,0.3)',
+                      borderRadius: '4px',
+                      padding: '0.2rem 0.5rem',
+                      alignSelf: 'flex-start',
+                    }}>
+                      Stress: -{item.stressReduction}%
                     </div>
-                    
-                    <div className="store-card-footer">
-                      <div className="store-price-tag">{item.price.toLocaleString('el-GR')}€</div>
-                      <button 
-                        className="store-buy-btn" 
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '0.75rem' }}>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#66fcf1' }}>
+                        {item.price.toLocaleString('el-GR')}€
+                      </div>
+                      <button
                         disabled={isDisabled}
                         onClick={() => buyStoreItem(item)}
+                        style={{
+                          background: isDisabled ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #66fcf1, #45a29e)',
+                          border: isDisabled ? '1px solid rgba(255,255,255,0.2)' : 'none',
+                          borderRadius: '6px',
+                          padding: '0.5rem 1rem',
+                          color: isDisabled ? '#ffffff' : '#0b0c10',
+                          fontWeight: 700,
+                          fontSize: '0.9rem',
+                          cursor: isDisabled ? 'not-allowed' : 'pointer',
+                          transition: 'all 0.2s',
+                          whiteSpace: 'nowrap',
+                        }}
                       >
-                        {hasPurchasedThisTurn 
-                          ? 'Όριο αγοράς' 
-                          : canAfford ? 'Αγορά' : 'Λείπουν χρήματα'
-                        }
+                        {hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : (canAfford ? 'Αγορά' : 'Λείπουν χρήματα')}
                       </button>
                     </div>
                   </div>
