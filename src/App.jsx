@@ -45,6 +45,9 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [hasCloudSave, setHasCloudSave] = useState(false);
   const [cloudSaveData, setCloudSaveData] = useState(null);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [isSendingFeedback, setIsSendingFeedback] = useState(false);
 
   // Auto-play music on first click if intro is already seen
   useEffect(() => {
@@ -708,7 +711,58 @@ function App() {
           <div>Final Rep: <span className="text-warning">{gameState.reputation}%</span></div>
           <div>Cash: <span className="text-success">€{gameState.cash}</span></div>
         </div>
-        <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); }}>
+
+        {isSeasonEnd && (
+          <div style={{ marginTop: '2rem', backgroundColor: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', maxWidth: '600px', margin: '2rem auto' }}>
+            <h3 style={{ marginTop: 0, color: 'var(--accent-color)' }}>Πώς θα περιέγραφες τη φετινή εμπειρία σου;</h3>
+            {!feedbackSent ? (
+              <>
+                <textarea 
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  placeholder="Γράψε εδώ τα παράπονά σου (δεν θα τα διαβάσει κανείς στο HR)..."
+                  style={{ width: '100%', height: '100px', padding: '1rem', borderRadius: '8px', border: '1px solid var(--panel-border)', backgroundColor: 'rgba(0,0,0,0.3)', color: 'var(--text-primary)', marginTop: '1rem', resize: 'vertical' }}
+                />
+                <button 
+                  className="btn-primary" 
+                  style={{ marginTop: '1rem', width: '100%' }}
+                  onClick={async () => {
+                    if (!feedbackText.trim()) return;
+                    setIsSendingFeedback(true);
+                    try {
+                      await fetch('https://formspree.io/f/meedqrjg', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          nickname: nickname,
+                          role: gameState.role,
+                          stress: gameState.stress,
+                          reputation: gameState.reputation,
+                          cash: gameState.cash,
+                          feedback: feedbackText
+                        })
+                      });
+                      setFeedbackSent(true);
+                    } catch (err) {
+                      console.error("Failed to send feedback:", err);
+                    }
+                    setIsSendingFeedback(false);
+                  }}
+                  disabled={isSendingFeedback || !feedbackText.trim()}
+                >
+                  {isSendingFeedback ? 'Αποστολή...' : 'Αποστολή Αναφοράς'}
+                </button>
+              </>
+            ) : (
+              <p style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>Η αναφορά σας εστάλη επιτυχώς. Καλό χειμώνα!</p>
+            )}
+          </div>
+        )}
+
+        <button className="btn-restart" onClick={() => { setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); setFeedbackSent(false); setFeedbackText(''); }}>
           {isSeasonEnd ? "Αίτηση για την Επόμενη Σεζόν" : "Apply for a new Job"}
         </button>
       </div>
