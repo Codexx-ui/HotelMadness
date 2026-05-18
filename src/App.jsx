@@ -1333,16 +1333,16 @@ function App() {
 
       {showStore && (
         <div className="modal-overlay" onClick={() => setShowStore(false)}>
-          <div className="store-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="settings-header">
-              <h2>🛍️ Κατάστημα Faplatinca</h2>
-              <button className="modal-close-btn" onClick={() => setShowStore(false)}>×</button>
+          <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: '2rem', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ margin: 0, color: '#66fcf1' }}>🛍️ Κατάστημα Faplatinca</h2>
+              <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowStore(false)}>×</button>
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem' }}>
-              <div style={{ color: hasPurchasedThisTurn ? 'var(--danger-color)' : 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal', transition: 'color 0.3s' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ color: hasPurchasedThisTurn ? '#ff4b4b' : '#a8b2d8', fontSize: '0.95rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal' }}>
                 {hasPurchasedThisTurn 
-                  ? "⚠️ Έχετε ήδη πραγματοποιήσει 1 αγορά σε αυτή τη βάρδια. Περιμένετε το επόμενο act/απόφαση για να ξαναψωνίσετε!" 
+                  ? "⚠️ Έχετε ήδη πραγματοποιήσει 1 αγορά σε αυτή τη βάρδια." 
                   : "Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν."
                 }
               </div>
