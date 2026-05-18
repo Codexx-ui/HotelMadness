@@ -154,54 +154,6 @@ function App() {
       difficulty: 'Mustakas Mood 💀',
       status: 'Σεζόν End 🏆',
       date: '18/05/2026'
-    },
-    {
-      id: 'mock-2',
-      nickname: 'Μαρία Reception',
-      role: 'Υποδοχή 🛎️',
-      turns: 28,
-      season: 2,
-      cash: 3400,
-      tips: 850,
-      difficulty: 'August Peak 🏖️',
-      status: 'Επιβίωσε 🎉',
-      date: '17/05/2026'
-    },
-    {
-      id: 'mock-3',
-      nickname: 'Chef Μπάμπης',
-      role: 'Chef 🍳',
-      turns: 24,
-      season: 1,
-      cash: 2500,
-      tips: 120,
-      difficulty: 'Normal Shift ⚙️',
-      status: 'Έπαθε Burnout 🤯',
-      date: '16/05/2026'
-    },
-    {
-      id: 'mock-4',
-      nickname: 'Αλέκος Air-Condition',
-      role: 'Συντήρηση 🔧',
-      turns: 18,
-      season: 1,
-      cash: 1800,
-      tips: 450,
-      difficulty: 'HR Lover 💖',
-      status: 'Παραιτήθηκε 🏃',
-      date: '15/05/2026'
-    },
-    {
-      id: 'mock-5',
-      nickname: 'Μπάρμαν Στέλιος',
-      role: 'Σέρβις 🍽️',
-      turns: 12,
-      season: 1,
-      cash: 1200,
-      tips: 600,
-      difficulty: 'Normal Shift ⚙️',
-      status: 'Απολύθηκε (Warning) ⚠️',
-      date: '14/05/2026'
     }
   ];
 
