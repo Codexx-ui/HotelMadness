@@ -1966,94 +1966,166 @@ function App() {
           <div className="settings-modal" style={{ background: '#0b0c10', border: '2px solid #ff4b4b', boxShadow: '0 0 25px rgba(255, 75, 75, 0.4)' }} onClick={(e) => e.stopPropagation()}>
             <div className="settings-header" style={{ borderBottom: '1px solid rgba(255, 75, 75, 0.3)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <h2 style={{ margin: 0, color: '#ff4b4b', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                🛠️ Πάνελ Διαχειριστή (Admin Panel)
+                🛠️ Πάνελ Διαχειριστή (God Mode)
               </h2>
               <button className="modal-close-btn" style={{ color: '#ff4b4b' }} onClick={() => setShowAdminPanel(false)}>x</button>
             </div>
             
-            <div className="settings-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '70vh', overflowY: 'auto' }}>
+            <div className="settings-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '75vh', overflowY: 'auto' }}>
               
               {/* God Mode Stats */}
               <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
                 <div className="settings-section-title" style={{ color: '#ffdd67', borderBottom: '1px solid rgba(255, 221, 103, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
-                  👼 God Mode Stats
+                  👼 Βασικά Stats
                 </div>
                 
-                {/* Stress Cheat */}
                 <div className="settings-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <span className="settings-label">🤯 Άγχος (Stress): <strong>{gameState.stress}%</strong></span>
-                  <button 
-                    onClick={() => {
-                      setGameState(prev => ({ ...prev, stress: 0 }));
-                      showToast("🧘 Το Stress μηδενίστηκε!", "😇");
-                    }}
-                    style={{ background: 'rgba(75, 255, 75, 0.1)', border: '1px solid #4bff4b', color: '#4bff4b', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
-                  >
+                  <button onClick={() => { setGameState(prev => ({ ...prev, stress: 0 })); showToast("🧘 Το Stress μηδενίστηκε!", "😇"); }} style={{ background: 'rgba(75, 255, 75, 0.1)', border: '1px solid #4bff4b', color: '#4bff4b', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>
                     🧘 Μηδενισμός
                   </button>
                 </div>
 
-                {/* Reputation Cheat */}
                 <div className="settings-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <span className="settings-label">🌟 Φήμη (Reputation): <strong>{gameState.reputation}%</strong></span>
-                  <button 
-                    onClick={() => {
-                      setGameState(prev => ({ ...prev, reputation: 100 }));
-                      showToast("🌟 Η Φήμη εκτοξεύτηκε στο 100%!", "👑");
-                    }}
-                    style={{ background: 'rgba(102, 252, 241, 0.1)', border: '1px solid #66fcf1', color: '#66fcf1', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
-                  >
+                  <button onClick={() => { setGameState(prev => ({ ...prev, reputation: 100 })); showToast("🌟 Η Φήμη εκτοξεύτηκε στο 100%!", "👑"); }} style={{ background: 'rgba(102, 252, 241, 0.1)', border: '1px solid #66fcf1', color: '#66fcf1', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>
                     👑 Μέγιστο
                   </button>
                 </div>
 
-                {/* Cash Cheat */}
                 <div className="settings-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span className="settings-label">💵 Μετρητά (Cash): <strong>{gameState.cash.toLocaleString('el-GR')}€</strong></span>
-                  <button 
-                    onClick={() => {
-                      setGameState(prev => ({ ...prev, cash: prev.cash + 5000 }));
-                      showToast("💵 Προστέθηκαν +5.000€!", "💰");
-                      audioService.playCashSound();
-                    }}
-                    style={{ background: 'rgba(255, 221, 103, 0.1)', border: '1px solid #ffdd67', color: '#ffdd67', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
-                  >
+                  <button onClick={() => { setGameState(prev => ({ ...prev, cash: prev.cash + 5000 })); showToast("💵 Προστέθηκαν +5.000€!", "💰"); audioService.playCashSound(); }} style={{ background: 'rgba(255, 221, 103, 0.1)', border: '1px solid #ffdd67', color: '#ffdd67', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>
                     💰 +5.000€
                   </button>
                 </div>
               </div>
 
-              {/* Slap Playground in Admin */}
+              {/* Time Travel */}
               <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
-                <div className="settings-section-title" style={{ color: '#b388ff', borderBottom: '1px solid rgba(179, 136, 255, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
-                  🤚 ΦαΠ-Ο-Μέτρο Playground
+                <div className="settings-section-title" style={{ color: '#45a29e', borderBottom: '1px solid rgba(69, 162, 158, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
+                  ⏱️ Έλεγχος Χρόνου & Σεζόν
                 </div>
-                <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
-                  <span className="settings-label" style={{ textAlign: 'center', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#a8b2d8' }}>
-                    Δοκίμασε τα αντανακλαστικά σου στο ΦαΠ-Ο-Μέτρο οποιαδήποτε στιγμή!
-                  </span>
-                  <button
-                    style={{
-                      background: 'linear-gradient(135deg, #b388ff, #ff4b4b)',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '0.6rem 1.5rem',
-                      color: '#ffffff',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      boxShadow: '0 0 10px rgba(179, 136, 255, 0.3)',
-                      transition: 'all 0.2s',
-                      width: '100%',
-                      textTransform: 'uppercase'
-                    }}
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button 
                     onClick={() => {
-                      setShowAdminPanel(false);
-                      setShowSlapOMeter(true);
+                      setGameState(prev => ({ ...prev, currentDate: '2026-08-01', turnCount: prev.turnCount + 24, occupancy: 100 }));
+                      showToast("☀️ Καλωσήρθες στον Δεκαπενταύγουστο!", "🔥");
                     }}
+                    style={{ flex: 1, background: 'rgba(69, 162, 158, 0.1)', border: '1px solid #45a29e', color: '#45a29e', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
                   >
-                    ⚡ ΠΑΙΞΕ ΦαΠ-Ο-Μέτρο
+                    🔥 Μετάβαση στον Αύγουστο (Peak)
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setGameState(prev => ({ ...prev, currentDate: '2026-11-01' }));
+                      showToast("❄️ Ο χειμώνας έφτασε! Κάνε μια ενέργεια για να τερματίσεις.", "⛄");
+                    }}
+                    style={{ flex: 1, background: 'rgba(255, 255, 255, 0.1)', border: '1px solid #ccc', color: '#ccc', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                  >
+                    ⏩ Skip στο Τέλος (Νοέμβριος)
                   </button>
                 </div>
+              </div>
+
+              {/* Inventory Spawner */}
+              <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
+                <div className="settings-section-title" style={{ color: '#ff77ff', borderBottom: '1px solid rgba(255, 119, 255, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
+                  🎒 Γεννήτρια Αντικειμένων (Store)
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button onClick={() => { setGameState(prev => ({ ...prev, inventory: [...prev.inventory, 'Μαγικό Μάτι 🧿'] })); showToast("🧿 Προστέθηκε Μαγικό Μάτι!"); }} style={{ flex: 1, background: 'rgba(255, 119, 255, 0.1)', border: '1px solid #ff77ff', color: '#ff77ff', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>+1 Μαγικό Μάτι 🧿</button>
+                  <button onClick={() => { setGameState(prev => ({ ...prev, inventory: [...prev.inventory, 'Lexotanil 💊'] })); showToast("💊 Προστέθηκε Lexotanil!"); }} style={{ flex: 1, background: 'rgba(255, 119, 255, 0.1)', border: '1px solid #ff77ff', color: '#ff77ff', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>+1 Lexotanil 💊</button>
+                  <button onClick={() => { setGameState(prev => ({ ...prev, inventory: [...prev.inventory, 'Καφές Φραπέ ☕'] })); showToast("☕ Προστέθηκε Φραπές!"); }} style={{ flex: 1, background: 'rgba(255, 119, 255, 0.1)', border: '1px solid #ff77ff', color: '#ff77ff', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>+1 Φραπές ☕</button>
+                </div>
+              </div>
+
+              {/* Disaster Triggers */}
+              <div className="settings-section" style={{ border: '1px solid rgba(255, 75, 75, 0.1)', background: 'rgba(255, 75, 75, 0.05)', padding: '1rem', borderRadius: '8px' }}>
+                <div className="settings-section-title" style={{ color: '#ff4b4b', borderBottom: '1px solid rgba(255, 75, 75, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
+                  🌪️ Απόλυτο Χάος (Disaster Triggers)
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <button 
+                    onClick={() => {
+                      setGameState(prev => ({ ...prev, occupancy: 120, reputation: Math.max(0, prev.reputation - 20) }));
+                      showToast("🚨 Overbooking! Η πληρότητα πήγε στο 120% και η φήμη έπεσε!", "🔥");
+                    }}
+                    style={{ background: 'rgba(255, 75, 75, 0.1)', border: '1px solid #ff4b4b', color: '#ff4b4b', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}
+                  >
+                    🔥 Πρόβλημα Overbooking (120%)
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setGameState(prev => ({ ...prev, reputation: Math.max(0, prev.reputation - 35), stress: Math.min(100, prev.stress + 40) }));
+                      showToast("🤢 Μαζική Τροφική Δηλητηρίαση! Τεράστιο πλήγμα στη φήμη!", "🤮");
+                    }}
+                    style={{ background: 'rgba(255, 75, 75, 0.1)', border: '1px solid #ff4b4b', color: '#ff4b4b', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}
+                  >
+                    🤮 Μαζική Τροφική Δηλητηρίαση
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setGameState(prev => ({ ...prev, staffTurnover: 100, staffRelations: -50 }));
+                      showToast("😡 Το προσωπικό παραιτείται μαζικά!", "📉");
+                    }}
+                    style={{ background: 'rgba(255, 75, 75, 0.1)', border: '1px solid #ff4b4b', color: '#ff4b4b', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}
+                  >
+                    📉 Μαζική Παραίτηση Προσωπικού
+                  </button>
+                </div>
+              </div>
+
+              {/* Force Events */}
+              <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
+                <div className="settings-section-title" style={{ color: '#b388ff', borderBottom: '1px solid rgba(179, 136, 255, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
+                  🎯 Εξαναγκασμός Συμβάντων (Force Events)
+                </div>
+                <button
+                  style={{
+                    background: 'linear-gradient(135deg, #b388ff, #ff4b4b)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.5rem',
+                    color: '#ffffff',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 10px rgba(179, 136, 255, 0.3)',
+                    transition: 'all 0.2s',
+                    width: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                  onClick={() => {
+                    setGameState(prev => ({ ...prev, thesfapaTargetTurn: prev.turnCount + 1, thesfapaSpawnedThisSeason: false }));
+                    showToast("🎯 Το ΦαΠ-Ο-Μέτρο θα εμφανιστεί στο ΑΜΕΣΩΣ επόμενο Arc!", "✨");
+                    setShowAdminPanel(false);
+                  }}
+                >
+                  ⚡ Force "ΦαΠ-Ο-Μέτρο" Link (Next Arc)
+                </button>
+                
+                <button
+                  style={{
+                    marginTop: '0.5rem',
+                    background: 'linear-gradient(135deg, #66fcf1, #45a29e)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.5rem',
+                    color: '#0b0c10',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 10px rgba(102, 252, 241, 0.3)',
+                    transition: 'all 0.2s',
+                    width: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                  onClick={() => {
+                    setShowAdminPanel(false);
+                    setShowSlapOMeter(true);
+                  }}
+                >
+                  🤚 ΠΑΙΞΕ ΤΩΡΑ ΤΟ ΦαΠ-Ο-Μέτρο
+                </button>
               </div>
 
             </div>
