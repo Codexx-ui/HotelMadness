@@ -828,3 +828,10 @@ input:checked + .slider:before {
   width: 100%;
   text-align: center;
 }
+
+.header-title-link {
+  transition: opacity var(--transition-speed);
+}
+.header-title-link:hover {
+  opacity: 0.85;
+}

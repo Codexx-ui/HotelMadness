@@ -877,6 +877,14 @@ function App() {
     return currentRole;
   };
 
+  const resetToHome = () => {
+    setGameStarted(false);
+    setNicknameConfirmed(false);
+    setIsGuest(false);
+    setShowDisclaimer(false);
+    setErrorMsg('');
+  };
+
   const startNextSeason = () => {
     const nextSeason = (gameState.season || 1) + 1;
     const nextYear = 2025 + nextSeason;
@@ -944,8 +952,21 @@ function App() {
       )}
       <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '2rem' }}>
         <div>
-          <h1 style={{ margin: 0 }}>Hotel Madness</h1>
-          <p style={{ margin: '0.25rem 0 0 0' }}>Προηγμένος Εξομοιωτής Εταιρικής Διοίκησης Ξενοδοχείων</p>
+          <h1 
+            style={{ 
+              margin: 0, 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.6rem', 
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}
+            className="header-title-link"
+            onClick={resetToHome}
+          >
+            <Hotel size={28} color="var(--accent-color)" style={{ filter: 'drop-shadow(0 0 8px rgba(102, 252, 241, 0.4))' }} />
+            <span>Hotel Madness</span>
+          </h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button
