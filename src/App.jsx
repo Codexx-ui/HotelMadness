@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './components/Dashboard';
 import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
+import SlapOMeter from './components/SlapOMeter';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
 import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut, Trophy } from 'lucide-react';
@@ -84,6 +85,7 @@ function App() {
   const [musicVolume, setMusicVolume] = useState(parseFloat(localStorage.getItem('game_music_volume') || '0.5'));
   const [useSFX, setUseSFX] = useState(localStorage.getItem('game_use_sfx') !== 'false');
   const [musicPlaylist, setMusicPlaylist] = useState(audioService.getPlaylist());
+  const [showSlapOMeter, setShowSlapOMeter] = useState(false);
 
   const showToast = (text, icon = '💵') => {
     setToastMessage({ text, icon });
@@ -534,11 +536,49 @@ function App() {
   };
 
   const handleThesfapaClick = () => {
-    setGameState(prev => ({
-      ...prev,
-      thesfapaClicked: true,
-      turnsSinceThesfapa: 0
-    }));
+    setShowSlapOMeter(true);
+  };
+
+  const handleSlapResult = (score) => {
+    setGameState(prev => {
+      const newState = { ...prev };
+      if (score === 'perfect') {
+        newState.stress = Math.max(0, newState.stress - 40);
+        newState.reputation = Math.min(100, newState.reputation + 10);
+        newState.cash += 50;
+        
+        try {
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#66fcf1', '#45a29e', '#4bff4b', '#ffdd67']
+          });
+        } catch (e) {}
+
+        setTimeout(() => {
+          showToast("💥 FLAWLESS MEGASLAP! Το stress μειώθηκε κατά 40%, κέρδισες +10% Φήμη και +50€ tips!", "⚡");
+          audioService.playCashSound();
+        }, 100);
+      } else if (score === 'good') {
+        newState.stress = Math.max(0, newState.stress - 15);
+        setTimeout(() => {
+          showToast("👋 Έριξες μια κλασική, τίμια σφαλιάρα! Το stress μειώθηκε κατά 15%.", "❤️");
+        }, 100);
+      } else {
+        newState.stress = Math.min(100, newState.stress + 15);
+        newState.reputation = Math.max(0, newState.reputation - 15);
+        
+        // Ensure warnings exists
+        const currentWarnings = newState.warnings || 0;
+        newState.warnings = Math.min(3, currentWarnings + 1);
+
+        setTimeout(() => {
+          showToast("💀 ΑΣΤΟΧΗΣΕΣ! Ο πελάτης απέφυγε τη φάπα, σε κατήγγειλε στον Μουστάκα και έφαγες +1 Warning, +15% Stress & -15% Φήμη!", "⚠️");
+        }, 100);
+      }
+      return newState;
+    });
   };
 
   const handleChoice = async (choice) => {
@@ -2000,6 +2040,12 @@ function App() {
             </button>
           </div>
         </div>
+      )}
+      {showSlapOMeter && (
+        <SlapOMeter
+          onClose={() => setShowSlapOMeter(false)}
+          onResult={handleSlapResult}
+        />
       )}
       {renderLeaderboardModal()}
     </div>
