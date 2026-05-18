@@ -74,11 +74,11 @@ function App() {
   };
 
   const STORE_ITEMS = [
-    { id: 'coffee', name: 'Καφέ', price: 5, stressReduction: 10, emoji: '☕', desc: 'Να πάει για Καφέ που θα έχει κόστος 5 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
-    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹', desc: 'Να πάει για ποτό με κόστος 15 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
-    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺', desc: 'Να πάρει αναρρωτική από τον Γιατρό Σωτήρη 30 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
-    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩', desc: 'Να πάει να φάει στον Λάμπρο Steakhouse 100 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' },
-    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Να αγοράσει αυτοκίνητο 15.000 ευρώ. Του ρίχνει το stress αλλά μειώνει τα λεφτά από τον τραπεζικό του λογαριασμό.' }
+    { id: 'coffee', name: 'Καφέ', price: 5, stressReduction: 10, emoji: '☕', desc: 'Να πάει για Καφέ που θα έχει κόστος 5 ευρώ.' },
+    { id: 'drink', name: 'Ποτό', price: 15, stressReduction: 25, emoji: '🍹', desc: 'Να πάει για ποτό με κόστος 15 ευρώ.' },
+    { id: 'doctor', name: 'Αναρρωτική από τον Γιατρό Σωτήρη', price: 30, stressReduction: 40, emoji: '🩺', desc: 'Να πάρει αναρρωτική από τον Γιατρό Σωτήρη 30 ευρώ.' },
+    { id: 'steakhouse', name: 'Λάμπρος Steakhouse', price: 100, stressReduction: 60, emoji: '🥩', desc: 'Να πάει να φάει στον Λάμπρο Steakhouse 100 ευρώ.' },
+    { id: 'car', name: 'Αγορά Αυτοκινήτου', price: 15000, stressReduction: 99, emoji: '🚗', desc: 'Να αγοράσει αυτοκίνητο 15.000 ευρώ.' }
   ];
 
   const buyStoreItem = (item) => {
@@ -1346,11 +1346,13 @@ function App() {
                         className="store-buy-btn" 
                         disabled={hasPurchasedThisTurn || !canAfford}
                         onClick={() => buyStoreItem(item)}
+                        style={{
+                          opacity: (hasPurchasedThisTurn || !canAfford) ? 0.5 : 1,
+                          color: '#000000',
+                          fontWeight: 'bold'
+                        }}
                       >
-                        {hasPurchasedThisTurn 
-                          ? 'Όριο αγοράς' 
-                          : canAfford ? 'Αγορά' : 'Μη επαρκές ποσό'
-                        }
+                        {hasPurchasedThisTurn ? "Όριο Αγοράς" : (canAfford ? "Αγορά" : "Λείπουν χρήματα")}
                       </button>
                     </div>
                   </div>
