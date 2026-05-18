@@ -1065,31 +1065,29 @@ function App() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           {gameStarted && !gameOver && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textTransform: 'uppercase', marginBottom: '0.2rem', letterSpacing: '0.05em', fontWeight: 600 }}>
-                Μίνι Μάρκετ
-              </span>
-              <button
-                onClick={() => setShowStore(true)}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--panel-border)',
-                  borderRadius: '50%',
-                  width: '40px',
-                  height: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: 'var(--accent-color)',
-                  boxShadow: '0 0 10px rgba(102, 252, 241, 0.2)',
-                  transition: 'all 0.2s'
-                }}
-                title="Κατάστημα / Αγορά"
-              >
-                <ShoppingBag size={18} />
-              </button>
-            </div>
+            <button
+              onClick={() => setShowStore(true)}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--panel-border)',
+                borderRadius: '20px',
+                padding: '0.5rem 1rem',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'var(--accent-color)',
+                boxShadow: '0 0 10px rgba(102, 252, 241, 0.15)',
+                transition: 'all 0.2s',
+                gap: '0.4rem',
+                fontWeight: 600
+              }}
+              title="Μίνι Μάρκετ"
+            >
+              <ShoppingBag size={16} />
+              <span>Μίνι Μάρκετ</span>
+            </button>
           )}
           <button
             onClick={() => setShowSettings(true)}
