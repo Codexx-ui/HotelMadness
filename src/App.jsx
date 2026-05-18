@@ -389,6 +389,21 @@ function App() {
       }
     }
 
+    if (updatedState.turnCount === 1) {
+      const isRejected = Math.random() < (1 / 15);
+      if (isRejected) {
+        setSceneData({
+          scene_title: "Απόρριψη στη Συνέντευξη",
+          story_text: "Ο GM Γεώργιος Μουστάκας σε κοίταξε υποτιμητικά από πάνω μέχρι κάτω. «Δεν μου αρέσει η φάτσα σου. Δεν ταιριάζεις στο corporate alignment της Faplatinca. Έξω!» Η καριέρα σου έληξε πριν καν αρχίσει.",
+          choices: [],
+          game_over: true
+        });
+        setGameOver(true);
+        setGameState(updatedState);
+        return;
+      }
+    }
+
     setGameState(updatedState);
     await processTurn(`I choose option ${choice.id}: ${choice.text}`, updatedState);
   };
