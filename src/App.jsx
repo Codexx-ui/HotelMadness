@@ -4,7 +4,7 @@ import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
-import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut } from 'lucide-react';
+import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut, Trophy } from 'lucide-react';
 import { audioService } from './services/audioService';
 import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
 import confetti from 'canvas-confetti';
@@ -58,6 +58,7 @@ function App() {
 
   // Settings and Difficulty States
   const [showSettings, setShowSettings] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [difficulty, setDifficulty] = useState(localStorage.getItem('game_difficulty') || 'medium');
   const [useAI, setUseAI] = useState(localStorage.getItem('game_use_ai') !== 'false');
   const [musicVolume, setMusicVolume] = useState(parseFloat(localStorage.getItem('game_music_volume') || '0.5'));
@@ -137,6 +138,127 @@ function App() {
       return () => document.removeEventListener('click', handleFirstInteraction);
     }
   }, [showIntro]);
+
+  const getMockLeaderboard = () => [
+    {
+      id: 'mock-1',
+      nickname: 'GM Μουστάκας',
+      role: 'Γενικός Διευθυντής 👑',
+      turns: 99,
+      season: 5,
+      cash: 15000,
+      tips: 0,
+      difficulty: 'Mustakas Mood 💀',
+      status: 'Σεζόν End 🏆',
+      date: '18/05/2026'
+    },
+    {
+      id: 'mock-2',
+      nickname: 'Μαρία Reception',
+      role: 'Υποδοχή 🛎️',
+      turns: 28,
+      season: 2,
+      cash: 3400,
+      tips: 850,
+      difficulty: 'August Peak 🏖️',
+      status: 'Επιβίωσε 🎉',
+      date: '17/05/2026'
+    },
+    {
+      id: 'mock-3',
+      nickname: 'Chef Μπάμπης',
+      role: 'Chef 🍳',
+      turns: 24,
+      season: 1,
+      cash: 2500,
+      tips: 120,
+      difficulty: 'Normal Shift ⚙️',
+      status: 'Έπαθε Burnout 🤯',
+      date: '16/05/2026'
+    },
+    {
+      id: 'mock-4',
+      nickname: 'Αλέκος Air-Condition',
+      role: 'Συντήρηση 🔧',
+      turns: 18,
+      season: 1,
+      cash: 1800,
+      tips: 450,
+      difficulty: 'HR Lover 💖',
+      status: 'Παραιτήθηκε 🏃',
+      date: '15/05/2026'
+    },
+    {
+      id: 'mock-5',
+      nickname: 'Μπάρμαν Στέλιος',
+      role: 'Σέρβις 🍽️',
+      turns: 12,
+      season: 1,
+      cash: 1200,
+      tips: 600,
+      difficulty: 'Normal Shift ⚙️',
+      status: 'Απολύθηκε (Warning) ⚠️',
+      date: '14/05/2026'
+    }
+  ];
+
+  const saveScoreToLeaderboard = (state) => {
+    try {
+      const difficultyMap = {
+        easy: 'HR Lover 💖',
+        normal: 'Normal Shift ⚙️',
+        hard: 'August Peak 🏖️',
+        nightmare: 'Mustakas Mood 💀'
+      };
+
+      const diff = localStorage.getItem('game_difficulty') || 'normal';
+      const roleMap = {
+        reception: 'Υποδοχή 🛎️',
+        waiter: 'Σέρβις 🍽️',
+        chef: 'Chef 🍳',
+        maintenance: 'Συντήρηση 🔧'
+      };
+
+      let status = 'Επιβίωσε 🎉';
+      if (state.resigned) {
+        status = 'Παραιτήθηκε 🏃';
+      } else if (state.stress >= 100) {
+        status = 'Έπαθε Burnout 🤯';
+      } else if (state.reputation <= 0) {
+        status = 'Απολύθηκε (Κακή Φήμη) 📉';
+      } else if (state.alcoholWarnings >= 3) {
+        status = 'Απολύθηκε (GM Warning) ⚠️';
+      }
+
+      const newEntry = {
+        id: Date.now().toString(),
+        nickname: nickname || 'Guest',
+        role: roleMap[state.role] || state.role || '—',
+        turns: state.turnCount || 0,
+        season: state.season || 1,
+        cash: state.cash || 0,
+        tips: state.tips || 0,
+        difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
+        status: status,
+        date: new Date().toLocaleDateString('el-GR')
+      };
+
+      const currentLeaderboard = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
+      const updatedLeaderboard = [...currentLeaderboard, newEntry];
+      
+      // Sort by season (descending), then turns (descending), then cash (descending)
+      updatedLeaderboard.sort((a, b) => {
+        if (b.season !== a.season) return b.season - a.season;
+        if (b.turns !== a.turns) return b.turns - a.turns;
+        return b.cash - a.cash;
+      });
+
+      // Keep top 100 entries
+      localStorage.setItem('hotel_madness_leaderboard', JSON.stringify(updatedLeaderboard.slice(0, 100)));
+    } catch (e) {
+      console.error('Failed to save to leaderboard:', e);
+    }
+  };
 
   // Fireworks effect for Disclaimer Screen
   useEffect(() => {
@@ -1034,6 +1156,115 @@ function App() {
     </div>
   );
 
+  const renderLeaderboardModal = () => {
+    if (!showLeaderboard) return null;
+    const list = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
+
+    return (
+      <div className="store-modal-overlay" style={{ zIndex: 1100 }}>
+        <div className="store-modal" style={{ maxWidth: '800px', width: '90%' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
+            <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Trophy color="var(--warning-color)" /> Hall of Fame - Κατάταξη
+            </h3>
+            <button 
+              onClick={() => setShowLeaderboard(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-secondary)',
+                fontSize: '1.5rem',
+                cursor: 'pointer'
+              }}
+            >
+              ✕
+            </button>
+          </div>
+
+          <div style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid rgba(102, 252, 241, 0.3)', color: 'var(--accent-color)' }}>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>#</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Όνομα</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Ρόλος</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Σεζόν</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Βάρδιες</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Eurobank</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Tips</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Δυσκολία</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Κατάσταση</th>
+                </tr>
+              </thead>
+              <tbody>
+                {list.map((entry, index) => {
+                  const isTop3 = index < 3;
+                  const medalEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                  return (
+                    <tr 
+                      key={entry.id || index} 
+                      style={{ 
+                        borderBottom: '1px solid rgba(255,255,255,0.05)',
+                        backgroundColor: index % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent',
+                        fontWeight: isTop3 ? '600' : '400',
+                        color: isTop3 ? '#ffffff' : 'var(--text-secondary)'
+                      }}
+                    >
+                      <td style={{ padding: '0.75rem 0.5rem' }}>
+                        {isTop3 ? medalEmoji : index + 1}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.5rem', color: isTop3 ? 'var(--accent-color)' : '#fff' }}>
+                        {entry.nickname}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.5rem' }}>{entry.role}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', textAlign: 'center' }}>{entry.season}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', textAlign: 'center' }}>{entry.turns}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', color: 'var(--success-color)' }}>€{entry.cash.toLocaleString('el-GR')}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', color: '#ffd700' }}>€{entry.tips.toLocaleString('el-GR')}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', fontSize: '0.8rem' }}>{entry.difficulty}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', fontSize: '0.8rem' }}>{entry.status}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <button 
+              className="btn-primary" 
+              onClick={() => {
+                if (window.confirm("Θέλεις σίγουρα να μηδενίσεις την κατάταξη; (Θα επαναφέρει τους προεπιλεγμένους παίκτες)")) {
+                  localStorage.removeItem('hotel_madness_leaderboard');
+                  setShowLeaderboard(false);
+                  setTimeout(() => setShowLeaderboard(true), 50);
+                }
+              }}
+              style={{
+                backgroundColor: 'rgba(255, 75, 75, 0.1)',
+                border: '1px solid rgba(255, 75, 75, 0.3)',
+                color: 'var(--danger-color)',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                cursor: 'pointer'
+              }}
+            >
+              Επαναφορά Κατάταξης
+            </button>
+
+            <button 
+              className="btn-primary" 
+              onClick={() => setShowLeaderboard(false)}
+            >
+              Κλείσιμο
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (showIntro) {
     return renderIntroScreen();
   }
@@ -1090,6 +1321,29 @@ function App() {
               <span>Μίνι Μάρκετ</span>
             </button>
           )}
+          <button
+            onClick={() => setShowLeaderboard(true)}
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--panel-border)',
+              borderRadius: '20px',
+              padding: '0.5rem 1rem',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'var(--accent-color)',
+              boxShadow: '0 0 10px rgba(102, 252, 241, 0.1)',
+              transition: 'all 0.2s',
+              gap: '0.4rem',
+              fontWeight: 500
+            }}
+            title="Κατάταξη"
+          >
+            <Trophy size={16} color="var(--warning-color)" />
+            <span>Κατάταξη</span>
+          </button>
           <button
             onClick={() => setShowSettings(true)}
             style={{
@@ -1424,6 +1678,7 @@ function App() {
           </div>
         </div>
       )}
+      {renderLeaderboardModal()}
     </div>
   );
 }
