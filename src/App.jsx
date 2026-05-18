@@ -459,7 +459,7 @@ function App() {
       const mult = getDifficultyMultipliers();
 
       // Update Game State
-      const newState = { ...gameState };
+      const newState = { ...currentState };
       if (response.stress_change) {
         const stressDelta = response.stress_change > 0 
           ? response.stress_change * mult.stressUp 
