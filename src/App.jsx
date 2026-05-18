@@ -61,6 +61,7 @@ function App() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [onlineScores, setOnlineScores] = useState([]);
   const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
+  const [isOnlineConnected, setIsOnlineConnected] = useState(false);
   const [difficulty, setDifficulty] = useState(localStorage.getItem('game_difficulty') || 'medium');
   const [useAI, setUseAI] = useState(localStorage.getItem('game_use_ai') !== 'false');
   const [musicVolume, setMusicVolume] = useState(parseFloat(localStorage.getItem('game_music_volume') || '0.5'));
@@ -292,14 +293,17 @@ function App() {
     try {
       const res = await fetch('/api/leaderboard');
       const data = await res.json();
-      if (data.success && data.scores && data.scores.length > 0) {
+      if (data.success && data.scores) {
         setOnlineScores(data.scores);
+        setIsOnlineConnected(true);
       } else {
         setOnlineScores([]);
+        setIsOnlineConnected(false);
       }
     } catch (e) {
       console.warn('Failed to fetch online leaderboard, using offline fallback:', e);
       setOnlineScores([]);
+      setIsOnlineConnected(false);
     } finally {
       setIsLeaderboardLoading(false);
     }
@@ -574,7 +578,9 @@ function App() {
           game_over: true
         });
         setGameOver(true);
-        setGameState(updatedState);
+        const rejectedState = { ...updatedState, turnCount: 0, resigned: false };
+        setGameState(rejectedState);
+        saveScoreToLeaderboard(rejectedState);
         return;
       }
     }
@@ -701,6 +707,7 @@ function App() {
 
       if (response.game_over || newState.stress >= 100 || newState.reputation <= 0 || newState.alcoholWarnings >= 3) {
         setGameOver(true);
+        saveScoreToLeaderboard(newState);
       }
     } catch (error) {
       console.warn("AI Generation failed. Falling back to a hardcoded generic event.", error);
@@ -1210,8 +1217,25 @@ function App() {
   const renderLeaderboardModal = () => {
     if (!showLeaderboard) return null;
     const offlineList = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
-    const list = onlineScores.length > 0 ? onlineScores : offlineList;
-    const isOnline = onlineScores.length > 0;
+    
+    // Merge online scores with mock scores for an immediately populated list
+    const uniqueScores = [...onlineScores];
+    const mockList = getMockLeaderboard();
+    mockList.forEach(mockEntry => {
+      if (!uniqueScores.some(e => e.nickname.trim().toLowerCase() === mockEntry.nickname.trim().toLowerCase())) {
+        uniqueScores.push(mockEntry);
+      }
+    });
+    
+    // Sort by season (descending), then turns (descending), then cash (descending)
+    uniqueScores.sort((a, b) => {
+      if (b.season !== a.season) return b.season - a.season;
+      if (b.turns !== a.turns) return b.turns - a.turns;
+      return b.cash - a.cash;
+    });
+
+    const list = isOnlineConnected ? uniqueScores : offlineList;
+    const isOnline = isOnlineConnected;
 
     return (
       <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setShowLeaderboard(false)}>
