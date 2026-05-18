@@ -1334,7 +1334,7 @@ function App() {
 
       {showStore && (
         <div className="modal-overlay" onClick={() => setShowStore(false)}>
-          <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: 'clamp(1rem, 4vw, 2rem)', maxWidth: '700px', width: '95%', maxHeight: '90vh', display: 'flex', flexDirection: 'column', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+          <div className="store-modal" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
               <h2 style={{ margin: 0, color: '#66fcf1', fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>🛍️ Κατάστημα Faplantica</h2>
               <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.5rem' }} onClick={() => setShowStore(false)}>×</button>
@@ -1347,7 +1347,7 @@ function App() {
                   : "Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν."
                 }
               </div>
-              <div style={{ background: 'rgba(102,252,241,0.1)', border: '1px solid #66fcf1', color: '#66fcf1', padding: '0.4rem 1rem', borderRadius: '30px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', width: '100%', justifyContent: 'center' }}>
+              <div className="store-balance-badge" style={{ width: '100%', justifyContent: 'center' }}>
                 <span>💵 Υπόλοιπο:</span>
                 <span>{gameState.cash.toLocaleString('el-GR')}€</span>
               </div>
