@@ -29,7 +29,6 @@ export default function Dashboard({ state, nickname }) {
       <div 
         className="mobile-dashboard-toggle" 
         onClick={() => setIsMobileExpanded(!isMobileExpanded)}
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}
       >
         <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', fontSize: '0.95rem', fontWeight: 700, flexWrap: 'wrap' }}>
           <span style={{ color: '#fff', marginRight: '0.2rem' }}>📊</span>
