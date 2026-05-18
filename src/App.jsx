@@ -25,7 +25,8 @@ const INITIAL_STATE = {
   turnsSinceThesfapa: 0,
   currentDate: '2026-02-01',
   turnCount: 0,
-  season: 1
+  season: 1,
+  tips: 0
 };
 
 function App() {
@@ -49,6 +50,14 @@ function App() {
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [isSendingFeedback, setIsSendingFeedback] = useState(false);
+  const [tipsNotification, setTipsNotification] = useState(null);
+
+  const triggerTipsToast = (amount) => {
+    setTipsNotification({ amount });
+    setTimeout(() => {
+      setTipsNotification(null);
+    }, 3000);
+  };
 
   // Auto-play music on first click if intro is already seen
   useEffect(() => {
@@ -297,6 +306,11 @@ function App() {
       updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + choice.reputation_change));
       updatedState.cash += (choice.cash_change || 0);
       updatedState.staffRelations = Math.max(-100, Math.min(100, updatedState.staffRelations + (choice.staff_relations_change || 0)));
+      
+      if (choice.cash_change > 0) {
+        updatedState.tips = (updatedState.tips || 0) + choice.cash_change;
+        triggerTipsToast(choice.cash_change);
+      }
     }
 
     setGameState(updatedState);
@@ -368,7 +382,13 @@ function App() {
       const newState = { ...gameState };
       if (response.stress_change) newState.stress = Math.max(0, Math.min(100, newState.stress + response.stress_change));
       if (response.reputation_change) newState.reputation = Math.max(0, Math.min(100, newState.reputation + response.reputation_change));
-      if (response.cash_change) newState.cash += response.cash_change;
+      if (response.cash_change) {
+        newState.cash += response.cash_change;
+        if (response.cash_change > 0) {
+          newState.tips = (newState.tips || 0) + response.cash_change;
+          triggerTipsToast(response.cash_change);
+        }
+      }
       if (response.staff_relations_change) newState.staffRelations += response.staff_relations_change;
       if (response.alcohol_warnings_increment) newState.alcoholWarnings += response.alcohol_warnings_increment;
       if (response.current_shift) newState.shift = response.current_shift;
@@ -873,6 +893,12 @@ function App() {
 
   return (
     <div className="app-container">
+      {tipsNotification && (
+        <div className="tips-toast">
+          <span style={{ fontSize: '1.2rem' }}>💵</span>
+          <span>Έλαβες Φιλοδώρημα: <strong>+{tipsNotification.amount}€</strong>!</span>
+        </div>
+      )}
       <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ margin: 0 }}>Hotel Madness</h1>

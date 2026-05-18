@@ -68,6 +68,10 @@ export default function Dashboard({ state, nickname }) {
           <span className="stat-label"><Coins size={16} color="var(--success-color)" /> Λογαριασμός Eurobank</span>
           <span className="stat-value text-success">€{state.cash}</span>
         </div>
+        <div className="stat-item" style={{ paddingLeft: '1.5rem', marginTop: '2px', fontSize: '0.85rem' }}>
+          <span className="stat-label" style={{ color: 'var(--text-secondary)' }}>└ Φιλοδωρήματα (Tips)</span>
+          <span className="stat-value" style={{ color: 'var(--success-color)' }}>€{state.tips || 0}</span>
+        </div>
       </div>
 
       <div className="stat-group">
