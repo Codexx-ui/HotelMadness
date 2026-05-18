@@ -1,8 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageSquare, Star } from 'lucide-react';
+
+const SURVIVAL_TIPS = [
+  "Tip: Αν ο Μουστάκας φωνάζει, απλά κουνήστε το κεφάλι καταφατικά και πείτε 'corporate alignment'. Λειτουργεί πάντα.",
+  "Tip: Μην πίνετε ποτέ το σφηνάκι του VIP πελάτη. Είναι παγίδα του HR.",
+  "Tip: Η γιαγιά είναι ο κρυφός επενδυτής της Faplantica. Κάντε της ένα τηλέφωνο αν ξεμείνετε από ρευστό.",
+  "Tip: Το 'Μαγικό Μάτι' 🧿 δεν είναι απλή πρόληψη. Στη Faplantica είναι ζήτημα επιβίωσης.",
+  "Tip: Αν δείτε τον Μουστάκα να έρχεται με το tablet στο χέρι, κρυφτείτε πίσω από τα λινά της λάντζας.",
+  "Tip: Ο διπλός Freddo Espresso είναι το επίσημο καύσιμο της σεζόν. Χωρίς αυτόν, το burnout παραμονεύει.",
+  "Tip: VIP πελάτης που ζητάει 'καλή θέση' χωρίς tip είναι σαν καλοκαίρι χωρίς ζέστη. Απλά δεν υπάρχει.",
+  "Tip: Αν χυθεί καφές πάνω σε λευκό παντελόνι πελάτη, πείτε ότι είναι το νέο organic pattern του ξενοδοχείου.",
+  "Tip: Οι Influencers τρέφονται με likes, αλλά εσείς τρέφεστε με tips. Μην μπερδεύετε τις προτεραιότητες.",
+  "Tip: Το ρεπό στην Faplantica είναι σαν τον Μινώταυρο: όλοι έχουν ακούσει γι' αυτό, κανείς δεν το έχει δει.",
+  "Tip: Ο Γιατρός Σωτήρης υπογράφει αναρρωτικές πιο γρήγορα και από τη σκιά του. Χρησιμοποιήστε τον σοφά.",
+  "Tip: Αν σας ρωτήσει ο Μουστάκας για το 'KPI alignment', απαντήστε 'το έχουμε φτάσει στο 110% κύριε Γιώργο'.",
+  "Tip: Η Faplantica έχει 5 αστέρια, αλλά οι εργαζόμενοι βλέπουν μόνο τα αστέρια της κούρασης το βράδυ.",
+  "Tip: Μην προσπαθήσετε να εξηγήσετε το μενού στους τουρίστες. Απλά πείτε 'very traditional, high energy' και θα το αγοράσουν.",
+  "Tip: Αν ο πελάτης παραπονεθεί για τη ζέστη, πείτε του ότι είναι μέρος της αυθεντικής 'Greek Bath Experience'.",
+  "Tip: Το Λάμπρος Steakhouse είναι για τους πλούσιους. Για εσάς, υπάρχει πάντα το Roi Mat.",
+  "Tip: Αν το Stress φτάσει στο 99%, μην πανικοβληθείτε. Απλά αγοράστε ένα αυτοκίνητο. Ή ένα Depon.",
+  "Tip: Η Φήμη του ξενοδοχείου πέφτει πιο γρήγορα από το ίντερνετ στα δωμάτια. Προσοχή στις κριτικές!",
+  "Tip: Αν δείτε τουρίστα να φοράει κάλτσα με σανδάλι, χρεώστε τον έξτρα. Είναι άγραφος νόμος.",
+  "Tip: Στη Faplantica δεν δουλεύουμε απλά. Aligning dreams, converting nightmares."
+];
 
 export default function EventTerminal({ state, sceneData, onChoice, isLoading, onThesfapaClick }) {
   const [inputText, setInputText] = useState('');
+  const [currentTip, setCurrentTip] = useState('');
+
+  useEffect(() => {
+    if (isLoading) {
+      const randomTip = SURVIVAL_TIPS[Math.floor(Math.random() * SURVIVAL_TIPS.length)];
+      setCurrentTip(randomTip);
+    }
+  }, [isLoading]);
 
   if (!sceneData) {
     return (
@@ -23,8 +54,24 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
   return (
     <div className="panel terminal-panel" style={{ position: 'relative' }}>
       {isLoading && (
-        <div className="loading-overlay">
+        <div className="loading-overlay" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '2rem', textAlign: 'center', justifyContent: 'center', alignItems: 'center' }}>
           <div className="spinner"></div>
+          {currentTip && (
+            <div className="loading-tip-container" style={{
+              maxWidth: '85%',
+              background: 'rgba(102, 252, 241, 0.05)',
+              border: '1px solid rgba(102, 252, 241, 0.2)',
+              borderRadius: '12px',
+              padding: '1rem 1.5rem',
+              color: '#66fcf1',
+              fontSize: '0.95rem',
+              fontStyle: 'italic',
+              lineHeight: '1.5',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.4)'
+            }}>
+              {currentTip}
+            </div>
+          )}
         </div>
       )}
 
