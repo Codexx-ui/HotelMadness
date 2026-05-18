@@ -1214,8 +1214,8 @@ function App() {
     const isOnline = onlineScores.length > 0;
 
     return (
-      <div className="store-modal-overlay" style={{ zIndex: 1100 }}>
-        <div className="store-modal" style={{ maxWidth: '850px', width: '95%' }}>
+      <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setShowLeaderboard(false)}>
+        <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: '2rem', maxWidth: '850px', width: '95%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
             <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <Trophy color="var(--warning-color)" /> Hall of Fame - Κατάταξη 
