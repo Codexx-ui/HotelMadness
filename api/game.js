@@ -93,7 +93,9 @@ Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
          promptStr += `CRITICAL CALENDAR INSTRUCTION: The date is ${currentStateData.currentDate}. The summer season is officially OVER. The hotel is closing for the winter. You MUST output a final wrap-up story summarizing the player's performance over the season and explicitly set "game_over": true to end the game successfully.\n\n`;
       } else {
          const month = current.getMonth() + 1; // 1-12
-         if (month === 4 || month === 5) {
+         if (month === 2) {
+           promptStr += `SEASONAL CONTEXT: It's February. The player is in the job interview phase for their selected role. The theme of this turn MUST be the corporate job interview process, interview questions from HR or GM George Moustakas, and evaluating if the candidate fits the role. The location is the GM's office.\n\n`;
+         } else if (month === 4 || month === 5) {
            promptStr += `SEASONAL CONTEXT: It's early in the season (Spring/May). Focus on opening preparations, new staff training, and low occupancy issues.\n\n`;
          } else if (month === 7 || month === 8) {
            promptStr += `SEASONAL CONTEXT: It's PEAK SUMMER SEASON (July/August). Occupancy is 100%. Chaos, heatwaves, overbookings, and extreme stress are the norm. Increase the intensity of events!\n\n`;
