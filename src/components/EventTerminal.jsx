@@ -81,13 +81,11 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
             Σεζόν {state.season || 1}, {state.turnCount === 0 ? 'Προετοιμασία' : `Εβδομάδα ${state.turnCount}`}
           </div>
         )}
-        <div className="terminal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', borderBottom: '1px solid var(--panel-border)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <h2 className="scene-title" style={{ margin: 0 }}>{scene_title}</h2>
-            {active_vip_archetype && active_vip_archetype !== 'None' && (
-              <span className="badge vip" style={{ margin: 0 }}>{active_vip_archetype}</span>
-            )}
-          </div>
+        <div className="terminal-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', borderBottom: '1px solid var(--panel-border)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+          <h2 className="scene-title" style={{ margin: 0 }}>{scene_title}</h2>
+          {active_vip_archetype && active_vip_archetype !== 'None' && (
+            <span className="badge vip" style={{ margin: 0 }}>{active_vip_archetype}</span>
+          )}
 
           {(() => {
             const isChefSavvasScene = story_text?.includes('Σάββας') || story_text?.includes('Σάββα') || story_text?.includes('Σεφ Αντώνης') || scene_title?.includes('Σάββας') || scene_title?.includes('Σάββα') || scene_title?.includes('Σεφ Αντώνης');
