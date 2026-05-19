@@ -951,5 +951,17 @@ export const GENERAL_EVENTS = [
       { id: 2, text: "Πηγαίνω στον Τάρναβα και του δείχνω τα στοιχεία πριν προλάβει ο Καρδάρης να δράσει.", stress_change: 20, reputation_change: 25, cash_change: 100, staff_relations_change: -30 },
       { id: 3, text: "Λέω στον Καρδάρη ότι ο Μουστάκας ξέρει, παίζοντας διπλό παιχνίδι.", stress_change: 40, reputation_change: -15, cash_change: 80, staff_relations_change: 10 }
     ]
+  },
+  {
+    scene_title: "Η Επίμονη Μαρία από το Σέρβις (Act Season 3)",
+    season: 3,
+    image: "/maria.png",
+    story_text: "Η Μαρία από το Service σε πλησιάζει στο διάλειμμα. Σε κοιτάζει έντονα και σε ζαλίζει επίμονα: 'Έλα τώρα, μην είσαι τόσο σφιχτός, πότε θα βγούμε επιτέλους για ένα ποτό μετά τη βάρδια; Σε περιμένω!' Πώς αντιδράς;",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Της εξηγώ ευγενικά αλλά σταθερά ότι δεν αναμιγνύω τα προσωπικά μου με τη δουλειά.", stress_change: 5, reputation_change: 10, cash_change: 0, staff_relations_change: -5 },
+      { id: 2, text: "Αλλάζω θέμα συζήτησης και αρχίζω να της μιλάω για τις ελλείψεις στα ποτήρια.", stress_change: 10, reputation_change: 5, cash_change: 0, staff_relations_change: 10 },
+      { id: 3, text: "Φεύγω δικαιολογούμενος ότι με φωνάζει επειγόντως ο Μουστάκας.", stress_change: 15, reputation_change: 0, cash_change: 0, staff_relations_change: 0 }
+    ]
   }
 ];

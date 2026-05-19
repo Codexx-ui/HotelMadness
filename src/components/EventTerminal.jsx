@@ -89,6 +89,22 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
         </div>
 
         <div className="story-content">
+          {sceneData.image && (
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <img 
+                src={sceneData.image} 
+                alt="Scene Character" 
+                style={{ 
+                  maxWidth: '300px', 
+                  borderRadius: '12px', 
+                  border: '2px solid var(--panel-border)', 
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                  backgroundColor: 'rgba(0,0,0,0.2)'
+                }} 
+              />
+            </div>
+          )}
+          
           <p>
             {(() => {
               if (!story_text) return null;
