@@ -820,6 +820,29 @@ function App() {
     }
   };
 
+
+  const useInventoryItem = (item) => {
+    const idx = gameState.inventory.indexOf(item);
+    if (idx === -1) return;
+    const newInv = [...gameState.inventory];
+    newInv.splice(idx, 1);
+    let newState = { ...gameState, inventory: newInv };
+    
+    if (item.includes('Φραπέ') || item.includes('Frappe') || item.includes('☕')) {
+      newState.stress = Math.max(0, newState.stress - 8);
+      showToast("☕ Ο Φραπές σε ηρεμεί! -8% Stress", "😌");
+    } else if (item.includes('Lexotanil') || item.includes('💊')) {
+      newState.stress = Math.max(0, newState.stress - 20);
+      showToast("💊 Το Lexotanil σε ηρεμεί βαθιά! -20% Stress", "😴");
+    } else if (item.includes('Μαγικό Μάτι') || item.includes('🧿')) {
+      // Magic Eye is passive, put it back
+      newState.inventory = gameState.inventory;
+      showToast("🧿 Το Μαγικό Μάτι είναι παθητικό - ενεργοποιείται αυτόματα!", "✨");
+      return;
+    }
+    setGameState(newState);
+  };
+
   const processTurn = async (playerInput, currentState) => {
     setIsLoading(true);
     setErrorMsg('');
@@ -1339,6 +1362,37 @@ function App() {
           <div>Λογαριασμός Eurobank: <span className="text-success">€{gameState.cash}</span></div>
         </div>
 
+
+          {/* Animated Character Avatar */}
+          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            <div style={{
+              fontSize: '5rem',
+              lineHeight: 1,
+              animation: isSeasonEnd && !isResigned ? 'pulse 1.5s ease-in-out infinite' : gameState.stress >= 100 ? 'shake 0.5s ease-in-out infinite' : 'none',
+              display: 'inline-block',
+              filter: isSeasonEnd && !isResigned ? 'drop-shadow(0 0 10px rgba(75,255,75,0.5))' : gameState.stress >= 100 ? 'drop-shadow(0 0 10px rgba(255,75,75,0.5))' : 'none'
+            }}>
+              {isSeasonEnd && !isResigned
+                ? (successRate >= 80 ? '🥳' : successRate >= 50 ? '😤' : '😮‍💨')
+                : isResigned ? '🏃'
+                : gameState.stress >= 100 ? '🤯'
+                : gameState.reputation <= 0 ? '😰'
+                : gameState.alcoholWarnings >= 3 ? '🍷'
+                : successRate >= 70 ? '😎'
+                : '😵'}
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>
+              {isSeasonEnd && !isResigned
+                ? (successRate >= 80 ? 'Επιτυχία! Αξίζεις διακοπές!' : 'Φύγαμε για χειμώνα!')
+                : isResigned ? 'Λευτεριά!'
+                : gameState.stress >= 100 ? 'Burnout!'
+                : gameState.reputation <= 0 ? 'Εκτός Ελέγχου!'
+                : gameState.alcoholWarnings >= 3 ? 'Disciplinary Action!'
+                : successRate >= 70 ? 'Καλή δουλειά!'
+                : 'Επόμενη φορά!'}
+            </div>
+          </div>
+
         {/* GORGEOUS EMPLOYEE CAREER CARD */}
         <div className="employee-profile-card" style={{
           marginTop: '2rem',
@@ -1412,6 +1466,39 @@ function App() {
             </p>
           </div>
         </div>
+
+
+          {/* Share Button */}
+          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+            <button
+              onClick={() => {
+                const msg = `🏨 Hotel Madness - Faplantica\n👤 ${nickname || 'Άγνωστος'} (${gameState.role})\n📊 Σεζόν: ${gameState.season} | Γύροι: ${gameState.turnCount} | Χρήματα: €${gameState.cash.toLocaleString('el-GR')}\n⭐ Αξιολόγηση: ${evalObj.grade} - ${evalObj.label}\n✅ Ποσοστό Επιτυχίας: ${successRate}%\n\nΠαίξε κι εσύ 👉 https://hotel-madness.vercel.app`;
+                if (navigator.share) {
+                  navigator.share({ title: 'Hotel Madness - Faplantica', text: msg });
+                } else {
+                  navigator.clipboard.writeText(msg);
+                  showToast("📋 Το σκορ σου αντιγράφηκε! Επικόλλησέ το σε WhatsApp/Instagram!", "🎉");
+                }
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #25D366, #128C7E)',
+                border: 'none',
+                borderRadius: '30px',
+                padding: '0.6rem 2rem',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(37, 211, 102, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                margin: '0 auto'
+              }}
+            >
+              📤 Μοιράσου το Σκορ σου!
+            </button>
+          </div>
 
         {/* HR SUBMISSION PANEL */}
         <div style={{ marginTop: '1.5rem', backgroundColor: 'rgba(255,255,255,0.04)', padding: '1.25rem', borderRadius: '12px', maxWidth: '550px', margin: '1.5rem auto', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -1897,7 +1984,7 @@ function App() {
           </div>
         ) : (
           <>
-            <Dashboard state={gameState} nickname={nickname} />
+            <Dashboard state={gameState} nickname={nickname} onUseItem={useInventoryItem} />
             <EventTerminal state={gameState} sceneData={sceneData} onChoice={handleChoice} isLoading={isLoading} onThesfapaClick={handleThesfapaClick} />
           </>
         )}

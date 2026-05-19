@@ -1,7 +1,7 @@
 import React from 'react';
 import { Briefcase, Coins, HeartPulse, Star, Users, AlertTriangle, ShieldAlert, BarChart3, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
-export default function Dashboard({ state, nickname }) {
+export default function Dashboard({ state, nickname, onUseItem }) {
 
   // Helpers for progress colors
   const getStressColor = (val) => {
@@ -132,7 +132,15 @@ export default function Dashboard({ state, nickname }) {
                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Άδειες Τσέπες</span>
             ) : (
               state.inventory.map((item, idx) => (
-                <span key={idx} className="inventory-item">{item}</span>
+                <span
+                  key={idx}
+                  className="inventory-item"
+                  onClick={() => onUseItem && onUseItem(item)}
+                  title={item.includes('🧿') ? 'Παθητικό - ενεργοποιείται αυτόματα' : `Κλικ για χρήση: ${item}`}
+                  style={{ cursor: item.includes('🧿') ? 'default' : 'pointer', transition: 'transform 0.15s', userSelect: 'none' }}
+                  onMouseEnter={e => { if (!item.includes('🧿')) e.currentTarget.style.transform = 'scale(1.15)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                >{item}</span>
               ))
             )}
           </div>
