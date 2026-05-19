@@ -108,9 +108,11 @@ Financial Metric: ${currentStateData.financialMetric}
 Staff Turnover: ${currentStateData.staffTurnover}
 Turn: ${currentStateData.turnCount || 0}\n\n`;
 
-      // Every 3rd turn: request a funny coworker Viber message
+      // Every 3rd turn, or turn 1: request a funny coworker Viber message
       const turn = currentStateData.turnCount || 0;
-      if (turn > 0 && turn % 3 === 0) {
+      if (turn === 1) {
+        promptStr += `VIBER MESSAGE INSTRUCTION: Since this is the player's FIRST turn at the hotel, you MUST generate a welcome Viber message from a coworker appropriate to the player's role (NOT Nikos Tsafradkis) in casual Greek. The colleague should welcome them to the Faplantica team and warn them about GM Moustakas' high stress levels today. Set "sender" to the coworker's name and role, and "text" to the message.\n\n`;
+      } else if (turn > 0 && turn % 3 === 0) {
         promptStr += `VIBER MESSAGE INSTRUCTION: On this turn you MUST generate a funny, in-character "viber_message" in the JSON from a colleague (NOT Nikos Tsafradkis). Pick a coworker appropriate to the player's role and current situation. The message must be a short, funny, sarcastic or shocked reaction to the player's recent decisions or current stress level. Write it in casual Greek. Set "sender" to the colleague's name and "text" to the message.\n\n`;
       } else {
         promptStr += `VIBER MESSAGE INSTRUCTION: Do NOT generate a viber_message this turn. Set "viber_message": {"sender": null, "text": null}.\n\n`;

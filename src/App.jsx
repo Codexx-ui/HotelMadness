@@ -1130,7 +1130,18 @@ function App() {
       }
 
       // Coworker Viber message check
-      if (updatedState.turnCount > 0 && updatedState.turnCount % 3 === 0) {
+      if (updatedState.turnCount === 1) {
+        const welcomeMsgs = {
+          'Front Office Agent': { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στη Reception της Faplantica. Κουράγιο για την πρώτη σου μέρα, ο Μουστάκας είναι σε τρελά κέφια σήμερα... 😅' },
+          'Γ Μάγειρας': { sender: 'Chef Αντώνης', text: 'Καλώς τον νέο! Ετοιμάσου να ιδρώσεις, έχουμε 400 άτομα buffet το βράδυ. Μην καθυστερήσεις στη βάρδια σου! 🍳' },
+          'Βοηθός Σερβιτόρου': { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Γεια! Καλώς ήρθες στην ομάδα του service. Πάρε βαθιά ανάσα, σήμερα έχει γάμο στο beach bar και θα τρέχουμε όλοι. 😅' }
+        };
+        const welcome = welcomeMsgs[updatedState.role] || { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στην ομάδα της Faplantica. Κουράγιο για την πρώτη σου μέρα! 😅' };
+        const coworkerMsg = { sender: welcome.sender, text: welcome.text, item: null, accepted: false };
+        updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
+        updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
+        audioService.playNotificationSound();
+      } else if (updatedState.turnCount > 0 && updatedState.turnCount % 3 === 0) {
         const fallback = getFallbackCoworkerMessage(updatedState.role);
         const coworkerMsg = { sender: fallback.sender, text: fallback.text, item: null, accepted: false };
         updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
@@ -1211,6 +1222,14 @@ function App() {
           item: null,
           accepted: false
         };
+      } else if (newState.turnCount === 1) {
+        const welcomeMsgs = {
+          'Front Office Agent': { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στη Reception της Faplantica. Κουράγιο για την πρώτη σου μέρα, ο Μουστάκας είναι σε τρελά κέφια σήμερα... 😅' },
+          'Γ Μάγειρας': { sender: 'Chef Αντώνης', text: 'Καλώς τον νέο! Ετοιμάσου να ιδρώσεις, έχουμε 400 άτομα buffet το βράδυ. Μην καθυστερήσεις στη βάρδια σου! 🍳' },
+          'Βοηθός Σερβιτόρου': { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Γεια! Καλώς ήρθες στην ομάδα του service. Πάρε βαθιά ανάσα, σήμερα έχει γάμο στο beach bar και θα τρέχουμε όλοι. 😅' }
+        };
+        const welcome = welcomeMsgs[newState.role] || { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στην ομάδα της Faplantica. Κουράγιο για την πρώτη σου μέρα! 😅' };
+        coworkerMsg = { sender: welcome.sender, text: welcome.text, item: null, accepted: false };
       } else if (newState.turnCount > 0 && newState.turnCount % 3 === 0) {
         const fallback = getFallbackCoworkerMessage(newState.role);
         coworkerMsg = {
@@ -1252,7 +1271,18 @@ function App() {
         updatedState.usedEventTexts.push(randomGen.story_text);
       }
       // Coworker Viber message check fallback
-      if (updatedState.turnCount > 0 && updatedState.turnCount % 3 === 0) {
+      if (updatedState.turnCount === 1) {
+        const welcomeMsgs = {
+          'Front Office Agent': { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στη Reception της Faplantica. Κουράγιο για την πρώτη σου μέρα, ο Μουστάκας είναι σε τρελά κέφια σήμερα... 😅' },
+          'Γ Μάγειρας': { sender: 'Chef Αντώνης', text: 'Καλώς τον νέο! Ετοιμάσου να ιδρώσεις, έχουμε 400 άτομα buffet το βράδυ. Μην καθυστερήσεις στη βάρδια σου! 🍳' },
+          'Βοηθός Σερβιτόρου': { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Γεια! Καλώς ήρθες στην ομάδα του service. Πάρε βαθιά ανάσα, σήμερα έχει γάμο στο beach bar και θα τρέχουμε όλοι. 😅' }
+        };
+        const welcome = welcomeMsgs[updatedState.role] || { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στην ομάδα της Faplantica. Κουράγιο για την πρώτη σου μέρα! 😅' };
+        const coworkerMsg = { sender: welcome.sender, text: welcome.text, item: null, accepted: false };
+        updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
+        updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
+        audioService.playNotificationSound();
+      } else if (updatedState.turnCount > 0 && updatedState.turnCount % 3 === 0) {
         const fallback = getFallbackCoworkerMessage(updatedState.role);
         const coworkerMsg = { sender: fallback.sender, text: fallback.text, item: null, accepted: false };
         updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
