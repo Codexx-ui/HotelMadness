@@ -107,24 +107,44 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
 
           {(() => {
             const isChefSavvasScene = story_text?.includes('Σάββας') || story_text?.includes('Σάββα') || story_text?.includes('Σεφ Αντώνης') || scene_title?.includes('Σάββας') || scene_title?.includes('Σάββα') || scene_title?.includes('Σεφ Αντώνης');
-            if (isChefSavvasScene && !sceneData.image) {
+            const isMoustakasScene = story_text?.includes('Μουστάκας') || story_text?.includes('Μουστάκα') || story_text?.includes('Moustakas') || scene_title?.includes('Μουστάκας') || scene_title?.includes('Μουστάκα') || scene_title?.includes('Moustakas');
+            if ((isChefSavvasScene || isMoustakasScene) && !sceneData.image) {
               return (
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                  <div style={{ 
-                    border: '2px solid var(--accent-color)', 
-                    borderRadius: '50%', 
-                    overflow: 'hidden', 
-                    width: '80px', 
-                    height: '80px',
-                    boxShadow: '0 4px 10px rgba(102, 252, 241, 0.3)',
-                    backgroundColor: 'rgba(0,0,0,0.2)'
-                  }}>
-                    <img 
-                      src="/savvas_face.jpg" 
-                      alt="Chef Antonis Savvas" 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                    />
-                  </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '1.25rem', marginBottom: '1.25rem' }}>
+                  {isChefSavvasScene && (
+                    <div style={{ 
+                      border: '2px solid var(--accent-color)', 
+                      borderRadius: '50%', 
+                      overflow: 'hidden', 
+                      width: '80px', 
+                      height: '80px',
+                      boxShadow: '0 4px 10px rgba(102, 252, 241, 0.3)',
+                      backgroundColor: 'rgba(0,0,0,0.2)'
+                    }}>
+                      <img 
+                        src="/savvas_face.jpg" 
+                        alt="Chef Antonis Savvas" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      />
+                    </div>
+                  )}
+                  {isMoustakasScene && (
+                    <div style={{ 
+                      border: '2px solid var(--accent-color)', 
+                      borderRadius: '50%', 
+                      overflow: 'hidden', 
+                      width: '80px', 
+                      height: '80px',
+                      boxShadow: '0 4px 10px rgba(102, 252, 241, 0.3)',
+                      backgroundColor: 'rgba(0,0,0,0.2)'
+                    }}>
+                      <img 
+                        src="/moustakas_face.jpg" 
+                        alt="GM Georgios Moustakas" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      />
+                    </div>
+                  )}
                 </div>
               );
             }
