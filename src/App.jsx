@@ -1071,7 +1071,7 @@ function App() {
   const renderNicknameScreen = () => (
     <div className="role-selection">
       <h2 style={{ fontSize: '2.2rem', color: 'var(--accent-color)', marginBottom: '0.5rem' }}>Καλώς ήρθατε</h2>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '1.35rem', marginBottom: '1.25rem' }}>Πώς σε λένε, νέε υπάλληλε;</p>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '1.35rem', marginBottom: '1.25rem' }}>Πώς σε λένε;</p>
       <div style={{
         backgroundColor: 'rgba(255, 255, 255, 0.03)',
         border: '1px solid var(--panel-border)',
