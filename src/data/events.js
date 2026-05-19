@@ -103,12 +103,56 @@ export const SPECIFIC_EVENTS = {
     {
       role: "Ρεσεψιονίστ",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
-      story_text: "Ο Μουστάκας κάνει μια βαθιά ερώτηση: «Τι σημαίνει για σένα η έννοια του Corporate Alignment στη Faplantica;»",
+      story_text: "Ο Μουστάκας βάζει τα γυαλιά του: «Αν έρθει ένας VIP πελάτης στις 3 το βράδυ και απαιτεί να του βρεις οπωσδήποτε φρέσκια μπουγάτσα Θεσσαλονίκης με κρέμα, τι κάνεις;»",
       requires_text_input: null,
       choices: [
-        { id: 1, text: "Σημαίνει να θυσιάζω τα πάντα για το καλό και την κερδοφορία της εταιρείας.", stress_change: 25, reputation_change: 20, cash_change: 0 },
-        { id: 2, text: "Σημαίνει να κάνω απλά τη δουλειά μου σωστά χωρίς υπερβολικές πιέσεις.", stress_change: 10, reputation_change: 5, cash_change: 0 },
-        { id: 3, text: "Σημαίνει να συμφωνώ μαζί σας σε ό,τι κι αν λέτε, κύριε Διευθυντά.", stress_change: 15, reputation_change: 15, cash_change: 0 }
+        { id: 1, text: "Παίρνω το αυτοκίνητό μου και ψάχνω όλα τα 24ωρα αρτοποιεία της πόλης για να τον ικανοποιήσω.", stress_change: 25, reputation_change: 15, cash_change: -10 },
+        { id: 2, text: "Του λέω ότι η Faplantica προσφέρει μόνο healthy detox επιλογές τέτοια ώρα και του δίνω ένα μήλο.", stress_change: 10, reputation_change: -15, cash_change: 0 },
+        { id: 3, text: "Ξυπνάω τον Chef Σάββα στο τηλέφωνο να του φτιάξει, ρισκάροντας τη σωματική μου ακεραιότητα.", stress_change: 35, reputation_change: 20, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Ρεσεψιονίστ",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει με καχυποψία: «Αν δεις μια διάσημη influencer να βγάζει βίντεο στο lobby κατηγορώντας το ξενοδοχείο για κακό service, πώς αντιδράς;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Της προσφέρω δωρεάν διαμονή στη VIP σουίτα αν σβήσει το βίντεο και κάνει θετικό post.", stress_change: 20, reputation_change: 20, cash_change: -50 },
+        { id: 2, text: "Μπαίνω μπροστά στην κάμερα και κάνω photobomb κάνοντας αστείες γκριμάτσες.", stress_change: 15, reputation_change: -30, cash_change: 0 },
+        { id: 3, text: "Της εξηγώ ευγενικά τις διαδικασίες GDPR και της ζητώ να σταματήσει τη βιντεοσκόπηση.", stress_change: 15, reputation_change: 10, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Ρεσεψιονίστ",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει σοβαρός: «Ένας VIP πελάτης χάνει το πανάκριβο ρολόι του στο δωμάτιο και κατηγορεί ευθέως την καμαριέρα. Πώς το χειρίζεσαι;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Κάνω πλήρη έρευνα, ησυχάζω τον πελάτη και στηρίζω την καμαριέρα μας μέχρι να αποδειχθεί το αντίθετο.", stress_change: 20, reputation_change: 15, cash_change: 0 },
+        { id: 2, text: "Απολύω την καμαριέρα επιτόπου για να δείξω στον πελάτη ότι παίρνουμε σοβαρά τα παράπονά του.", stress_change: 30, reputation_change: -20, cash_change: 0 },
+        { id: 3, text: "Του λέω ότι η Faplantica δεν φέρει καμία ευθύνη για απώλεια αντικειμένων και του δείχνω τους όρους.", stress_change: 15, reputation_change: -25, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Ρεσεψιονίστ",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει με σφιγμένα δόντια: «Αν ένας πελάτης κάνει check-out και παραπονεθεί ότι τον χρέωσες 2 φορές το minibar που δεν άγγιξε ποτέ, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Αφαιρώ τη χρέωση αμέσως με corporate χαμόγελο, θεωρώντας το ως διαφημιστικό έξοδο.", stress_change: 10, reputation_change: 15, cash_change: -20 },
+        { id: 2, text: "Του δείχνω τη χειρόγραφη αναφορά του Bellboy και επιμένω ότι πρέπει να πληρώσει.", stress_change: 25, reputation_change: -15, cash_change: 0 },
+        { id: 3, text: "Του προτείνω να λύσουμε τη διαφορά με μια παρτίδα 'πέτρα-ψαλίδι-χαρτί' στη ρεσεψιόν.", stress_change: 15, reputation_change: -30, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Ρεσεψιονίστ",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει χαμογελώντας περίεργα: «Αν σου ζητήσω να πεις ψέματα σε έναν ελεγκτή τουρισμού ότι η πισίνα μας έχει άδεια λειτουργίας ενώ δεν έχει, τι θα κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Θα πω το ψέμα με απόλυτη φυσικότητα, κύριε Διευθυντά! Το Corporate Alignment προηγείται του νόμου.", stress_change: 35, reputation_change: 20, cash_change: 0 },
+        { id: 2, text: "Θα αρνηθώ ευγενικά, λέγοντας ότι δεν θέλω να μπλέξω σε παράνομες ενέργειες.", stress_change: 15, reputation_change: -30, cash_change: 0 },
+        { id: 3, text: "Θα ζητήσω γραπτή εντολή από εσάς για να είμαι καλυμμένος νομικά.", stress_change: 25, reputation_change: 5, cash_change: 0 }
       ]
     },
 
@@ -215,12 +259,56 @@ export const SPECIFIC_EVENTS = {
     {
       role: "Σερβιτόρος",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
-      story_text: "Ο Μουστάκας σε ρωτάει με πονηρό χαμόγελο: «Αν σε πιάσουμε να τρως κλεφτά από τις περίσσειες του μπουφέ πίσω στη λάντζα, πώς θα δικαιολογηθείς;»",
+      story_text: "Ο Μουστάκας σε ρωτάει κοιτώντας τις τιμές του καταλόγου: «Αν ένας VIP πελάτης ζητήσει να πιει ένα σπάνιο ουίσκι που έχει εξαντληθεί, αλλά έχουμε ένα φθηνό παρόμοιο μπουκάλι, τι κάνεις;»",
       requires_text_input: null,
       choices: [
-        { id: 1, text: "Θα πω ότι έκανα ποιοτικό έλεγχο γεύσης για να προστατεύσω τους πελάτες.", stress_change: 15, reputation_change: 10, cash_change: 0 },
-        { id: 2, text: "Θα ζητήσω συγγνώμη και θα υποσχεθώ να μην επαναληφθεί ποτέ.", stress_change: 20, reputation_change: 15, cash_change: 0 },
-        { id: 3, text: "Θα του πω ότι με τόσο χαμηλό μισθό, το φαγητό είναι μέρος της αμοιβής μου.", stress_change: 30, reputation_change: -25, cash_change: 0 }
+        { id: 1, text: "Του σερβίρω το φθηνό στη διπλάσια τιμή και του λέω ότι είναι ειδική vintage εμφιάλωση.", stress_change: 20, reputation_change: -20, cash_change: 40 },
+        { id: 2, text: "Του εξηγώ με ειλικρίνεια ότι έχει εξαντληθεί και του προτείνω μια άλλη premium εναλλακτική.", stress_change: 10, reputation_change: 15, cash_change: 10 },
+        { id: 3, text: "Τρέχω στο διπλανό super market να αγοράσω το σωστό μπουκάλι με δικά μου έξοδα.", stress_change: 30, reputation_change: 10, cash_change: -30 }
+      ]
+    },
+    {
+      role: "Σερβιτόρος",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε κοιτάζει έντονα: «Αν ένας μεθυσμένος VIP πελάτης αρχίσει να τραγουδάει δυνατά στη σάλα ενοχλώντας τους υπόλοιπους, πώς αντιδράς;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Του προσφέρω ένα δωρεάν ελαφρύ σνακ και του προτείνω ευγενικά να πάει στο μπαρ του lobby.", stress_change: 15, reputation_change: 15, cash_change: 0 },
+        { id: 2, text: "Παίρνω ένα μικρόφωνο και αρχίζω να τραγουδάω ντουέτο μαζί του για να γίνει show.", stress_change: 20, reputation_change: -15, cash_change: 20 },
+        { id: 3, text: "Φωνάζω τον Μουστάκα να του κάνει παρατήρηση επειδή φοβάμαι να τον πλησιάσω.", stress_change: 25, reputation_change: -5, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Σερβιτόρος",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει για το service: «Μια παρέα VIP πελατών κάθεται στο τραπέζι για 20 λεπτά χωρίς κανείς να τους πάρει παραγγελία. Πώς δικαιολογείσαι;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Ζητώ ταπεινά συγγνώμη, τους κερνάω ένα απεριτίφ και παίρνω την παραγγελία αμέσως.", stress_change: 25, reputation_change: 15, cash_change: -15 },
+        { id: 2, text: "Τους λέω ότι ο συνάδελφός μου ο Μπαλατσούκας είχε αναλάβει το τραπέζι και αφαιρέθηκε.", stress_change: 15, reputation_change: -10, cash_change: 0 },
+        { id: 3, text: "Τους εξηγώ ότι στη Faplantica ακολουθούμε το concept του Slow Living και της χαλάρωσης.", stress_change: 20, reputation_change: -25, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Σερβιτόρος",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει με πονηρό ύφος: «Αν ένας VIP πελάτης αφήσει 100€ φιλοδώρημα στο τραπέζι, αλλά ο κανονισμός λέει ότι τα tips μοιράζονται σε όλους, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Τα βάζω κρυφά στην τσέπη μου, κανείς δεν χρειάζεται να μάθει για αυτά τα 100€.", stress_change: 20, reputation_change: -20, cash_change: 100 },
+        { id: 2, text: "Τα παραδίδω στη Maitress Κατερίνα για να μοιραστούν δίκαια όπως ορίζει το κοινό ταμείο.", stress_change: 10, reputation_change: 20, cash_change: 0 },
+        { id: 3, text: "Τα κρατάω αλλά κερνάω όλη την κουζίνα μπύρες μετά τη βάρδια για να τους καλοπιάσω.", stress_change: 15, reputation_change: 10, cash_change: 30 }
+      ]
+    },
+    {
+      role: "Σερβιτόρος",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει ανήσυχος: «Αν ένας πελάτης πάθει αλλεργικό σοκ από ξηρούς καρπούς επειδή ξέχασες να ρωτήσεις την κουζίνα για τα υλικά, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Καλώ αμέσως τις πρώτες βοήθειες, του παρέχω τις πρώτες βοήθειες και αναλαμβάνω την ευθύνη.", stress_change: 35, reputation_change: 20, cash_change: 0 },
+        { id: 2, text: "Ισχυρίζομαι ότι ο πελάτης δεν με ενημέρωσε ποτέ για την αλλεργία του και κρύβω την παραγγελία.", stress_change: 30, reputation_change: -30, cash_change: 0 },
+        { id: 3, text: "Κατηγορώ τον Chef Σάββα ότι άλλαξε τη συνταγή κρυφά χωρίς να ενημερώσει τη σάλα.", stress_change: 25, reputation_change: -15, cash_change: 0 }
       ]
     },
 
@@ -327,12 +415,56 @@ export const SPECIFIC_EVENTS = {
     {
       role: "Μάγειρας",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
-      story_text: "Ο Μουστάκας ολοκληρώνει: «Ο μισθός σου θα είναι 850€ για 12ωρη εργασία, 7 ημέρες την εβδομάδα, χωρίς ρεπό. Πώς σου φαίνεται;»",
+      story_text: "Ο Μουστάκας σε ρωτάει με απορία: «Αν ένας VIP πελάτης ζητήσει vegan μουσακά, πώς θα τον παρασκευάσεις μέσα σε 15 λεπτά;»",
       requires_text_input: null,
       choices: [
-        { id: 1, text: "Είναι μια εξαιρετική ευκαιρία να αποδείξω την αξία μου στη Faplantica!", stress_change: 35, reputation_change: 20, cash_change: 0 },
-        { id: 2, text: "Δέχομαι, αλλά θα ήθελα να συζητήσουμε bonus αποδοτικότητας στο τέλος της σεζόν.", stress_change: 20, reputation_change: 10, cash_change: 10 },
-        { id: 3, text: "Του λέω ότι με αυτά τα λεφτά προτιμώ να πάω να δουλέψω delivery.", stress_change: 15, reputation_change: -30, cash_change: 0 }
+        { id: 1, text: "Παίρνω τον κανονικό μουσακά, αφαιρώ τον κιμά με το κουτάλι και του βάζω φρέσκια μπεσαμέλ.", stress_change: 20, reputation_change: -30, cash_change: 0 },
+        { id: 2, text: "Του εξηγώ ότι ο μουσακάς απαιτεί ώρες προετοιμασίας και του προτείνω μια φρέσκια vegan σαλάτα.", stress_change: 10, reputation_change: 15, cash_change: 0 },
+        { id: 3, text: "Αυτοσχεδιάζω ένα γρήγορο πιάτο με ψητά λαχανικά και πατάτες με μπαχαρικά.", stress_change: 15, reputation_change: 10, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Μάγειρας",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε κοιτάζει αυστηρά: «Αν ο Chef Αντώνης Σάββας πάθει κρίση πανικού και κλειδωθεί στο γραφείο του κατά τη διάρκεια ενός VIP dinner, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Αναλαμβάνω αμέσως τη διεύθυνση της κουζίνας και βγάζω όλα τα πιάτα στην ώρα τους.", stress_change: 35, reputation_change: 25, cash_change: 0 },
+        { id: 2, text: "Κλειδώνομαι κι εγώ στην αποθήκη μαζί του για να του συμπαρασταθώ.", stress_change: 15, reputation_change: -25, cash_change: 0 },
+        { id: 3, text: "Φωνάζω τον Μουστάκα να σπάσει την πόρτα του Chef με έναν πυροσβεστήρα.", stress_change: 25, reputation_change: 5, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Μάγειρας",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει για τη διαχείριση απορριμμάτων: «Αν σου ζητήσω να ξαναχρησιμοποιήσεις το ψωμί που περίσσεψε από τα τραπέζια για να φτιάξεις κρουτόν, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Το κάνω αμέσως! Η Faplantica υποστηρίζει την κυκλική οικονομία και το zero waste.", stress_change: 20, reputation_change: 10, cash_change: 10 },
+        { id: 2, text: "Αρνούμαι κατηγορηματικά για λόγους υγιεινής και πετάω το ψωμί στα σκουπίδια.", stress_change: 15, reputation_change: 15, cash_change: -10 },
+        { id: 3, text: "Το χρησιμοποιώ αλλά μόνο για το προσωπικό του ξενοδοχείου για να μην κινδυνεύσουν πελάτες.", stress_change: 25, reputation_change: -15, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Μάγειρας",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει με νόημα: «Αν ένας VIP πελάτης ζητήσει να δει τον σεφ για να του δώσει συγχαρητήρια, αλλά το πιάτο το έφτιαξες εσύ και όχι ο Chef Σάββας, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Στέλνω τον Chef Σάββα να πάρει τη δόξα για να διατηρήσω την ειρήνη στην κουζίνα.", stress_change: 15, reputation_change: 15, cash_change: 0 },
+        { id: 2, text: "Βγαίνω εγώ στη σάλα και λέω μπροστά σε όλους ότι ο Chef Σάββας δεν ακούμπησε το πιάτο.", stress_change: 30, reputation_change: -20, cash_change: 20 },
+        { id: 3, text: "Αρνούμαι να βγω και λέω ότι οι μάγειρες ανήκουν στην κουζίνα και όχι στις δημόσιες σχέσεις.", stress_change: 10, reputation_change: 5, cash_change: 0 }
+      ]
+    },
+    {
+      role: "Μάγειρας",
+      scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
+      story_text: "Ο Μουστάκας σε ρωτάει για τις προμήθειες: «Αν παραλάβουμε ληγμένα αυγά αλλά έχουμε banquet για πρωινό με 100 ομελέτες, τι κάνεις;»",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "Τα σπάω ένα-ένα, τα μυρίζω και αν φαίνονται εντάξει, τα χρησιμοποιώ κανονικά.", stress_change: 30, reputation_change: 10, cash_change: 0 },
+        { id: 2, text: "Ακυρώνω τις ομελέτες και προσφέρω εναλλακτικά pancakes χωρίς αυγά.", stress_change: 20, reputation_change: 15, cash_change: -15 },
+        { id: 3, text: "Τα πετάω όλα και στέλνω τον βοηθό να αγοράσει 100 αυγά από το mini market.", stress_change: 25, reputation_change: 20, cash_change: -30 }
       ]
     }
   ],
