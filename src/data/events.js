@@ -468,6 +468,18 @@ export const SPECIFIC_EVENTS = {
       ]
     }
   ],
+  5: [
+    {
+      scene_title: "Η Εξαφάνιση του Λαντζέρη (Act Season 3)",
+      season: 3,
+      story_text: "Ο σεφ Αντώνης Σάββας σε φωνάζει έξαλλος στην κουζίνα. 'Ο λαντζέρης μας εξαφανίστηκε! Έχει μαζευτεί ένα βουνό από πιάτα και το εστιατόριο γεμίζει. Μπορείς να βάλεις ένα χεράκι στη λάντζα να σώσουμε τη βάρδια;'",
+      requires_text_input: null,
+      choices: [
+        { id: 1, text: "«Εννοείται σεφ, αναλαμβάνω αμέσως!» (Παίξε το Mini-game της Λάντζας)", stress_change: 0, reputation_change: 15, cash_change: 0, trigger_dishwasher: true },
+        { id: 2, text: "«Δεν είναι αυτή η δουλειά μου σεφ, είμαι εδώ για άλλο πόστο.»", stress_change: 10, reputation_change: -10, cash_change: 0, staff_relations_change: -15 }
+      ]
+    }
+  ],
   7: [
     {
       scene_title: "Διάδρομος Προσωπικού (Act 7)",

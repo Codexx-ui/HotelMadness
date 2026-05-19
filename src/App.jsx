@@ -108,27 +108,53 @@ function App() {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showDishwasher, setShowDishwasher] = useState(false);
   const [hasWashedDishesThisTurn, setHasWashedDishesThisTurn] = useState(false);
+  const [pendingChoiceData, setPendingChoiceData] = useState(null);
 
   const handleDishwasherComplete = ({ success, score }) => {
-    setGameState((prev) => {
-      let stressChange = success ? -20 : 15;
-      let cashChange = success ? 10 : 0;
-      
-      const newStress = Math.max(0, Math.min(100, prev.stress + stressChange));
-      const newCash = Math.max(0, prev.cash + cashChange);
-      
-      return {
-        ...prev,
-        stress: newStress,
-        cash: newCash
-      };
-    });
-    setHasWashedDishesThisTurn(true);
+    let stressChange = success ? -20 : 15;
+    let cashChange = success ? 10 : 0;
+
+    if (pendingChoiceData) {
+      const { choice, updatedState } = pendingChoiceData;
+      const mult = getDifficultyMultipliers();
+      let stressDelta = stressChange > 0 
+        ? stressChange * mult.stressUp 
+        : stressChange * mult.stressDown;
+      let cashDelta = Math.round(cashChange * mult.cash);
+
+      updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + stressDelta));
+      updatedState.cash += cashDelta;
+
+      if (choice.reputation_change !== undefined) {
+        let repDelta = choice.reputation_change > 0
+          ? choice.reputation_change * mult.repUp
+          : choice.reputation_change * mult.repDown;
+        updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + repDelta));
+      }
+
+      setGameState(updatedState);
+      processTurn(`I choose option ${choice.id}: ${choice.text}. Mini-game result: ${success ? 'Success' : 'Failure'} with score ${score}.`, updatedState);
+      setPendingChoiceData(null);
+    } else {
+      setGameState((prev) => {
+        const newStress = Math.max(0, Math.min(100, prev.stress + stressChange));
+        const newCash = Math.max(0, prev.cash + cashChange);
+        return {
+          ...prev,
+          stress: newStress,
+          cash: newCash
+        };
+      });
+      setHasWashedDishesThisTurn(true);
+    }
     
     if (success) {
       if (useSFX) {
         audioService.playCashSound();
       }
+      showToast(`Καθάρισες ${score} πιάτα! Stress -20, Bonus +10€`, '🧼');
+    } else {
+      showToast(`Καθάρισες μόνο ${score} πιάτα! Stress +15`, '🤦‍♂️');
     }
   };
 
@@ -685,6 +711,12 @@ function App() {
     setHasPurchasedThisTurn(false);
     setHasWashedDishesThisTurn(false);
     const updatedState = { ...gameState };
+    
+    if (choice.trigger_dishwasher) {
+      setPendingChoiceData({ choice, updatedState });
+      setShowDishwasher(true);
+      return;
+    }
     if (updatedState.thesfapaClicked) {
       updatedState.turnsSinceThesfapa += 1;
     }
@@ -929,13 +961,14 @@ function App() {
     }
 
     const currentTurn = currentState.turnCount;
+    const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] && 
+      SPECIFIC_EVENTS[currentTurn].some(alt => (!alt.season || alt.season === currentState.season) && isRoleMatch(alt.role, currentState.role));
     // AI is used on Turn 0 (Interview) and every 5th turn (5, 10, 15, etc.) EXCEPT if there's a SPECIFIC_EVENT
-    const isAITurn = useAI && (currentTurn === 0 || currentTurn % 5 === 0) && !SPECIFIC_EVENTS[currentTurn];
+    const isAITurn = useAI && (currentTurn === 0 || currentTurn % 5 === 0) && !hasSpecificEvent;
 
     if (!isAITurn) {
       // Hardcoded Route
       let nextScene = null;
-      const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] && (currentTurn !== 7 || currentState.season === 2);
       if (hasSpecificEvent) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
         const roleFiltered = alternatives.filter(alt => isRoleMatch(alt.role, currentState.role));
@@ -999,7 +1032,8 @@ function App() {
       if (!updatedState.thesfapaTargetTurn) {
         updatedState.thesfapaTargetTurn = Math.floor(Math.random() * 15) + 11; // Turn 11 to 25
       }
-      if (updatedState.turnCount === updatedState.thesfapaTargetTurn && !updatedState.thesfapaSpawnedThisSeason) {
+      const isSeason1 = !updatedState.season || updatedState.season === 1;
+      if (isSeason1 && updatedState.turnCount === updatedState.thesfapaTargetTurn && !updatedState.thesfapaSpawnedThisSeason) {
         nextScene.story_text += " \n\nΈνας πελάτης σε βγάζει εκτός εαυτού με τις παράλογες απαιτήσεις του! Νιώθεις το αίμα σου να βράζει και θες απεγνωσμένα να τον χαστουκίσεις! Ξέσπασε εδώ: http://FapOMeter";
         updatedState.thesfapaSpawnedThisSeason = true;
       }
@@ -1059,7 +1093,8 @@ function App() {
       if (!newState.thesfapaTargetTurn) {
         newState.thesfapaTargetTurn = Math.floor(Math.random() * 15) + 11; // Turn 11 to 25
       }
-      if (newState.turnCount === newState.thesfapaTargetTurn && !newState.thesfapaSpawnedThisSeason) {
+      const isSeason1 = !newState.season || newState.season === 1;
+      if (isSeason1 && newState.turnCount === newState.thesfapaTargetTurn && !newState.thesfapaSpawnedThisSeason) {
         response.story_text += " \n\nΈνας πελάτης σε βγάζει εκτός εαυτού με τις παράλογες απαιτήσεις του! Νιώθεις το αίμα σου να βράζει και θες απεγνωσμένα να τον χαστουκίσεις! Ξέσπασε εδώ: http://FapOMeter";
         newState.thesfapaSpawnedThisSeason = true;
       }
@@ -1723,7 +1758,9 @@ function App() {
       stress: 10,
       alcoholWarnings: 0,
       magicEyePurchasedCount: 0,
-      grandmaCashPurchasedCount: 0
+      grandmaCashPurchasedCount: 0,
+      thesfapaSpawnedThisSeason: false,
+      thesfapaTargetTurn: null
     };
     setGameState(newState);
     setGameOver(false);
@@ -1954,38 +1991,7 @@ function App() {
               <span>Μίνι Μάρκετ</span>
             </button>
           )}
-          {gameStarted && !gameOver && (
-            <button
-              onClick={() => {
-                if (hasWashedDishesThisTurn) {
-                  showToast("Έχεις ήδη πλύνει τα πιάτα αυτής της βάρδιας!", "🧼");
-                } else {
-                  setShowDishwasher(true);
-                }
-              }}
-              style={{
-                backgroundColor: hasWashedDishesThisTurn ? 'rgba(255, 255, 255, 0.02)' : 'rgba(102, 252, 241, 0.05)',
-                border: '1px solid var(--panel-border)',
-                borderRadius: '20px',
-                padding: '0.5rem 1rem',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: hasWashedDishesThisTurn ? 'var(--text-secondary)' : 'var(--accent-color)',
-                boxShadow: hasWashedDishesThisTurn ? 'none' : '0 0 10px rgba(102, 252, 241, 0.15)',
-                opacity: hasWashedDishesThisTurn ? 0.6 : 1,
-                transition: 'all 0.2s',
-                gap: '0.4rem',
-                fontWeight: 600
-              }}
-              title="Η Ώρα της Λάντζας (Mini-Game)"
-            >
-              <span style={{ fontSize: '1rem' }}>🧼</span>
-              <span>Λάντζα</span>
-            </button>
-          )}
+
           <button
             onClick={() => setShowLeaderboard(true)}
             style={{
@@ -2516,6 +2522,29 @@ function App() {
                   }}
                 >
                   🤚 ΠΑΙΞΕ ΤΩΡΑ ΤΟ ΦαΠ-Ο-Μέτρο
+                </button>
+
+                <button
+                  style={{
+                    marginTop: '0.5rem',
+                    background: 'linear-gradient(135deg, #a855f7, #7c3aed)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.5rem',
+                    color: '#ffffff',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)',
+                    transition: 'all 0.2s',
+                    width: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                  onClick={() => {
+                    setShowAdminPanel(false);
+                    setShowDishwasher(true);
+                  }}
+                >
+                  🧼 ΠΑΙΞΕ ΤΗ ΛΑΝΤΖΑ (TEST)
                 </button>
               </div>
 
