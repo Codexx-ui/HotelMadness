@@ -882,5 +882,50 @@ export const GENERAL_EVENTS = [
       { id: 2, text: "Τρέχω στο parking να τους προλάβω πριν μπουν στο αυτοκίνητο.", stress_change: 35, reputation_change: 5, cash_change: 0 },
       { id: 3, text: "Χρεώνω τα πιάτα τους κρυφά στο δωμάτιο ενός άλλου VIP που δεν ελέγχει ποτέ.", stress_change: 25, reputation_change: -25, cash_change: 40 }
     ]
+  },
+  {
+    scene_title: "Μυστική Συνάντηση Καρδάρη (Act Season 2)",
+    season: 2,
+    story_text: "Ο νέος F&B Manager Καρδάρης σε πλησιάζει ύποπτα στις αποθήκες. Σε κοιτάζει διερευνητικά: 'Ψάχνω κάποιον έμπιστο να μου δίνει πληροφορίες για τις κινήσεις του Μουστάκα. Αν με βοηθήσεις να τον εκθέσουμε στον Τάρναβα, θα έχεις προσωπική προστασία και μερίδιο από τα tips. Τι λες;'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Συμφωνώ κρυφά μαζί του, ο Μουστάκας έτσι κι αλλιώς μας έχει πρήξει.", stress_change: 15, reputation_change: -10, cash_change: 20, staff_relations_change: 15 },
+      { id: 2, text: "Του λέω ευγενικά ότι κοιτάω μόνο τη δουλειά μου και φεύγω.", stress_change: 5, reputation_change: 5, cash_change: 0, staff_relations_change: -10 },
+      { id: 3, text: "Πηγαίνω κατευθείαν στον Μουστάκα και τον καρφώνω για τη λαμογιά που ετοιμάζει.", stress_change: 30, reputation_change: 20, cash_change: 0, staff_relations_change: -25 }
+    ]
+  },
+  {
+    scene_title: "Η Λαμογιά του Καρδάρη (Act Season 2)",
+    season: 2,
+    story_text: "Ο Καρδάρης σε φωνάζει στο office και σου δίνει μπουκάλια με φτηνό αλκοόλ: 'Από σήμερα θα σερβίρουμε αυτά στα VIP τραπέζια ως premium. Η διαφορά θα μπει στην μπάντα. Μην ανησυχείς, αν γίνει έλεγχος θα το ρίξουμε στην απειρία της ρεσεψιόν και στον Μουστάκα.'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Ακολουθώ τις οδηγίες του F&B Manager, είναι ο προϊστάμενός μου.", stress_change: 20, reputation_change: -25, cash_change: 50, staff_relations_change: 10 },
+      { id: 2, text: "Αρνούμαι να συμμετάσχω σε τέτοια απάτη.", stress_change: 10, reputation_change: 15, cash_change: 0, staff_relations_change: -15 },
+      { id: 3, text: "Αναφέρω την απάτη απευθείας στον Τάρναβα για να κάψω τον Καρδάρη.", stress_change: 25, reputation_change: 10, cash_change: 0, staff_relations_change: -20 }
+    ]
+  },
+  {
+    scene_title: "Αλλεργιογόνα στον Μπουφέ (Act Season 2)",
+    season: 2,
+    role: "Βοηθός Σερβιτόρου",
+    story_text: "Η Captain Αλεξάνδρα Παντερμάλη τρέχει πανικόβλητη: 'Χρειαζόμαστε άμεσα καρτελάκια με αλλεργιογόνα για τον μπουφέ, αλλιώς αν μας κάνει έλεγχο το υγειονομικό θα φάμε 5.000€ πρόστιμο! Ο Καρδάρης αρνείται να εγκρίνει το budget. Μπορείς να βοηθήσεις να βρούμε μια άκρη ή έκπτωση για την εκτύπωση;'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Πηγαίνω στη Ρεσεψιόν και χρησιμοποιώ κρυφά τον εταιρικό εκτυπωτή για να τα τυπώσω δωρεάν.", stress_change: 20, reputation_change: 10, cash_change: 0, staff_relations_change: 20 },
+      { id: 2, text: "Βάζω 10€ από την τσέπη μου για να τα τυπώσουμε στο διπλανό φωτοτυπείο.", stress_change: 10, reputation_change: 15, cash_change: -10, staff_relations_change: 25 },
+      { id: 3, text: "Της λέω ότι είναι δουλειά του F&B και δεν ανακατεύομαι σε θέματα budget.", stress_change: 0, reputation_change: -10, cash_change: 0, staff_relations_change: -15 }
+    ]
+  },
+  {
+    scene_title: "Ο Μεθυσμένος Bar Manager (Act Season 2)",
+    season: 2,
+    story_text: "Μπαίνεις στην κεντρική αποθήκη ποτών και ακούς ένα δυνατό ροχαλητό. Πίσω από τις κούτες με τα τζιν, βρίσκεις τον Bar Manager Νίκο Περαντωνάκη τελείως μεθυσμένο να κοιμάται αγκαλιά με ένα μπουκάλι Metaxa. 'Αφήστε με... ο Μουστάκας μου φωνάζει όλη μέρα... δεν αντέχω άλλο...', μουρμουρίζει.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τον σκεπάζω με μια κούτα, κλειδώνω την αποθήκη και τον αφήνω να κοιμηθεί.", stress_change: 10, reputation_change: -5, cash_change: 0, staff_relations_change: 25 },
+      { id: 2, text: "Του ρίχνω έναν κουβά παγωμένο νερό για να συνέλθει άμεσα.", stress_change: 25, reputation_change: 5, cash_change: 0, staff_relations_change: -15 },
+      { id: 3, text: "Φωνάζω τον Καρδάρη για να δει σε τι κατάσταση είναι το τμήμα του.", stress_change: 15, reputation_change: 15, cash_change: 0, staff_relations_change: -30 }
+    ]
   }
 ];

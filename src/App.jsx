@@ -891,14 +891,48 @@ function App() {
       if (hasSpecificEvent) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
         const roleFiltered = alternatives.filter(alt => !alt.role || alt.role === currentState.role);
-        const unused = roleFiltered.filter(alt => !currentState.usedEventTexts?.includes(alt.story_text));
-        const pool = unused.length > 0 ? unused : roleFiltered;
+        
+        // Filter by season if the event has a specific season requirement
+        const seasonFiltered = roleFiltered.filter(alt => !alt.season || alt.season === currentState.season);
+        
+        // Exclude Fasli and Valantis in Season 2
+        let filteredAlts = seasonFiltered;
+        if (currentState.season === 2) {
+          filteredAlts = seasonFiltered.filter(alt => 
+            !alt.story_text.includes('Βαλάντης') && 
+            !alt.story_text.includes('Φασλί') && 
+            !alt.story_text.includes('Fasli') &&
+            !alt.scene_title.includes('Βαλάντης') &&
+            !alt.scene_title.includes('Φασλί') &&
+            !alt.scene_title.includes('Fasli')
+          );
+        }
+        
+        const unused = filteredAlts.filter(alt => !currentState.usedEventTexts?.includes(alt.story_text));
+        const pool = unused.length > 0 ? unused : (filteredAlts.length > 0 ? filteredAlts : roleFiltered);
         nextScene = pool[Math.floor(Math.random() * pool.length)] || alternatives[0];
       } else {
         // Filter general events so that role-specific events are only served to players with that role
         const filteredEvents = GENERAL_EVENTS.filter(e => !e.role || e.role === currentState.role);
-        const unused = filteredEvents.filter(e => !currentState.usedEventTexts?.includes(e.story_text));
-        const pool = unused.length > 0 ? unused : filteredEvents;
+        
+        // Filter by season if the event has a specific season requirement
+        const seasonFiltered = filteredEvents.filter(e => !e.season || e.season === currentState.season);
+        
+        // Exclude Fasli and Valantis in Season 2
+        let finalEvents = seasonFiltered;
+        if (currentState.season === 2) {
+          finalEvents = seasonFiltered.filter(e => 
+            !e.story_text.includes('Βαλάντης') && 
+            !e.story_text.includes('Φασλί') && 
+            !e.story_text.includes('Fasli') &&
+            !e.scene_title.includes('Βαλάντης') &&
+            !e.scene_title.includes('Φασλί') &&
+            !e.scene_title.includes('Fasli')
+          );
+        }
+        
+        const unused = finalEvents.filter(e => !currentState.usedEventTexts?.includes(e.story_text));
+        const pool = unused.length > 0 ? unused : finalEvents;
         const randomGen = pool[Math.floor(Math.random() * pool.length)];
         nextScene = { ...randomGen };
       }

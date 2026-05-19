@@ -106,6 +106,14 @@ Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
 
     // SEASONAL LOGIC INJECTION
     if (currentStateData.currentDate) {
+      if (currentStateData.season === 2) {
+        promptStr += `CRITICAL SEASON 2 RULES & LORE (You MUST follow these rules):
+- Do NOT mention or feature the NPCs "Βαλάντης" (Valantis) or "Φασλί" (Fasli) at all. They do not work here in Season 2.
+- Introduce a new NPC: "Καρδάρης" (Kardaris). He is the F&B Manager, has an extremely bad character, is a spy for Tarnavas, wants to undermine Moustakas, and wants to take Moustakas' position using various shady schemes (λαμογιές).
+- The allowed NPCs in Season 2 are: Maitress Κατερίνα Τζιούτζιου, Executive Chef Αντώνης Σάββας, Μουστάκας, Τάρναβας, and Καρδάρης.
+- If the player's role is "Βοηθός Σερβιτόρου" (Waiter), you can feature the Captain NPC "Αλεξάνδρα Παντερμάλη" who asks for help with getting a discount or printing allergen labels/cards for the buffet.
+- You can also feature the bar manager "Νίκος Περαντωνάκης" who has gotten completely drunk and is found passed out or drinking inside a warehouse (αποθήκη).\n\n`;
+      }
       const current = new Date(currentStateData.currentDate);
       const endOfSeason = new Date('2026-11-01');
       if (current >= endOfSeason) {
