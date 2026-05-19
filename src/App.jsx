@@ -207,23 +207,39 @@ function App() {
 
     let score = (turnWeight * 40) + (cashWeight * 60) + repBonus - stressPenalty;
     if (state.resigned) score -= 15;
-    if (state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3) score = score * 0.6;
+    
+    const isSeasonEnd = new Date(state.currentDate) >= new Date(`${2025 + (state.season || 1)}-11-01`);
+    
+    if (!isSeasonEnd && (state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3)) {
+        score = score * 0.6;
+    }
+    
+    // Bonus for surviving the season
+    if (isSeasonEnd) {
+        score += 15;
+    }
+
     return Math.max(0, Math.min(100, Math.round(score)));
   };
 
   const getEvaluationGrade = (rate, state) => {
+    const isSeasonEnd = new Date(state.currentDate) >= new Date(`${2025 + (state.season || 1)}-11-01`);
+
     if (state.resigned) {
       if (rate >= 70) return { grade: 'B-', label: 'Συνειδητοποιημένος Δραπέτης 🏃', desc: 'Έφυγες με γεμάτες τσέπες, αφήνοντας τον Μουστάκα στα κρύα του λουτρού!' };
       return { grade: 'D', label: 'Λιποτάκτης 🏃', desc: 'Πέταξες τη ποδιά και έφυγες τρέχοντας για το πλοίο της επιστροφής.' };
     }
-    if (state.stress >= 100) {
-      return { grade: 'F+', label: 'Θύμα του Συστήματος 🤯', desc: 'Κατέρρευσες από το ακραίο stress. Σε βρήκαν στην αποθήκη να κλαις αγκαλιά με ένα σεντόνι.' };
-    }
-    if (state.reputation <= 0) {
-      return { grade: 'F-', label: 'Ανεπιθύμητος 📉', desc: 'Κατέστρεψες τη φήμη του ξενοδοχείου. Ο Μουστάκας σε πέταξε έξω με κλωτσιές και σου μαύρισε το βιογραφικό.' };
-    }
-    if (state.alcoholWarnings >= 3) {
-      return { grade: 'F', label: 'Αλκοολικός της Faplantica ⚠️', desc: 'Σε έπιασαν να πίνεις το σφηνάκι του VIP. Σε έστειλαν σπίτι σου με 3 πειθαρχικές προειδοποιήσεις.' };
+    
+    if (!isSeasonEnd) {
+      if (state.stress >= 100) {
+        return { grade: 'F+', label: 'Θύμα του Συστήματος 🤯', desc: 'Κατέρρευσες από το ακραίο stress. Σε βρήκαν στην αποθήκη να κλαις αγκαλιά με ένα σεντόνι.' };
+      }
+      if (state.reputation <= 0) {
+        return { grade: 'F-', label: 'Ανεπιθύμητος 📉', desc: 'Κατέστρεψες τη φήμη του ξενοδοχείου. Ο Μουστάκας σε πέταξε έξω με κλωτσιές και σου μαύρισε το βιογραφικό.' };
+      }
+      if (state.alcoholWarnings >= 3) {
+        return { grade: 'F', label: 'Αλκοολικός της Faplantica ⚠️', desc: 'Σε έπιασαν να πίνεις το σφηνάκι του VIP. Σε έστειλαν σπίτι σου με 3 πειθαρχικές προειδοποιήσεις.' };
+      }
     }
     
     if (rate >= 95) return { grade: 'S+', label: 'Διάδοχος του Μουστάκα 👑', desc: 'Αδιανόητο! Έγινες ο φόβος και ο τρόμος των υπαλλήλων. Ο Μουστάκας υποκλίνεται στο μεγαλείο σου!' };
@@ -231,6 +247,11 @@ function App() {
     if (rate >= 70) return { grade: 'B', label: 'Έμπειρος Επαγγελματίας 🛎️', desc: 'Ξέρεις πώς να κρύβεις τα λάθη σου και πώς να παίρνεις tips. Ένας αληθινός επαγγελματίας.' };
     if (rate >= 50) return { grade: 'C', label: 'Επιζών της Σεζόν 🩹', desc: 'Με μισό κουτί depon την ημέρα και άπειρο καφέ, κατάφερες να βγάλεις τη σεζόν όρθιος.' };
     if (rate >= 30) return { grade: 'D', label: 'Φοβισμένο Γατάκι 🐱', desc: 'Κρυβόσουν στις τουαλέτες κάθε φορά που φώναζε ο Μουστάκας. Αλλά τουλάχιστον πληρώθηκες.' };
+    
+    if (isSeasonEnd) {
+      return { grade: 'D-', label: 'Με το Ζόρι Επιζών 🤕', desc: 'Η χειρότερη σεζόν της ζωής σου. Ο Μουστάκας κλαίει τα λεφτά που σε πλήρωσε, αλλά τουλάχιστον έφτασες στο τέλος χωρίς να απολυθείς!' };
+    }
+    
     return { grade: 'F', label: 'Απολυμένος 💼', desc: 'Δεν άντεξες ούτε τη βασική εκπαίδευση. Ο τουρισμός δεν είναι για σένα.' };
   };
 
@@ -1297,12 +1318,13 @@ function App() {
 
     return (
       <div className="game-over-screen">
-        <div className="game-over-title">
-          {isResigned ? "ΠΑΡΑΙΤΗΣΗ! GAME OVER" :
+        <div className="game-over-title" style={isSeasonEnd && !isResigned ? { color: '#4bff4b', textShadow: '0 0 25px rgba(75, 255, 75, 0.6)' } : {}}>
+          {isSeasonEnd && !isResigned ? "ΤΕΛΟΣ ΣΕΖΟΝ!" :
+           isResigned ? "ΠΑΡΑΙΤΗΣΗ! GAME OVER" :
            gameState.stress >= 100 ? "BURNOUT! GAME OVER" : 
            gameState.reputation <= 0 ? "ΑΠΟΛΥΘΗΚΕΣ! GAME OVER" : 
            gameState.alcoholWarnings >= 3 ? "ΠΕΙΘΑΡΧΙΚΗ ΑΠΟΛΥΣΗ! GAME OVER" : 
-           isSeasonEnd ? "ΤΕΛΟΣ ΣΕΖΟΝ!" : "GAME OVER"}
+           "GAME OVER"}
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center', lineHeight: '1.6' }}>
           {isResigned 
