@@ -114,8 +114,6 @@ function App() {
   const [hasWashedDishesThisTurn, setHasWashedDishesThisTurn] = useState(false);
   const [pendingChoiceData, setPendingChoiceData] = useState(null);
   const [showViber, setShowViber] = useState(false);
-  const [viberMessages, setViberMessages] = useState([]);
-  const [viberUnreadCount, setViberUnreadCount] = useState(0);
   const [opsManagerSpawnsThisSeason, setOpsManagerSpawnsThisSeason] = useState(0);
 
   const handleDishwasherComplete = ({ success, score }) => {
@@ -642,8 +640,6 @@ function App() {
       setNicknameConfirmed(true);
       setGameStarted(true);
       setHasSavedGame(false);
-      setViberMessages(savedGame.gameState?.viberMessages || []);
-      setViberUnreadCount(savedGame.gameState?.viberUnreadCount || 0);
       setOpsManagerSpawnsThisSeason(savedGame.gameState?.opsManagerSpawnsThisSeason || 0);
     }
   };
@@ -656,8 +652,6 @@ function App() {
       setNicknameConfirmed(true);
       setGameStarted(true);
       setHasCloudSave(false);
-      setViberMessages(cloudSaveData.game_state?.viberMessages || []);
-      setViberUnreadCount(cloudSaveData.game_state?.viberUnreadCount || 0);
       setOpsManagerSpawnsThisSeason(cloudSaveData.game_state?.opsManagerSpawnsThisSeason || 0);
     }
   };
@@ -695,8 +689,6 @@ function App() {
     if (roleKey === 'Σερβιτόρος') actualRole = 'Βοηθός Σερβιτόρου';
     const newState = { ...INITIAL_STATE, role: actualRole, nickname };
     setGameState(newState);
-    setViberMessages([]);
-    setViberUnreadCount(0);
     setOpsManagerSpawnsThisSeason(0);
     setShowDisclaimer(true);
   };
@@ -998,8 +990,6 @@ function App() {
       stateToUpdate.viberUnreadCount = (stateToUpdate.viberUnreadCount || 0) + 1;
       stateToUpdate.opsManagerSpawnsThisSeason = currentSpawns + 1;
 
-      setViberMessages(newMsgs);
-      setViberUnreadCount(stateToUpdate.viberUnreadCount);
       setOpsManagerSpawnsThisSeason(stateToUpdate.opsManagerSpawnsThisSeason);
       audioService.playNotificationSound();
     }
@@ -1145,8 +1135,6 @@ function App() {
         const coworkerMsg = { sender: fallback.sender, text: fallback.text, item: null, accepted: false };
         updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
         updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
-        setViberMessages(updatedState.viberMessages);
-        setViberUnreadCount(updatedState.viberUnreadCount);
         audioService.playNotificationSound();
       }
 
@@ -1236,8 +1224,6 @@ function App() {
       if (coworkerMsg) {
         newState.viberMessages = [...(newState.viberMessages || []), coworkerMsg];
         newState.viberUnreadCount = (newState.viberUnreadCount || 0) + 1;
-        setViberMessages(newState.viberMessages);
-        setViberUnreadCount(newState.viberUnreadCount);
         audioService.playNotificationSound();
       }
 
@@ -1271,8 +1257,6 @@ function App() {
         const coworkerMsg = { sender: fallback.sender, text: fallback.text, item: null, accepted: false };
         updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
         updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
-        setViberMessages(updatedState.viberMessages);
-        setViberUnreadCount(updatedState.viberUnreadCount);
         audioService.playNotificationSound();
       }
 
@@ -1406,8 +1390,6 @@ function App() {
                         setNicknameConfirmed(true);
                         setGameStarted(true);
                         setGameOver(false);
-                        setViberMessages(save.saveData.gameState?.viberMessages || []);
-                        setViberUnreadCount(save.saveData.gameState?.viberUnreadCount || 0);
                         setOpsManagerSpawnsThisSeason(save.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
                         showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
                       }
@@ -1659,8 +1641,6 @@ function App() {
                         setNicknameConfirmed(true);
                         setGameStarted(true);
                         setGameOver(false);
-                        setViberMessages(save.saveData.gameState?.viberMessages || []);
-                        setViberUnreadCount(save.saveData.gameState?.viberUnreadCount || 0);
                         setOpsManagerSpawnsThisSeason(save.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
                         showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
                       }
@@ -2095,8 +2075,6 @@ function App() {
       opsManagerSpawnsThisSeason: 0
     };
     setGameState(newState);
-    setViberMessages([]);
-    setViberUnreadCount(0);
     setOpsManagerSpawnsThisSeason(0);
     setGameOver(false);
     setFeedbackSent(false);
@@ -2255,8 +2233,6 @@ function App() {
                                 setNicknameConfirmed(true);
                                 setGameStarted(true);
                                 setGameOver(false);
-                                setViberMessages(entry.saveData.gameState?.viberMessages || []);
-                                setViberUnreadCount(entry.saveData.gameState?.viberUnreadCount || 0);
                                 setOpsManagerSpawnsThisSeason(entry.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
                                 setShowLeaderboard(false);
                                 showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
@@ -2416,7 +2392,6 @@ function App() {
             <button
               onClick={() => { 
                 setShowViber(true); 
-                setViberUnreadCount(0); 
                 setGameState(prev => ({ ...prev, viberUnreadCount: 0 }));
               }}
               style={{
@@ -2440,14 +2415,14 @@ function App() {
             >
               <span>💬</span>
               <span>Viber</span>
-              {viberUnreadCount > 0 && (
+              {(gameState.viberUnreadCount || 0) > 0 && (
                 <span style={{
                   position: 'absolute', top: '-6px', right: '-6px',
                   backgroundColor: '#ff4b4b', color: 'white',
                   borderRadius: '50%', width: '18px', height: '18px',
                   fontSize: '0.7rem', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', fontWeight: 'bold'
-                }}>{viberUnreadCount}</span>
+                }}>{gameState.viberUnreadCount}</span>
               )}
             </button>
           )}
@@ -2704,8 +2679,6 @@ function App() {
                       localStorage.removeItem('hotel_madness_leaderboard');
                       // Reset local storage states
                       setGameState(INITIAL_STATE);
-                      setViberMessages([]);
-                      setViberUnreadCount(0);
                       setOpsManagerSpawnsThisSeason(0);
                       setGameStarted(false);
                       setNicknameConfirmed(false);
@@ -3177,17 +3150,17 @@ function App() {
       {renderLeaderboardModal()}
       {showViber && (
         <ViberModal
-          messages={viberMessages}
+          messages={gameState.viberMessages || []}
           onClose={() => setShowViber(false)}
           onAcceptItem={(index) => {
-            const msg = viberMessages[index];
+            const currentMsgs = gameState.viberMessages || [];
+            const msg = currentMsgs[index];
             if (!msg || !msg.item || msg.accepted) return;
-            const updated = viberMessages.map((m, i) => i === index ? { ...m, accepted: true } : m);
-            setViberMessages(updated);
+            const updated = currentMsgs.map((m, i) => i === index ? { ...m, accepted: true } : m);
             setGameState(prev => ({ 
               ...prev, 
               viberMessages: updated,
-              inventory: [...prev.inventory, msg.item] 
+              inventory: [...(prev.inventory || []), msg.item] 
             }));
             showToast(`🎁 Παρέλαβες: ${msg.item}!`, '✅');
           }}
