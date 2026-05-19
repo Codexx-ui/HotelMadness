@@ -101,7 +101,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   
   if (text.includes('κατερίνα') || text.includes('κατερίνας') || text.includes('katerina')) {
     chars.push({
-      src: '/katerina_face.jpg',
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Katerina&backgroundColor=b6e3f4',
       alt: 'Maitress Katerina',
       name: 'Maitress Κατερίνα',
       gender: 'female',
@@ -111,7 +111,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   
   if (text.includes('μπαλατσούκας') || text.includes('μπαλατσούκα') || text.includes('μπαλατσουκα')) {
     chars.push({
-      src: '/balatsoukas_face.jpg',
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Balatsoukas&backgroundColor=ffd5dc',
       alt: 'Balatsoukas',
       name: 'Μπαλατσούκας',
       gender: 'male',
@@ -121,7 +121,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   
   if (text.includes('βαλάντης') || text.includes('βαλάντη') || text.includes('βαλαντη')) {
     chars.push({
-      src: '/valantis_face.jpg',
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Valantis&backgroundColor=c0aede',
       alt: 'Valantis',
       name: 'Βαλάντης',
       gender: 'male',
@@ -131,7 +131,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   
   if (text.includes('φασλί') || text.includes('fasli') || text.includes('φασλι')) {
     chars.push({
-      src: '/fasli_face.jpg',
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Fasli&backgroundColor=ffdfbf',
       alt: 'Fasli',
       name: 'Φασλί',
       gender: 'male',
@@ -141,7 +141,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   
   if (text.includes('καμαριέρα') || text.includes('καμαριέρας') || text.includes('καμαριερες')) {
     chars.push({
-      src: '/kamariera_face.jpg',
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Kamariera&backgroundColor=b6e3f4',
       alt: 'Kamariera',
       name: 'Καμαριέρα',
       gender: 'female',
@@ -151,7 +151,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   
   if (text.includes('bellboy') || text.includes('μπελμπόι')) {
     chars.push({
-      src: '/bellboy_face.jpg',
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Bellboy&backgroundColor=ffd5dc',
       alt: 'Bellboy',
       name: 'Bellboy',
       gender: 'male',
@@ -161,7 +161,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   
   if (text.includes('λαντζέρης') || text.includes('λαντζέρηδες') || text.includes('λαντζέρη')) {
     chars.push({
-      src: '/langeris_face.jpg',
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Langeris&backgroundColor=ffdfbf',
       alt: 'Langeris',
       name: 'Λαντζέρης',
       gender: 'male',
@@ -172,7 +172,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
   if (chars.length === 0) {
     if (text.includes('καμαριέρα') || text.includes('κοπέλα') || text.includes('συνάδελφος κοπέλα') || text.includes('γυναίκα')) {
       chars.push({
-        src: '/generic_female.jpg',
+        src: 'https://api.dicebear.com/9.x/micah/svg?seed=GenericFemale&backgroundColor=b6e3f4',
         alt: 'Staff',
         name: 'Υπάλληλος (Γυναίκα)',
         gender: 'female',
@@ -180,7 +180,7 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
       });
     } else if (text.includes('μάγειρας') || text.includes('σερβιτόρος') || text.includes('υπάλληλος') || text.includes('πελάτης') || text.includes('συνάδελφος') || text.includes('άνδρας')) {
       chars.push({
-        src: '/generic_male.jpg',
+        src: 'https://api.dicebear.com/9.x/micah/svg?seed=GenericMale&backgroundColor=c0aede',
         alt: 'Staff',
         name: 'Υπάλληλος (Άνδρας)',
         gender: 'male',
