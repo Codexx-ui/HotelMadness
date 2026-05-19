@@ -44,62 +44,64 @@ const ViberModal = ({ messages, onClose, onAcceptItem }) => {
           backgroundColor: '#e5e5ea', backgroundImage: 'radial-gradient(#d1d1d6 1px, transparent 1px)',
           backgroundSize: '20px 20px'
         }}>
-          {messages.length === 0 ? (
+          {!messages || messages.filter(m => m && m.sender && m.text).length === 0 ? (
             <div style={{ textAlign: 'center', color: '#8e8e93', marginTop: '2rem', fontSize: '0.9rem' }}>
               Κανένα νέο μήνυμα.
             </div>
           ) : (
-            messages.map((msg, index) => {
-              const isOps = msg.sender.includes('Τσαφρακίδης');
-              return (
-                <div key={index} style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  maxWidth: '85%'
-                }}>
-                  <div style={{
-                    fontSize: '0.75rem',
-                    color: isOps ? '#7360f2' : '#8e8e93',
-                    marginBottom: '0.2rem',
-                    marginLeft: '0.5rem',
-                    fontWeight: isOps ? 'bold' : 'normal'
+            messages
+              .filter(m => m && m.sender && m.text)
+              .map((msg, index) => {
+                const isOps = msg.sender && msg.sender.includes('Τσαφρακίδης');
+                return (
+                  <div key={index} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    maxWidth: '85%'
                   }}>
-                    {msg.sender}
-                  </div>
-                  <div style={{
-                    backgroundColor: 'white',
-                    color: '#000',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '18px',
-                    borderTopLeftRadius: '4px',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                    fontSize: '0.95rem',
-                    lineHeight: '1.4'
-                  }}>
-                    {msg.text}
-                    {msg.item && !msg.accepted && (
-                      <div style={{ marginTop: '0.75rem', borderTop: '1px solid #eee', paddingTop: '0.75rem' }}>
-                        <button onClick={() => onAcceptItem(index)} style={{
-                          backgroundColor: '#7360f2', color: 'white', border: 'none',
-                          padding: '0.5rem 1rem', borderRadius: '8px', width: '100%',
-                          cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem'
+                    <div style={{
+                      fontSize: '0.75rem',
+                      color: isOps ? '#7360f2' : '#8e8e93',
+                      marginBottom: '0.2rem',
+                      marginLeft: '0.5rem',
+                      fontWeight: isOps ? 'bold' : 'normal'
+                    }}>
+                      {msg.sender}
+                    </div>
+                    <div style={{
+                      backgroundColor: 'white',
+                      color: '#000',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '18px',
+                      borderTopLeftRadius: '4px',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                      fontSize: '0.95rem',
+                      lineHeight: '1.4'
+                    }}>
+                      {msg.text}
+                      {msg.item && !msg.accepted && (
+                        <div style={{ marginTop: '0.75rem', borderTop: '1px solid #eee', paddingTop: '0.75rem' }}>
+                          <button onClick={() => onAcceptItem(index)} style={{
+                            backgroundColor: '#7360f2', color: 'white', border: 'none',
+                            padding: '0.5rem 1rem', borderRadius: '8px', width: '100%',
+                            cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem'
+                          }}>
+                            🎁 Αποδοχή Δώρου
+                          </button>
+                        </div>
+                      )}
+                      {msg.item && msg.accepted && (
+                        <div style={{
+                          marginTop: '0.5rem', fontSize: '0.8rem', color: '#10b981', fontWeight: 'bold'
                         }}>
-                          🎁 Αποδοχή Δώρου
-                        </button>
-                      </div>
-                    )}
-                    {msg.item && msg.accepted && (
-                      <div style={{
-                        marginTop: '0.5rem', fontSize: '0.8rem', color: '#10b981', fontWeight: 'bold'
-                      }}>
-                        ✓ Δώρο λήφθηκε!
-                      </div>
-                    )}
+                          ✓ Δώρο λήφθηκε!
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })
           )}
           <div ref={messagesEndRef} />
         </div>
