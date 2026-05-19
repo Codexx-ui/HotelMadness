@@ -1,6 +1,197 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, Star } from 'lucide-react';
 
+const DynamicPortrait = ({ src, alt, fallbackName, fallbackGender, fallbackInitial }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError || !src) {
+    const gradient = fallbackGender === 'female'
+      ? 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)'
+      : 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)';
+    const border = fallbackGender === 'female' ? '#ec4899' : '#3b82f6';
+    const shadow = fallbackGender === 'female'
+      ? '0 0 15px rgba(236, 72, 153, 0.4)'
+      : '0 0 15px rgba(59, 130, 246, 0.4)';
+
+    return (
+      <div style={{
+        width: '60px',
+        height: '60px',
+        borderRadius: '50%',
+        border: `2px solid ${border}`,
+        boxShadow: shadow,
+        background: gradient,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: '1.4rem',
+        userSelect: 'none',
+        position: 'relative'
+      }} title={fallbackName}>
+        {fallbackInitial}
+        <span style={{
+          position: 'absolute',
+          bottom: '-2px',
+          right: '-2px',
+          backgroundColor: '#0a0d1e',
+          borderRadius: '50%',
+          width: '18px',
+          height: '18px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '0.7rem',
+          border: `1px solid ${border}`,
+          color: '#fff'
+        }}>
+          {fallbackGender === 'female' ? '♀' : '♂'}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      border: '2px solid var(--accent-color)',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      width: '60px',
+      height: '60px',
+      boxShadow: '0 2px 8px rgba(102, 252, 241, 0.3)',
+      backgroundColor: 'rgba(0,0,0,0.2)'
+    }}>
+      <img
+        src={src}
+        alt={alt}
+        onError={() => setHasError(true)}
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+    </div>
+  );
+};
+
+const getActiveCharacters = (story_text = '', scene_title = '') => {
+  const text = ((story_text || '') + ' ' + (scene_title || '')).toLowerCase();
+  const chars = [];
+  
+  const isChefSavvasScene = text.includes('σάββας') || text.includes('σάββα') || text.includes('σεφ αντώνης');
+  const isMoustakasScene = text.includes('μουστάκας') || text.includes('μουστάκα') || text.includes('moustakas');
+  
+  if (isChefSavvasScene) {
+    chars.push({
+      src: '/savvas_face.jpg',
+      alt: 'Chef Antonis Savvas',
+      name: 'Chef Αντώνης Σάββας',
+      gender: 'male',
+      initial: 'Σ'
+    });
+  }
+  
+  if (isMoustakasScene) {
+    chars.push({
+      src: '/moustakas_face.jpg',
+      alt: 'GM Georgios Moustakas',
+      name: 'GM Γεώργιος Μουστάκας',
+      gender: 'male',
+      initial: 'Μ'
+    });
+  }
+  
+  if (text.includes('κατερίνα') || text.includes('κατερίνας') || text.includes('katerina')) {
+    chars.push({
+      src: '/katerina_face.jpg',
+      alt: 'Maitress Katerina',
+      name: 'Maitress Κατερίνα',
+      gender: 'female',
+      initial: 'Κ'
+    });
+  }
+  
+  if (text.includes('μπαλατσούκας') || text.includes('μπαλατσούκα') || text.includes('μπαλατσουκα')) {
+    chars.push({
+      src: '/balatsoukas_face.jpg',
+      alt: 'Balatsoukas',
+      name: 'Μπαλατσούκας',
+      gender: 'male',
+      initial: 'Μ'
+    });
+  }
+  
+  if (text.includes('βαλάντης') || text.includes('βαλάντη') || text.includes('βαλαντη')) {
+    chars.push({
+      src: '/valantis_face.jpg',
+      alt: 'Valantis',
+      name: 'Βαλάντης',
+      gender: 'male',
+      initial: 'Β'
+    });
+  }
+  
+  if (text.includes('φασλί') || text.includes('fasli') || text.includes('φασλι')) {
+    chars.push({
+      src: '/fasli_face.jpg',
+      alt: 'Fasli',
+      name: 'Φασλί',
+      gender: 'male',
+      initial: 'Φ'
+    });
+  }
+  
+  if (text.includes('καμαριέρα') || text.includes('καμαριέρας') || text.includes('καμαριερες')) {
+    chars.push({
+      src: '/kamariera_face.jpg',
+      alt: 'Kamariera',
+      name: 'Καμαριέρα',
+      gender: 'female',
+      initial: 'Κ'
+    });
+  }
+  
+  if (text.includes('bellboy') || text.includes('μπελμπόι')) {
+    chars.push({
+      src: '/bellboy_face.jpg',
+      alt: 'Bellboy',
+      name: 'Bellboy',
+      gender: 'male',
+      initial: 'Β'
+    });
+  }
+  
+  if (text.includes('λαντζέρης') || text.includes('λαντζέρηδες') || text.includes('λαντζέρη')) {
+    chars.push({
+      src: '/langeris_face.jpg',
+      alt: 'Langeris',
+      name: 'Λαντζέρης',
+      gender: 'male',
+      initial: 'Λ'
+    });
+  }
+
+  if (chars.length === 0) {
+    if (text.includes('καμαριέρα') || text.includes('κοπέλα') || text.includes('συνάδελφος κοπέλα') || text.includes('γυναίκα')) {
+      chars.push({
+        src: '/generic_female.jpg',
+        alt: 'Staff',
+        name: 'Υπάλληλος (Γυναίκα)',
+        gender: 'female',
+        initial: '👩'
+      });
+    } else if (text.includes('μάγειρας') || text.includes('σερβιτόρος') || text.includes('υπάλληλος') || text.includes('πελάτης') || text.includes('συνάδελφος') || text.includes('άνδρας')) {
+      chars.push({
+        src: '/generic_male.jpg',
+        alt: 'Staff',
+        name: 'Υπάλληλος (Άνδρας)',
+        gender: 'male',
+        initial: '👨'
+      });
+    }
+  }
+
+  return chars;
+};
+
 const SURVIVAL_TIPS = [
   "Tip: Αν ο Μουστάκας φωνάζει, απλά κουνήστε το κεφάλι καταφατικά και πείτε 'corporate alignment'. Λειτουργεί πάντα.",
   "Tip: Μην πίνετε ποτέ το σφηνάκι του VIP πελάτη. Είναι παγίδα του HR.",
@@ -88,49 +279,23 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
           )}
 
           {(() => {
-            const isChefSavvasScene = story_text?.includes('Σάββας') || story_text?.includes('Σάββα') || story_text?.includes('Σεφ Αντώνης') || scene_title?.includes('Σάββας') || scene_title?.includes('Σάββα') || scene_title?.includes('Σεφ Αντώνης');
-            const isMoustakasScene = story_text?.includes('Μουστάκας') || story_text?.includes('Μουστάκα') || story_text?.includes('Moustakas') || scene_title?.includes('Μουστάκας') || scene_title?.includes('Μουστάκα') || scene_title?.includes('Moustakas');
-            if ((isChefSavvasScene || isMoustakasScene) && !sceneData.image) {
-              return (
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  {isChefSavvasScene && (
-                    <div style={{ 
-                      border: '2px solid var(--accent-color)', 
-                      borderRadius: '50%', 
-                      overflow: 'hidden', 
-                      width: '60px', 
-                      height: '60px',
-                      boxShadow: '0 2px 8px rgba(102, 252, 241, 0.3)',
-                      backgroundColor: 'rgba(0,0,0,0.2)'
-                    }}>
-                      <img 
-                        src="/savvas_face.jpg" 
-                        alt="Chef Antonis Savvas" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                      />
-                    </div>
-                  )}
-                  {isMoustakasScene && (
-                    <div style={{ 
-                      border: '2px solid var(--accent-color)', 
-                      borderRadius: '50%', 
-                      overflow: 'hidden', 
-                      width: '60px', 
-                      height: '60px',
-                      boxShadow: '0 2px 8px rgba(102, 252, 241, 0.3)',
-                      backgroundColor: 'rgba(0,0,0,0.2)'
-                    }}>
-                      <img 
-                        src="/moustakas_face.jpg" 
-                        alt="GM Georgios Moustakas" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                      />
-                    </div>
-                  )}
-                </div>
-              );
-            }
-            return null;
+            if (sceneData.image) return null;
+            const activeChars = getActiveCharacters(story_text, scene_title);
+            if (activeChars.length === 0) return null;
+            return (
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                {activeChars.map((char, index) => (
+                  <DynamicPortrait
+                    key={index}
+                    src={char.src}
+                    alt={char.alt}
+                    fallbackName={char.name}
+                    fallbackGender={char.gender}
+                    fallbackInitial={char.initial}
+                  />
+                ))}
+              </div>
+            );
           })()}
         </div>
 

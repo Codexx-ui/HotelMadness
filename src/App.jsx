@@ -3,6 +3,7 @@ import Dashboard from './components/Dashboard';
 import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import SlapOMeter from './components/SlapOMeter';
+import DishwasherModal from './components/DishwasherModal';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
 import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut, Trophy } from 'lucide-react';
@@ -105,6 +106,31 @@ function App() {
   const [musicPlaylist, setMusicPlaylist] = useState(audioService.getPlaylist());
   const [showSlapOMeter, setShowSlapOMeter] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showDishwasher, setShowDishwasher] = useState(false);
+  const [hasWashedDishesThisTurn, setHasWashedDishesThisTurn] = useState(false);
+
+  const handleDishwasherComplete = ({ success, score }) => {
+    setGameState((prev) => {
+      let stressChange = success ? -20 : 15;
+      let cashChange = success ? 10 : 0;
+      
+      const newStress = Math.max(0, Math.min(100, prev.stress + stressChange));
+      const newCash = Math.max(0, prev.cash + cashChange);
+      
+      return {
+        ...prev,
+        stress: newStress,
+        cash: newCash
+      };
+    });
+    setHasWashedDishesThisTurn(true);
+    
+    if (success) {
+      if (useSFX) {
+        audioService.playCashSound();
+      }
+    }
+  };
 
   const showToast = (text, icon = '💵') => {
     setToastMessage({ text, icon });
@@ -657,6 +683,7 @@ function App() {
 
   const handleChoice = async (choice) => {
     setHasPurchasedThisTurn(false);
+    setHasWashedDishesThisTurn(false);
     const updatedState = { ...gameState };
     if (updatedState.thesfapaClicked) {
       updatedState.turnsSinceThesfapa += 1;
@@ -1927,6 +1954,38 @@ function App() {
               <span>Μίνι Μάρκετ</span>
             </button>
           )}
+          {gameStarted && !gameOver && (
+            <button
+              onClick={() => {
+                if (hasWashedDishesThisTurn) {
+                  showToast("Έχεις ήδη πλύνει τα πιάτα αυτής της βάρδιας!", "🧼");
+                } else {
+                  setShowDishwasher(true);
+                }
+              }}
+              style={{
+                backgroundColor: hasWashedDishesThisTurn ? 'rgba(255, 255, 255, 0.02)' : 'rgba(102, 252, 241, 0.05)',
+                border: '1px solid var(--panel-border)',
+                borderRadius: '20px',
+                padding: '0.5rem 1rem',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: hasWashedDishesThisTurn ? 'var(--text-secondary)' : 'var(--accent-color)',
+                boxShadow: hasWashedDishesThisTurn ? 'none' : '0 0 10px rgba(102, 252, 241, 0.15)',
+                opacity: hasWashedDishesThisTurn ? 0.6 : 1,
+                transition: 'all 0.2s',
+                gap: '0.4rem',
+                fontWeight: 600
+              }}
+              title="Η Ώρα της Λάντζας (Mini-Game)"
+            >
+              <span style={{ fontSize: '1rem' }}>🧼</span>
+              <span>Λάντζα</span>
+            </button>
+          )}
           <button
             onClick={() => setShowLeaderboard(true)}
             style={{
@@ -2661,6 +2720,13 @@ function App() {
         <SlapOMeter
           onClose={() => setShowSlapOMeter(false)}
           onResult={handleSlapResult}
+        />
+      )}
+      {showDishwasher && (
+        <DishwasherModal
+          isOpen={showDishwasher}
+          onClose={() => setShowDishwasher(false)}
+          onComplete={handleDishwasherComplete}
         />
       )}
       {renderLeaderboardModal()}
