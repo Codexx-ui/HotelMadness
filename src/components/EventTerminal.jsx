@@ -169,6 +169,16 @@ const getActiveCharacters = (story_text = '', scene_title = '') => {
     });
   }
 
+  if (text.includes('αλεξάνδρα') || text.includes('alexandra') || text.includes('αλεξανδρα') || text.includes('captain')) {
+    chars.push({
+      src: 'https://api.dicebear.com/9.x/micah/svg?seed=Alexandra&backgroundColor=ffd5dc',
+      alt: 'Captain Alexandra',
+      name: 'Captain Αλεξάνδρα',
+      gender: 'female',
+      initial: 'Α'
+    });
+  }
+
   if (chars.length === 0) {
     if (text.includes('καμαριέρα') || text.includes('κοπέλα') || text.includes('συνάδελφος κοπέλα') || text.includes('γυναίκα')) {
       chars.push({
