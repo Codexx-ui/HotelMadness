@@ -6,7 +6,7 @@ import SlapOMeter from './components/SlapOMeter';
 import DishwasherModal from './components/DishwasherModal';
 import ViberModal from './components/ViberModal';
 import { supabase } from './supabaseClient';
-import { generateNextState, generateViberMessageOnly } from './services/aiService';
+import { generateNextState } from './services/aiService';
 import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut, Trophy } from 'lucide-react';
 import { audioService } from './services/audioService';
 import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
@@ -1005,29 +1005,24 @@ function App() {
     }
   };
 
-  const triggerCoworkerViberMessage = (stateForViber) => {
-    const turn = stateForViber.turnCount || 0;
-    if (turn > 0 && turn % 3 === 0) {
-      generateViberMessageOnly(stateForViber).then(res => {
-        if (res && res.viber_message && res.viber_message.sender && res.viber_message.text) {
-          const newMsg = { sender: res.viber_message.sender, text: res.viber_message.text, item: null, accepted: false };
-          setGameState(prev => {
-            const newMsgs = [...(prev.viberMessages || []), newMsg];
-            const newUnread = (prev.viberUnreadCount || 0) + 1;
-            setViberMessages(newMsgs);
-            setViberUnreadCount(newUnread);
-            return {
-              ...prev,
-              viberMessages: newMsgs,
-              viberUnreadCount: newUnread
-            };
-          });
-          audioService.playNotificationSound();
-        }
-      }).catch(err => {
-        console.warn("Failed to generate coworker Viber message asynchronously", err);
-      });
-    }
+  const getFallbackCoworkerMessage = (role) => {
+    const messages = [
+      { sender: 'Γιάννης (Reception)', text: 'Ρε συ, είδες τι έγινε χθες με τον Μουστάκα; Ούρλιαζε πάλι για τις πετσέτες. Κουράγιο...' },
+      { sender: 'Μαρία (Housekeeping)', text: 'Έχουμε 5 check-out στο 2ο όροφο και είμαστε μόνο δύο κοπέλες. Αν δεις τον Τάρναβα πες του ότι καθαρίζουμε!' },
+      { sender: 'Chef Αντώνης', text: 'Πάλι τελείωσε το ελαιόλαδο. Ποιος ξέχασε να παραγγείλει; Θα γίνει σφαγή σήμερα...' },
+      { sender: 'Κώστας (Maintenance)', text: 'Το air condition στο 104 πάλι στάζει. Μην νοικιάσετε αυτό το δωμάτιο, θα φάμε TripAdvisor κράξιμο!' },
+      { sender: 'Ελένη (Spa)', text: 'Ήρθε μια περίεργη κυρία και ζητάει δωρεάν μασάζ επειδή λέει είδε μια μέλισσα στην πισίνα. Τι να της πω;' },
+      { sender: 'Βασίλης (Beach Bar)', text: 'Φίλε έχει 40 βαθμούς έξω και έχει τελειώσει ο πάγος. Αν δεν φέρουν σε μισή ώρα, φεύγω.' },
+      { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Κάποιος έσπασε 3 δίσκους στην κουζίνα και ο Chef κοντεύει να πάθει εγκεφαλικό. Μην πλησιάζεις.' },
+      { sender: 'Νίκος (Μπαρ)', text: 'Φίλε, κρύψε καμιά μπύρα στην αποθήκη. Θα περάσω μετά το σχόλασμα να την πιούμε κρυφά 🤫' },
+      { sender: 'Γιώργος (Bellboy)', text: 'Ήρθαν κάτι VIPs με 10 βαλίτσες ο καθένας και δεν λειτουργεί το ασανσέρ. Μάλλον θα παραιτηθώ σήμερα.' }
+    ];
+    const roleFiltered = messages.filter(m => {
+      if (role === 'Front Office Agent' && m.sender.includes('Reception')) return false;
+      if (role === 'Γ Μάγειρας' && m.sender.includes('Chef')) return false;
+      return true;
+    });
+    return roleFiltered[Math.floor(Math.random() * roleFiltered.length)];
   };
 
   const processTurn = async (playerInput, currentState) => {
@@ -1144,9 +1139,19 @@ function App() {
         updatedState.thesfapaSpawnedThisSeason = true;
       }
 
+      // Coworker Viber message check
+      if (updatedState.turnCount > 0 && updatedState.turnCount % 3 === 0) {
+        const fallback = getFallbackCoworkerMessage(updatedState.role);
+        const coworkerMsg = { sender: fallback.sender, text: fallback.text, item: null, accepted: false };
+        updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
+        updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
+        setViberMessages(updatedState.viberMessages);
+        setViberUnreadCount(updatedState.viberUnreadCount);
+        audioService.playNotificationSound();
+      }
+
       checkNikosViberInjection(updatedState);
       setGameState(updatedState);
-      triggerCoworkerViberMessage(updatedState);
 
       // Simulate network delay for UI smoothness
       setTimeout(() => {
@@ -1209,11 +1214,36 @@ function App() {
         newState.thesfapaSpawnedThisSeason = true;
       }
 
+      // Coworker Viber message check/extraction
+      let coworkerMsg = null;
+      if (response.viber_message && response.viber_message.sender && response.viber_message.text) {
+        coworkerMsg = {
+          sender: response.viber_message.sender,
+          text: response.viber_message.text,
+          item: null,
+          accepted: false
+        };
+      } else if (newState.turnCount > 0 && newState.turnCount % 3 === 0) {
+        const fallback = getFallbackCoworkerMessage(newState.role);
+        coworkerMsg = {
+          sender: fallback.sender,
+          text: fallback.text,
+          item: null,
+          accepted: false
+        };
+      }
+
+      if (coworkerMsg) {
+        newState.viberMessages = [...(newState.viberMessages || []), coworkerMsg];
+        newState.viberUnreadCount = (newState.viberUnreadCount || 0) + 1;
+        setViberMessages(newState.viberMessages);
+        setViberUnreadCount(newState.viberUnreadCount);
+        audioService.playNotificationSound();
+      }
+
       checkNikosViberInjection(newState);
       setGameState(newState);
       setSceneData(response);
-
-      triggerCoworkerViberMessage(newState);
 
       if (response.game_over || newState.stress >= 100 || newState.reputation <= 0 || newState.alcoholWarnings >= 3) {
         setGameOver(true);
@@ -1235,9 +1265,19 @@ function App() {
       if (randomGen && randomGen.story_text) {
         updatedState.usedEventTexts.push(randomGen.story_text);
       }
+      // Coworker Viber message check fallback
+      if (updatedState.turnCount > 0 && updatedState.turnCount % 3 === 0) {
+        const fallback = getFallbackCoworkerMessage(updatedState.role);
+        const coworkerMsg = { sender: fallback.sender, text: fallback.text, item: null, accepted: false };
+        updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
+        updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
+        setViberMessages(updatedState.viberMessages);
+        setViberUnreadCount(updatedState.viberUnreadCount);
+        audioService.playNotificationSound();
+      }
+
       checkNikosViberInjection(updatedState);
       setGameState(updatedState);
-      triggerCoworkerViberMessage(updatedState);
 
       setSceneData({ ...randomGen });
     } finally {
