@@ -81,7 +81,7 @@ export default function EventTerminal({ state, sceneData, onChoice, isLoading, o
             Σεζόν {state.season || 1}, {state.turnCount === 0 ? 'Προετοιμασία' : `Εβδομάδα ${state.turnCount}`}
           </div>
         )}
-        <div className="terminal-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', borderBottom: '1px solid var(--panel-border)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+        <div className="terminal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1rem', flexWrap: 'wrap', borderBottom: '1px solid var(--panel-border)', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
           <h2 className="scene-title" style={{ margin: 0 }}>{scene_title}</h2>
           {active_vip_archetype && active_vip_archetype !== 'None' && (
             <span className="badge vip" style={{ margin: 0 }}>{active_vip_archetype}</span>
