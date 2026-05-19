@@ -182,3 +182,79 @@ Turn: ${currentStateData.turnCount || 0}\n\n`;
     throw error;
   }
 }
+
+export async function generateViberMessageOnly(currentStateData) {
+  if (import.meta.env.PROD) {
+    try {
+      const response = await fetch('/api/game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ onlyViber: true, currentStateData })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || `API Error: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Production Viber API Error:", error);
+      throw error;
+    }
+  }
+
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key');
+  if (!apiKey) {
+    throw new Error("Missing Gemini API Key.");
+  }
+
+  const promptStr = `
+# GAME CONTEXT: HOTEL MANAGER RPG
+We need to generate a funny, in-character Viber message from a coworker reacting to the player's current game state.
+Role: ${currentStateData?.role || 'Receptionist'}
+Current Turn: ${currentStateData?.turnCount || 0}
+Current Stress: ${currentStateData?.stress || 10}
+Current Reputation: ${currentStateData?.reputation || 50}
+Current Date: ${currentStateData?.currentDate || ''}
+
+INSTRUCTION: Generate a short, sarcastic, shocked or funny Viber chat message from a coworker appropriate to this role/situation in casual Greek. The colleague should react to their current stress level or general situation. Do NOT use Nikos Tsafradkis (Οπερατιονς Manager) or George Moustakas.
+OUTPUT FORMAT: Output a STRICT JSON object matching this schema (do NOT include other fields, do NOT wrap in markdown block):
+{
+  "viber_message": {
+    "sender": "string (Colleague name and role, e.g. 'Μαρία (Housekeeping)')",
+    "text": "string (The message in casual Greek)"
+  }
+}
+`;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: promptStr }] }],
+        generationConfig: {
+          temperature: 0.7,
+          responseMimeType: "application/json"
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const textResp = data.candidates[0].content.parts[0].text;
+    const cleanJsonString = textResp.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(cleanJsonString);
+  } catch (error) {
+    console.error("Local Viber Fallback Error:", error);
+    throw error;
+  }
+}

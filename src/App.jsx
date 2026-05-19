@@ -6,7 +6,7 @@ import SlapOMeter from './components/SlapOMeter';
 import DishwasherModal from './components/DishwasherModal';
 import ViberModal from './components/ViberModal';
 import { supabase } from './supabaseClient';
-import { generateNextState } from './services/aiService';
+import { generateNextState, generateViberMessageOnly } from './services/aiService';
 import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut, Trophy } from 'lucide-react';
 import { audioService } from './services/audioService';
 import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
@@ -48,7 +48,10 @@ const INITIAL_STATE = {
   tips: 0,
   usedEventTexts: [],
   magicEyePurchasedCount: 0,
-  grandmaCashPurchasedCount: 0
+  grandmaCashPurchasedCount: 0,
+  viberMessages: [],
+  viberUnreadCount: 0,
+  opsManagerSpawnsThisSeason: 0
 };
 
 function App() {
@@ -344,17 +347,12 @@ function App() {
         maintenance: 'Συντήρηση 🔧'
       };
 
-      let status = 'Επιβίωσε 🎉';
+      const isGameOver = state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3 || state.resigned;
+      let status = 'Εργάζεται';
       if (state.ultimateVictory) {
-        status = 'Νικητής Παιχνιδιού 👑';
-      } else if (state.resigned) {
-        status = 'Παραιτήθηκε 🏃';
-      } else if (state.stress >= 100) {
-        status = 'Έπαθε Burnout 🤯';
-      } else if (state.reputation <= 0) {
-        status = 'Απολύθηκε (Κακή Φήμη) 📉';
-      } else if (state.alcoholWarnings >= 3) {
-        status = 'Απολύθηκε (GM Warning) ⚠️';
+        status = 'Συνταξιοδοτήθηκε';
+      } else if (isGameOver) {
+        status = 'Απολύθηκε';
       }
 
       const successRate = calculateSuccessRate(state);
@@ -366,8 +364,10 @@ function App() {
                                (session?.user?.email ? session.user.email.split('@')[0] : '') || 
                                'Guest';
 
+      const runId = state.runId || `run_${Date.now()}`;
+
       const newEntry = {
-        id: Date.now().toString(),
+        id: runId,
         nickname: resolvedNickname,
         role: roleMap[state.role] || state.role || '—',
         turns: state.turnCount || 0,
@@ -379,11 +379,24 @@ function App() {
         successRate: successRate,
         evaluationGrade: evalObj.grade,
         evaluationLabel: evalObj.label,
-        date: new Date().toLocaleDateString('el-GR')
+        date: new Date().toLocaleDateString('el-GR'),
+        saveData: {
+          gameState: { ...state, runId },
+          sceneData: sceneData,
+          nickname: resolvedNickname
+        }
       };
 
       const currentLeaderboard = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
-      const updatedLeaderboard = [...currentLeaderboard, newEntry];
+      
+      const existingIndex = currentLeaderboard.findIndex(e => e.id === runId);
+      let updatedLeaderboard;
+      if (existingIndex !== -1) {
+        updatedLeaderboard = [...currentLeaderboard];
+        updatedLeaderboard[existingIndex] = newEntry;
+      } else {
+        updatedLeaderboard = [newEntry, ...currentLeaderboard];
+      }
       
       // Sort by season (descending), then turns (descending), then cash (descending)
       updatedLeaderboard.sort((a, b) => {
@@ -565,7 +578,17 @@ function App() {
   // Sync to database and local storage after every turn
   useEffect(() => {
     if (gameStarted && !gameOver) {
-      localStorage.setItem('hotel_saved_game', JSON.stringify({ gameState, sceneData, gameStarted, nickname }));
+      let currentState = gameState;
+      if (!gameState.runId) {
+        const newRunId = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        currentState = { ...gameState, runId: newRunId };
+        setGameState(currentState);
+      }
+      
+      localStorage.setItem('hotel_saved_game', JSON.stringify({ gameState: currentState, sceneData, gameStarted, nickname }));
+      
+      // Save current turn state to leaderboard
+      saveScoreToLeaderboard(currentState);
       
       // If user is logged in, sync to Supabase server in background
       if (session) {
@@ -577,14 +600,17 @@ function App() {
           },
           body: JSON.stringify({
             nickname,
-            gameState,
+            gameState: currentState,
             sceneData,
-            role: gameState.role
+            role: currentState.role
           })
         }).catch(err => console.error('Auto-save to server failed:', err));
       }
     }
     if (gameOver) {
+      // Save game over state to leaderboard
+      saveScoreToLeaderboard(gameState);
+      
       localStorage.removeItem('hotel_saved_game');
       setHasSavedGame(false);
       setHasCloudSave(false);
@@ -606,7 +632,7 @@ function App() {
         }).catch(err => console.error('Reset save on server failed:', err));
       }
     }
-  }, [gameState, sceneData, gameOver, session]);
+  }, [gameState, sceneData, gameOver, session, gameStarted, nickname]);
 
   const loadSavedGame = () => {
     if (savedGame) {
@@ -616,6 +642,9 @@ function App() {
       setNicknameConfirmed(true);
       setGameStarted(true);
       setHasSavedGame(false);
+      setViberMessages(savedGame.gameState?.viberMessages || []);
+      setViberUnreadCount(savedGame.gameState?.viberUnreadCount || 0);
+      setOpsManagerSpawnsThisSeason(savedGame.gameState?.opsManagerSpawnsThisSeason || 0);
     }
   };
 
@@ -627,6 +656,9 @@ function App() {
       setNicknameConfirmed(true);
       setGameStarted(true);
       setHasCloudSave(false);
+      setViberMessages(cloudSaveData.game_state?.viberMessages || []);
+      setViberUnreadCount(cloudSaveData.game_state?.viberUnreadCount || 0);
+      setOpsManagerSpawnsThisSeason(cloudSaveData.game_state?.opsManagerSpawnsThisSeason || 0);
     }
   };
 
@@ -663,6 +695,9 @@ function App() {
     if (roleKey === 'Σερβιτόρος') actualRole = 'Βοηθός Σερβιτόρου';
     const newState = { ...INITIAL_STATE, role: actualRole, nickname };
     setGameState(newState);
+    setViberMessages([]);
+    setViberUnreadCount(0);
+    setOpsManagerSpawnsThisSeason(0);
     setShowDisclaimer(true);
   };
 
@@ -935,6 +970,66 @@ function App() {
     setGameState(newState);
   };
 
+  const checkNikosViberInjection = (stateToUpdate) => {
+    const currentSeason = stateToUpdate.season || 1;
+    const currentTurn = stateToUpdate.turnCount || 0;
+    const currentSpawns = stateToUpdate.opsManagerSpawnsThisSeason || 0;
+    const canNikosSend = currentSpawns < 2;
+    let nikosShouldSend = false;
+    if (currentSeason === 1 && currentTurn >= 15 && canNikosSend) {
+      nikosShouldSend = Math.random() < 0.2;
+    } else if (currentSeason >= 2 && canNikosSend) {
+      nikosShouldSend = Math.random() < 0.15;
+    }
+    if (nikosShouldSend) {
+      let nikosItem = 'Lexotanil 💊';
+      let nikosText = 'Γεια ρε! Είδα πως το βγάζεις... Πάρε αυτό να σε βοηθήσει. Μην το λες στον Μουστάκα δεν ξέρει ότι σου στείλνω αυτά. Για το καλό 🤫';
+      if (currentSeason === 2) {
+        nikosItem = 'Xanax 💊';
+        nikosText = 'Μαν το βλέπω αυτή τη σεζόν και ανησυχώ. Πήρε αυτό να κρατάς. Ο Μουστάκας δεν πρέπει να το μάθει ποτέ 🤫';
+      } else if (currentSeason >= 3) {
+        nikosItem = 'Πορτοκαλάδα-Λεμονάδα Μιξ 70-30% 🍹';
+        nikosText = 'Έχω άλλα λεφτά για φαρμακεία. Πήρε αυτή την πορτοκαλάδα από τον μπουφέ. 70 πορτοκάλι, 30 λεμόνι - όπως το λέμε εμείς 😁';
+      }
+      const nikosMsg = { sender: 'Τσαφρακίδης Νίκος (Οπερατιονς Manager)', text: nikosText, item: nikosItem, accepted: false };
+      
+      const newMsgs = [...(stateToUpdate.viberMessages || []), nikosMsg];
+      stateToUpdate.viberMessages = newMsgs;
+      stateToUpdate.viberUnreadCount = (stateToUpdate.viberUnreadCount || 0) + 1;
+      stateToUpdate.opsManagerSpawnsThisSeason = currentSpawns + 1;
+
+      setViberMessages(newMsgs);
+      setViberUnreadCount(stateToUpdate.viberUnreadCount);
+      setOpsManagerSpawnsThisSeason(stateToUpdate.opsManagerSpawnsThisSeason);
+      audioService.playNotificationSound();
+    }
+  };
+
+  const triggerCoworkerViberMessage = (stateForViber) => {
+    const turn = stateForViber.turnCount || 0;
+    if (turn > 0 && turn % 3 === 0) {
+      generateViberMessageOnly(stateForViber).then(res => {
+        if (res && res.viber_message && res.viber_message.sender && res.viber_message.text) {
+          const newMsg = { sender: res.viber_message.sender, text: res.viber_message.text, item: null, accepted: false };
+          setGameState(prev => {
+            const newMsgs = [...(prev.viberMessages || []), newMsg];
+            const newUnread = (prev.viberUnreadCount || 0) + 1;
+            setViberMessages(newMsgs);
+            setViberUnreadCount(newUnread);
+            return {
+              ...prev,
+              viberMessages: newMsgs,
+              viberUnreadCount: newUnread
+            };
+          });
+          audioService.playNotificationSound();
+        }
+      }).catch(err => {
+        console.warn("Failed to generate coworker Viber message asynchronously", err);
+      });
+    }
+  };
+
   const processTurn = async (playerInput, currentState) => {
     setIsLoading(true);
     setErrorMsg('');
@@ -1038,7 +1133,6 @@ function App() {
       if (nextScene && nextScene.story_text) {
         updatedState.usedEventTexts.push(nextScene.story_text);
       }
-      setGameState(updatedState);
 
       // Dynamic Thesfapa Injection
       if (!updatedState.thesfapaTargetTurn) {
@@ -1049,6 +1143,10 @@ function App() {
         nextScene.story_text += " \n\nΈνας πελάτης σε βγάζει εκτός εαυτού με τις παράλογες απαιτήσεις του! Νιώθεις το αίμα σου να βράζει και θες απεγνωσμένα να τον χαστουκίσεις! Ξέσπασε εδώ: http://FapOMeter";
         updatedState.thesfapaSpawnedThisSeason = true;
       }
+
+      checkNikosViberInjection(updatedState);
+      setGameState(updatedState);
+      triggerCoworkerViberMessage(updatedState);
 
       // Simulate network delay for UI smoothness
       setTimeout(() => {
@@ -1111,41 +1209,11 @@ function App() {
         newState.thesfapaSpawnedThisSeason = true;
       }
 
+      checkNikosViberInjection(newState);
       setGameState(newState);
       setSceneData(response);
 
-      // Viber coworker message (every 3 turns, AI-generated)
-      if (response.viber_message && response.viber_message.sender && response.viber_message.text) {
-        const newMsg = { sender: response.viber_message.sender, text: response.viber_message.text, item: null, accepted: false };
-        setViberMessages(prev => [...prev, newMsg]);
-        setViberUnreadCount(prev => prev + 1);
-      }
-
-      // Nikos Tsafradkis Viber item injection
-      const currentSeason = newState.season || 1;
-      const currentTurn = newState.turnCount || 0;
-      const canNikosSend = opsManagerSpawnsThisSeason < 2;
-      let nikosShouldSend = false;
-      if (currentSeason === 1 && currentTurn >= 15 && canNikosSend) {
-        nikosShouldSend = Math.random() < 0.2;
-      } else if (currentSeason >= 2 && canNikosSend) {
-        nikosShouldSend = Math.random() < 0.15;
-      }
-      if (nikosShouldSend) {
-        let nikosItem = 'Lexotanil 💊';
-        let nikosText = 'Γεια ρε! Είδα πως το βγάζεις... Πάρε αυτό να σε βοηθήσει. Μην το λες στον Μουστάκα δεν ξέρει ότι σου στείλνω αυτά. Για το καλό 🤫';
-        if (currentSeason === 2) {
-          nikosItem = 'Xanax 💊';
-          nikosText = 'Μαν το βλέπω αυτή τη σεζόν και ανησυχώ. Πήρε αυτό να κρατάς. Ο Μουστάκας δεν πρέπει να το μάθει ποτέ 🤫';
-        } else if (currentSeason >= 3) {
-          nikosItem = 'Πορτοκαλάδα-Λεμονάδα Μιξ 70-30% 🍹';
-          nikosText = 'Έχω άλλα λεφτά για φαρμακεία. Πήρε αυτή την πορτοκαλάδα από τον μπουφέ. 70 πορτοκάλι, 30 λεμόνι - όπως το λέμε εμείς 😁';
-        }
-        const nikosMsg = { sender: 'Τσαφρακίδης Νίκος (Οπερατιονς Manager)', text: nikosText, item: nikosItem, accepted: false };
-        setViberMessages(prev => [...prev, nikosMsg]);
-        setViberUnreadCount(prev => prev + 1);
-        setOpsManagerSpawnsThisSeason(prev => prev + 1);
-      }
+      triggerCoworkerViberMessage(newState);
 
       if (response.game_over || newState.stress >= 100 || newState.reputation <= 0 || newState.alcoholWarnings >= 3) {
         setGameOver(true);
@@ -1167,7 +1235,9 @@ function App() {
       if (randomGen && randomGen.story_text) {
         updatedState.usedEventTexts.push(randomGen.story_text);
       }
+      checkNikosViberInjection(updatedState);
       setGameState(updatedState);
+      triggerCoworkerViberMessage(updatedState);
 
       setSceneData({ ...randomGen });
     } finally {
@@ -1175,114 +1245,201 @@ function App() {
     }
   };
 
-  const renderNicknameScreen = () => (
-    <div className="role-selection">
-      <h2 style={{ fontSize: '2.2rem', color: 'var(--accent-color)', marginBottom: '0.5rem' }}>Καλώς ήρθατε</h2>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '1.35rem', marginBottom: '1.25rem' }}>Πώς σε λένε;</p>
-      <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.03)',
-        border: '1px solid var(--panel-border)',
-        borderRadius: '12px',
-        padding: '2rem 2rem',
-        maxWidth: '480px',
-        margin: '1rem auto',
-        textAlign: 'center'
-      }}>
-        <label style={{ display: 'block', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: '0.75rem', fontWeight: 600 }}>
-          Nickname
-        </label>
-        <input
-          type="text"
-          placeholder="π.χ. Νίκος, Maria, Chef..."
-          value={nickname}
-          maxLength={20}
-          autoFocus
-          onChange={(e) => setNickname(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter' && nickname.trim()) { localStorage.setItem('player_nickname', nickname.trim()); setNicknameConfirmed(true); } }}
-          style={{
-            width: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.4)',
-            border: '1px solid var(--accent-color)',
-            borderRadius: '6px',
-            padding: '0.8rem 1.2rem',
-            color: '#fff',
-            fontFamily: 'inherit',
-            fontSize: '1.25rem',
-            textAlign: 'center',
-            outline: 'none',
-            boxSizing: 'border-box'
-          }}
-        />
-        <button
-          onClick={() => { localStorage.setItem('player_nickname', nickname.trim()); setNicknameConfirmed(true); }}
-          disabled={!nickname.trim()}
-          style={{
-            marginTop: '1.25rem',
-            backgroundColor: nickname.trim() ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
-            border: 'none',
-            borderRadius: '6px',
-            padding: '0.85rem 2.5rem',
-            color: '#fff',
-            fontSize: '1.15rem',
-            fontWeight: 600,
-            cursor: nickname.trim() ? 'pointer' : 'not-allowed',
-            transition: 'all 0.2s',
-            letterSpacing: '0.05em'
-          }}
-        >
-          Έτοιμος →
-        </button>
-      </div>
+  const renderNicknameScreen = () => {
+    const userNickname = nickname || '';
+    const leaderboard = (() => {
+      try {
+        return JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || [];
+      } catch {
+        return [];
+      }
+    })();
+    const activeSaves = leaderboard.filter(entry => 
+      entry.nickname && 
+      entry.nickname.trim().toLowerCase() === userNickname.trim().toLowerCase() && 
+      entry.status === 'Εργάζεται' && 
+      entry.saveData
+    );
 
-      {hasCloudSave && cloudSaveData && (
-        <div style={{ marginTop: '1.5rem', textAlign: 'center', backgroundColor: 'rgba(66, 133, 244, 0.05)', border: '1px solid rgba(66, 133, 244, 0.2)', padding: '1rem', borderRadius: '8px', maxWidth: '420px', margin: '1.5rem auto' }}>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem', marginTop: 0 }}>
-            ☁ Βρέθηκε Cloud Save ως <strong style={{ color: 'var(--accent-color)' }}>{cloudSaveData.nickname}</strong> ({cloudSaveData.role})
-          </p>
-          <button
-            onClick={loadCloudSave}
+    return (
+      <div className="role-selection">
+        <h2 style={{ fontSize: '2.2rem', color: 'var(--accent-color)', marginBottom: '0.5rem' }}>Καλώς ήρθατε</h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.35rem', marginBottom: '1.25rem' }}>Πώς σε λένε;</p>
+        <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid var(--panel-border)',
+          borderRadius: '12px',
+          padding: '2rem 2rem',
+          maxWidth: '480px',
+          margin: '1rem auto',
+          textAlign: 'center'
+        }}>
+          <label style={{ display: 'block', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: '0.75rem', fontWeight: 600 }}>
+            Nickname
+          </label>
+          <input
+            type="text"
+            placeholder="π.χ. Νίκος, Maria, Chef..."
+            value={nickname}
+            maxLength={20}
+            autoFocus
+            onChange={(e) => setNickname(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && nickname.trim()) { localStorage.setItem('player_nickname', nickname.trim()); setNicknameConfirmed(true); } }}
             style={{
-              backgroundColor: 'var(--accent-color)',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '0.6rem 1.5rem',
-              color: '#fff',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            ▶ Συνέχεια από το Cloud
-          </button>
-        </div>
-      )}
-
-      {hasSavedGame && savedGame && !hasCloudSave && (
-        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-            📂 Βρέθηκε τοπικό παιχνίδι ως <strong style={{ color: 'var(--accent-color)' }}>{savedGame.nickname}</strong> ({savedGame.gameState?.role})
-          </p>
-          <button
-            onClick={loadSavedGame}
-            style={{
-              backgroundColor: 'transparent',
+              width: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
               border: '1px solid var(--accent-color)',
               borderRadius: '6px',
-              padding: '0.6rem 1.5rem',
-              color: 'var(--accent-color)',
-              fontSize: '0.95rem',
+              padding: '0.8rem 1.2rem',
+              color: '#fff',
+              fontFamily: 'inherit',
+              fontSize: '1.25rem',
+              textAlign: 'center',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
+          <button
+            onClick={() => { localStorage.setItem('player_nickname', nickname.trim()); setNicknameConfirmed(true); }}
+            disabled={!nickname.trim()}
+            style={{
+              marginTop: '1.25rem',
+              backgroundColor: nickname.trim() ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '0.85rem 2.5rem',
+              color: '#fff',
+              fontSize: '1.15rem',
               fontWeight: 600,
-              cursor: 'pointer',
+              cursor: nickname.trim() ? 'pointer' : 'not-allowed',
               transition: 'all 0.2s',
+              letterSpacing: '0.05em'
             }}
           >
-            ▶ Συνέχεια από εκεί που έμεινα
+            Έτοιμος →
           </button>
         </div>
-      )}
-    </div>
-  );
+
+        {activeSaves.length > 0 && (
+          <div style={{
+            backgroundColor: 'rgba(102, 252, 241, 0.03)',
+            border: '1px solid rgba(102, 252, 241, 0.2)',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            maxWidth: '500px',
+            margin: '1.5rem auto',
+            textAlign: 'center',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+          }}>
+            <h3 style={{ color: 'var(--accent-color)', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <span>📂</span> Βρέθηκαν Ενεργά Παιχνίδια
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 1rem 0' }}>
+              Έχετε ενεργά παιχνίδια σε εξέλιξη με αυτό το όνομα. Επιλέξτε ένα για να συνεχίσετε:
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {activeSaves.map(save => (
+                <div key={save.id} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  borderRadius: '8px',
+                  padding: '0.75rem 1rem',
+                  textAlign: 'left'
+                }}>
+                  <div>
+                    <div style={{ fontWeight: 'bold', color: '#fff', fontSize: '0.95rem' }}>
+                      {save.role} <span style={{ fontSize: '0.75rem', color: 'var(--accent-color)', marginLeft: '0.5rem' }}>({save.difficulty})</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                      Σεζόν {save.season} • Γύρος {save.turns} • €{save.cash.toLocaleString('el-GR')}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Θέλεις να φορτώσεις το παιχνίδι σου (Σεζόν ${save.season}, Γύρος ${save.turns});`)) {
+                        setGameState(save.saveData.gameState);
+                        setSceneData(save.saveData.sceneData);
+                        setNickname(save.saveData.nickname);
+                        setNicknameConfirmed(true);
+                        setGameStarted(true);
+                        setGameOver(false);
+                        setViberMessages(save.saveData.gameState?.viberMessages || []);
+                        setViberUnreadCount(save.saveData.gameState?.viberUnreadCount || 0);
+                        setOpsManagerSpawnsThisSeason(save.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
+                        showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
+                      }
+                    }}
+                    className="btn-primary"
+                    style={{
+                      width: 'auto',
+                      padding: '0.35rem 0.85rem',
+                      fontSize: '0.8rem',
+                      fontWeight: 'bold',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Φόρτωση 💾
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {hasCloudSave && cloudSaveData && (
+          <div style={{ marginTop: '1.5rem', textAlign: 'center', backgroundColor: 'rgba(66, 133, 244, 0.05)', border: '1px solid rgba(66, 133, 244, 0.2)', padding: '1rem', borderRadius: '8px', maxWidth: '420px', margin: '1.5rem auto' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem', marginTop: 0 }}>
+              ☁ Βρέθηκε Cloud Save ως <strong style={{ color: 'var(--accent-color)' }}>{cloudSaveData.nickname}</strong> ({cloudSaveData.role})
+            </p>
+            <button
+              onClick={loadCloudSave}
+              style={{
+                backgroundColor: 'var(--accent-color)',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.6rem 1.5rem',
+                color: '#fff',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              ▶ Συνέχεια από το Cloud
+            </button>
+          </div>
+        )}
+
+        {hasSavedGame && savedGame && !hasCloudSave && (
+          <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+              📂 Βρέθηκε τοπικό παιχνίδι ως <strong style={{ color: 'var(--accent-color)' }}>{savedGame.nickname}</strong> ({savedGame.gameState?.role})
+            </p>
+            <button
+              onClick={loadSavedGame}
+              style={{
+                backgroundColor: 'transparent',
+                border: '1px solid var(--accent-color)',
+                borderRadius: '6px',
+                padding: '0.6rem 1.5rem',
+                color: 'var(--accent-color)',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              ▶ Συνέχεια από εκεί που έμεινα
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderLoginScreen = () => (
     <div className="role-selection" style={{ textAlign: 'center', padding: '1.5rem 1.5rem' }}>
@@ -1395,105 +1552,192 @@ function App() {
     </div>
   );
 
-  const renderRoleSelection = () => (
-    <div className="role-selection">
-      <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Επίλεξε τον Ρόλο σου, <span style={{ color: '#fff' }}>{nickname}</span></h2>
-      <p style={{ color: 'var(--text-secondary)' }}>Μπείτε στον γεμάτο προκλήσεις κόσμο της Ελληνικής Ξενοδοχειακής Βιομηχανίας.</p>
-      
-      {/* Premium API Key Configuration Panel (only in local development) */}
-      {!import.meta.env.PROD && (
-        <div style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid var(--panel-border)',
-          borderRadius: '8px',
-          padding: '1.25rem',
-          maxWidth: '500px',
-          margin: '1.5rem auto',
-          textAlign: 'left'
-        }}>
-          <label style={{ display: 'block', fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>
-            Gemini API Configuration
-          </label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              type="password"
-              placeholder={import.meta.env.VITE_GEMINI_API_KEY ? "Loaded from System Env" : "Paste your Gemini API Key here (AIzaSy...)"}
-              disabled={!!import.meta.env.VITE_GEMINI_API_KEY}
-              value={apiKeyInput}
-              onChange={(e) => saveApiKey(e.target.value)}
-              style={{
-                flex: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                border: '1px solid var(--panel-border)',
-                borderRadius: '4px',
-                padding: '0.5rem 0.75rem',
-                color: '#fff',
-                fontFamily: 'monospace',
-                fontSize: '0.9rem'
-              }}
-            />
-            {apiKeyInput && !import.meta.env.VITE_GEMINI_API_KEY && (
-              <button
-                onClick={() => saveApiKey('')}
-                style={{
-                  backgroundColor: 'transparent',
-                  border: '1px solid var(--danger-color)',
-                  color: 'var(--danger-color)',
-                  borderRadius: '4px',
-                  padding: '0 0.75rem',
-                  cursor: 'pointer',
-                  fontSize: '0.85rem'
-                }}
-              >
-                Clear
-              </button>
-            )}
+  const renderRoleSelection = () => {
+    const userNickname = nickname || '';
+    const leaderboard = (() => {
+      try {
+        return JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || [];
+      } catch {
+        return [];
+      }
+    })();
+    const activeSaves = leaderboard.filter(entry => 
+      entry.nickname && 
+      entry.nickname.trim().toLowerCase() === userNickname.trim().toLowerCase() && 
+      entry.status === 'Εργάζεται' && 
+      entry.saveData
+    );
+
+    return (
+      <div className="role-selection">
+        <h2 style={{ fontSize: '2rem', color: 'var(--accent-color)' }}>Επίλεξε τον Ρόλο σου, <span style={{ color: '#fff' }}>{nickname}</span></h2>
+        <p style={{ color: 'var(--text-secondary)' }}>Μπείτε στον γεμάτο προκλήσεις κόσμο της Ελληνικής Ξενοδοχειακής Βιομηχανίας.</p>
+
+        {activeSaves.length > 0 && (
+          <div style={{
+            backgroundColor: 'rgba(102, 252, 241, 0.03)',
+            border: '1px solid rgba(102, 252, 241, 0.2)',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            maxWidth: '600px',
+            margin: '1.5rem auto',
+            textAlign: 'center',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+          }}>
+            <h3 style={{ color: 'var(--accent-color)', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <span>📂</span> Βρέθηκαν Ενεργά Παιχνίδια
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 1rem 0' }}>
+              Έχετε ενεργά παιχνίδια σε εξέλιξη. Επιλέξτε ένα για να συνεχίσετε την καριέρα σας:
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {activeSaves.map(save => (
+                <div key={save.id} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  borderRadius: '8px',
+                  padding: '0.75rem 1rem',
+                  textAlign: 'left'
+                }}>
+                  <div>
+                    <div style={{ fontWeight: 'bold', color: '#fff', fontSize: '1rem' }}>
+                      {save.role} <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', marginLeft: '0.5rem' }}>({save.difficulty})</span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                      Σεζόν {save.season} • Γύρος {save.turns} • Ταμείο: €{save.cash.toLocaleString('el-GR')}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Θέλεις να φορτώσεις το παιχνίδι σου (Σεζόν ${save.season}, Γύρος ${save.turns});`)) {
+                        setGameState(save.saveData.gameState);
+                        setSceneData(save.saveData.sceneData);
+                        setNickname(save.saveData.nickname);
+                        setNicknameConfirmed(true);
+                        setGameStarted(true);
+                        setGameOver(false);
+                        setViberMessages(save.saveData.gameState?.viberMessages || []);
+                        setViberUnreadCount(save.saveData.gameState?.viberUnreadCount || 0);
+                        setOpsManagerSpawnsThisSeason(save.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
+                        showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
+                      }
+                    }}
+                    className="btn-primary"
+                    style={{
+                      width: 'auto',
+                      padding: '0.4rem 1rem',
+                      fontSize: '0.85rem',
+                      fontWeight: 'bold',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Φόρτωση 💾
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginOpt: 0 }}>
-            {import.meta.env.VITE_GEMINI_API_KEY ? (
-              <span className="text-success">✔ API Key detected from local environment configuration.</span>
-            ) : isKeyConfigured ? (
-              <span className="text-success">✔ API Key securely cached in your local browser storage.</span>
-            ) : (
-              <span className="text-warning">⚠ A free key is required. Get one at <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)' }}>Google AI Studio</a>.</span>
-            )}
+        )}
+        
+        {/* Premium API Key Configuration Panel (only in local development) */}
+        {!import.meta.env.PROD && (
+          <div style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid var(--panel-border)',
+            borderRadius: '8px',
+            padding: '1.25rem',
+            maxWidth: '500px',
+            margin: '1.5rem auto',
+            textAlign: 'left'
+          }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>
+              Gemini API Configuration
+            </label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                type="password"
+                placeholder={import.meta.env.VITE_GEMINI_API_KEY ? "Loaded from System Env" : "Paste your Gemini API Key here (AIzaSy...)"}
+                disabled={!!import.meta.env.VITE_GEMINI_API_KEY}
+                value={apiKeyInput}
+                onChange={(e) => saveApiKey(e.target.value)}
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid var(--panel-border)',
+                  borderRadius: '4px',
+                  padding: '0.5rem 0.75rem',
+                  color: '#fff',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem'
+                }}
+              />
+              {apiKeyInput && !import.meta.env.VITE_GEMINI_API_KEY && (
+                <button
+                  onClick={() => saveApiKey('')}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: '1px solid var(--danger-color)',
+                    color: 'var(--danger-color)',
+                    borderRadius: '4px',
+                    padding: '0 0.75rem',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem'
+                  }}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginOpt: 0 }}>
+              {import.meta.env.VITE_GEMINI_API_KEY ? (
+                <span className="text-success">✔ API Key detected from local environment configuration.</span>
+              ) : isKeyConfigured ? (
+                <span className="text-success">✔ API Key securely cached in your local browser storage.</span>
+              ) : (
+                <span className="text-warning">⚠ A free key is required. Get one at <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)' }}>Google AI Studio</a>.</span>
+              )}
+            </p>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div style={{ backgroundColor: 'rgba(255, 75, 75, 0.1)', border: '1px solid var(--danger-color)', padding: '1rem', borderRadius: '8px', maxWidth: '600px', margin: '1rem auto', color: 'var(--danger-color)' }}>
+            <ShieldAlert style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+            {errorMsg}
+          </div>
+        )}
+
+        <div className="role-cards" style={{ opacity: isKeyConfigured ? 1 : 0.5, pointerEvents: isKeyConfigured ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
+          <div className="role-card" onClick={() => startGame('Ρεσεψιονίστ')}>
+            <Hotel className="role-icon" color="var(--accent-color)" />
+            <div className="role-title">Ρεσεψιονίστ</div>
+            <div className="role-desc">Η πρώτη γραμμή άμυνας. Διαχειριστείτε υπερκρατήσεις, VIP πελάτες και την εταιρική ευθυγράμμιση.</div>
+          </div>
+          
+          <div className="role-card" onClick={() => startGame('Σερβιτόρος')}>
+            <Coffee className="role-icon" color="var(--accent-color)" />
+            <div className="role-title">Σερβιτόρος</div>
+            <div className="role-desc">Ο αφανής ήρωας του F&B. Αντιμετωπίστε αγενείς πελάτες, το χάος της σάλας και το κυνήγι του φιλοδωρήματος.</div>
+          </div>
+          
+          <div className="role-card" onClick={() => startGame('Μάγειρας')}>
+            <ChefHat className="role-icon" color="var(--accent-color)" />
+            <div className="role-title">Μάγειρας</div>
+            <div className="role-desc">Η φωτιά της κουζίνας. Επιβιώστε από χαλασμένο εξοπλισμό, ελλείψεις υλικών και ακραίες θερμοκρασίες.</div>
+          </div>
+        </div>
+        {!isKeyConfigured && !import.meta.env.PROD && (
+          <p style={{ marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            * Configure your Gemini API Key in the panel above to unlock role selection.
           </p>
-        </div>
-      )}
-
-      {errorMsg && (
-        <div style={{ backgroundColor: 'rgba(255, 75, 75, 0.1)', border: '1px solid var(--danger-color)', padding: '1rem', borderRadius: '8px', maxWidth: '600px', margin: '1rem auto', color: 'var(--danger-color)' }}>
-          <ShieldAlert style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
-          {errorMsg}
-        </div>
-      )}
-
-      <div className="role-cards" style={{ opacity: isKeyConfigured ? 1 : 0.5, pointerEvents: isKeyConfigured ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
-        <div className="role-card" onClick={() => startGame('Ρεσεψιονίστ')}>
-          <Hotel className="role-icon" color="var(--accent-color)" />
-          <div className="role-title">Ρεσεψιονίστ</div>
-          <div className="role-desc">Η πρώτη γραμμή άμυνας. Διαχειριστείτε υπερκρατήσεις, VIP πελάτες και την εταιρική ευθυγράμμιση.</div>
-        </div>
-        
-        <div className="role-card" onClick={() => startGame('Σερβιτόρος')}>
-          <Coffee className="role-icon" color="var(--accent-color)" />
-          <div className="role-title">Σερβιτόρος</div>
-          <div className="role-desc">Ο αφανής ήρωας του F&B. Αντιμετωπίστε αγενείς πελάτες, το χάος της σάλας και το κυνήγι του φιλοδωρήματος.</div>
-        </div>
-        
-        <div className="role-card" onClick={() => startGame('Μάγειρας')}>
-          <ChefHat className="role-icon" color="var(--accent-color)" />
-          <div className="role-title">Μάγειρας</div>
-          <div className="role-desc">Η φωτιά της κουζίνας. Επιβιώστε από χαλασμένο εξοπλισμό, ελλείψεις υλικών και ακραίες θερμοκρασίες.</div>
-        </div>
+        )}
       </div>
-      {!isKeyConfigured && !import.meta.env.PROD && (
-        <p style={{ marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          * Configure your Gemini API Key in the panel above to unlock role selection.
-        </p>
-      )}
-    </div>
-  );
+    );
+  };
 
   const renderGameOver = () => {
     const isSeasonEnd = new Date(gameState.currentDate) >= new Date('2026-11-01');
@@ -1805,9 +2049,14 @@ function App() {
       magicEyePurchasedCount: 0,
       grandmaCashPurchasedCount: 0,
       thesfapaSpawnedThisSeason: false,
-      thesfapaTargetTurn: null
+      thesfapaTargetTurn: null,
+      viberMessages: [],
+      viberUnreadCount: 0,
+      opsManagerSpawnsThisSeason: 0
     };
     setGameState(newState);
+    setViberMessages([]);
+    setViberUnreadCount(0);
     setOpsManagerSpawnsThisSeason(0);
     setGameOver(false);
     setFeedbackSent(false);
@@ -1925,6 +2174,7 @@ function App() {
                   <th style={{ padding: '0.75rem 0.5rem' }}>Tips</th>
                   <th style={{ padding: '0.75rem 0.5rem' }}>Δυσκολία</th>
                   <th style={{ padding: '0.75rem 0.5rem' }}>Κατάσταση</th>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Ενέργεια</th>
                 </tr>
               </thead>
               <tbody>
@@ -1954,6 +2204,42 @@ function App() {
                       <td style={{ padding: '0.75rem 0.5rem', color: '#ffd700' }}>€{entry.tips.toLocaleString('el-GR')}</td>
                       <td style={{ padding: '0.75rem 0.5rem', fontSize: '0.8rem' }}>{entry.difficulty}</td>
                       <td style={{ padding: '0.75rem 0.5rem', fontSize: '0.8rem' }}>{entry.status}</td>
+                      <td style={{ padding: '0.75rem 0.5rem' }}>
+                        {entry.saveData ? (
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`Θέλεις να φορτώσεις το παιχνίδι του/της ${entry.nickname} (Σεζόν ${entry.season}, Γύρος ${entry.turns});`)) {
+                                setGameState(entry.saveData.gameState);
+                                setSceneData(entry.saveData.sceneData);
+                                setNickname(entry.saveData.nickname);
+                                setNicknameConfirmed(true);
+                                setGameStarted(true);
+                                setGameOver(false);
+                                setViberMessages(entry.saveData.gameState?.viberMessages || []);
+                                setViberUnreadCount(entry.saveData.gameState?.viberUnreadCount || 0);
+                                setOpsManagerSpawnsThisSeason(entry.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
+                                setShowLeaderboard(false);
+                                showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
+                              }
+                            }}
+                            style={{
+                              backgroundColor: 'rgba(102, 252, 241, 0.15)',
+                              border: '1px solid var(--accent-color)',
+                              color: 'var(--accent-color)',
+                              borderRadius: '4px',
+                              padding: '0.2rem 0.5rem',
+                              cursor: 'pointer',
+                              fontSize: '0.8rem',
+                              fontWeight: 'bold',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            Φόρτωση 💾
+                          </button>
+                        ) : (
+                          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>—</span>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
@@ -2088,7 +2374,11 @@ function App() {
           {/* Viber Button */}
           {gameStarted && !gameOver && (
             <button
-              onClick={() => { setShowViber(true); setViberUnreadCount(0); }}
+              onClick={() => { 
+                setShowViber(true); 
+                setViberUnreadCount(0); 
+                setGameState(prev => ({ ...prev, viberUnreadCount: 0 }));
+              }}
               style={{
                 backgroundColor: 'rgba(115, 96, 242, 0.15)',
                 border: '1px solid #7360f2',
@@ -2374,6 +2664,9 @@ function App() {
                       localStorage.removeItem('hotel_madness_leaderboard');
                       // Reset local storage states
                       setGameState(INITIAL_STATE);
+                      setViberMessages([]);
+                      setViberUnreadCount(0);
+                      setOpsManagerSpawnsThisSeason(0);
                       setGameStarted(false);
                       setNicknameConfirmed(false);
                       setIsGuest(false);
@@ -2849,8 +3142,13 @@ function App() {
           onAcceptItem={(index) => {
             const msg = viberMessages[index];
             if (!msg || !msg.item || msg.accepted) return;
-            setViberMessages(prev => prev.map((m, i) => i === index ? { ...m, accepted: true } : m));
-            setGameState(prev => ({ ...prev, inventory: [...prev.inventory, msg.item] }));
+            const updated = viberMessages.map((m, i) => i === index ? { ...m, accepted: true } : m);
+            setViberMessages(updated);
+            setGameState(prev => ({ 
+              ...prev, 
+              viberMessages: updated,
+              inventory: [...prev.inventory, msg.item] 
+            }));
             showToast(`🎁 Παρέλαβες: ${msg.item}!`, '✅');
           }}
         />
