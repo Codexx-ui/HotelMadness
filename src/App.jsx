@@ -4,6 +4,7 @@ import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import SlapOMeter from './components/SlapOMeter';
 import DishwasherModal from './components/DishwasherModal';
+import ViberModal from './components/ViberModal';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
 import { ChefHat, Coffee, Hotel, ShieldAlert, Volume2, VolumeX, Settings, ShoppingBag, LogOut, Trophy } from 'lucide-react';
@@ -109,6 +110,10 @@ function App() {
   const [showDishwasher, setShowDishwasher] = useState(false);
   const [hasWashedDishesThisTurn, setHasWashedDishesThisTurn] = useState(false);
   const [pendingChoiceData, setPendingChoiceData] = useState(null);
+  const [showViber, setShowViber] = useState(false);
+  const [viberMessages, setViberMessages] = useState([]);
+  const [viberUnreadCount, setViberUnreadCount] = useState(0);
+  const [opsManagerSpawnsThisSeason, setOpsManagerSpawnsThisSeason] = useState(0);
 
   const handleDishwasherComplete = ({ success, score }) => {
     let stressChange = success ? -20 : 15;
@@ -911,9 +916,16 @@ function App() {
     if (item.includes('Φραπέ') || item.includes('Frappe') || item.includes('☕')) {
       newState.stress = Math.max(0, newState.stress - 8);
       showToast("☕ Ο Φραπές σε ηρεμεί! -8% Stress", "😌");
-    } else if (item.includes('Lexotanil') || item.includes('💊')) {
+    } else if (item.includes('Lexotanil')) {
       newState.stress = Math.max(0, newState.stress - 20);
       showToast("💊 Το Lexotanil σε ηρεμεί βαθιά! -20% Stress", "😴");
+    } else if (item.includes('Xanax')) {
+      newState.stress = Math.max(0, newState.stress - 35);
+      showToast("💊 Το Xanax σε ρίχνει σε βαθύ λήθαργο! -35% Stress", "😪");
+    } else if (item.includes('Πορτοκαλάδα')) {
+      newState.stress = Math.max(0, newState.stress - 15);
+      newState.cash = (newState.cash || 0) + 5;
+      showToast("🍹 Η Πορτοκαλάδα-Λεμονάδα 70-30 σε φρεσκάρει! -15% Stress & +5€", "⚡");
     } else if (item.includes('Μαγικό Μάτι') || item.includes('🧿')) {
       // Magic Eye is passive, put it back
       newState.inventory = gameState.inventory;
@@ -1101,6 +1113,39 @@ function App() {
 
       setGameState(newState);
       setSceneData(response);
+
+      // Viber coworker message (every 3 turns, AI-generated)
+      if (response.viber_message && response.viber_message.sender && response.viber_message.text) {
+        const newMsg = { sender: response.viber_message.sender, text: response.viber_message.text, item: null, accepted: false };
+        setViberMessages(prev => [...prev, newMsg]);
+        setViberUnreadCount(prev => prev + 1);
+      }
+
+      // Nikos Tsafradkis Viber item injection
+      const currentSeason = newState.season || 1;
+      const currentTurn = newState.turnCount || 0;
+      const canNikosSend = opsManagerSpawnsThisSeason < 2;
+      let nikosShouldSend = false;
+      if (currentSeason === 1 && currentTurn >= 15 && canNikosSend) {
+        nikosShouldSend = Math.random() < 0.2;
+      } else if (currentSeason >= 2 && canNikosSend) {
+        nikosShouldSend = Math.random() < 0.15;
+      }
+      if (nikosShouldSend) {
+        let nikosItem = 'Lexotanil 💊';
+        let nikosText = 'Γεια ρε! Είδα πως το βγάζεις... Πάρε αυτό να σε βοηθήσει. Μην το λες στον Μουστάκα δεν ξέρει ότι σου στείλνω αυτά. Για το καλό 🤫';
+        if (currentSeason === 2) {
+          nikosItem = 'Xanax 💊';
+          nikosText = 'Μαν το βλέπω αυτή τη σεζόν και ανησυχώ. Πήρε αυτό να κρατάς. Ο Μουστάκας δεν πρέπει να το μάθει ποτέ 🤫';
+        } else if (currentSeason >= 3) {
+          nikosItem = 'Πορτοκαλάδα-Λεμονάδα Μιξ 70-30% 🍹';
+          nikosText = 'Έχω άλλα λεφτά για φαρμακεία. Πήρε αυτή την πορτοκαλάδα από τον μπουφέ. 70 πορτοκάλι, 30 λεμόνι - όπως το λέμε εμείς 😁';
+        }
+        const nikosMsg = { sender: 'Τσαφρακίδης Νίκος (Οπερατιονς Manager)', text: nikosText, item: nikosItem, accepted: false };
+        setViberMessages(prev => [...prev, nikosMsg]);
+        setViberUnreadCount(prev => prev + 1);
+        setOpsManagerSpawnsThisSeason(prev => prev + 1);
+      }
 
       if (response.game_over || newState.stress >= 100 || newState.reputation <= 0 || newState.alcoholWarnings >= 3) {
         setGameOver(true);
@@ -1763,6 +1808,7 @@ function App() {
       thesfapaTargetTurn: null
     };
     setGameState(newState);
+    setOpsManagerSpawnsThisSeason(0);
     setGameOver(false);
     setFeedbackSent(false);
     setFeedbackText('');
@@ -2038,6 +2084,43 @@ function App() {
             <Settings size={16} />
             <span>Ρυθμίσεις</span>
           </button>
+
+          {/* Viber Button */}
+          {gameStarted && !gameOver && (
+            <button
+              onClick={() => { setShowViber(true); setViberUnreadCount(0); }}
+              style={{
+                backgroundColor: 'rgba(115, 96, 242, 0.15)',
+                border: '1px solid #7360f2',
+                borderRadius: '20px',
+                padding: '0.5rem 1rem',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#b39dff',
+                boxShadow: '0 0 10px rgba(115, 96, 242, 0.2)',
+                transition: 'all 0.2s',
+                gap: '0.4rem',
+                fontWeight: 600,
+                position: 'relative'
+              }}
+              title="Viber"
+            >
+              <span>💬</span>
+              <span>Viber</span>
+              {viberUnreadCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: '-6px', right: '-6px',
+                  backgroundColor: '#ff4b4b', color: 'white',
+                  borderRadius: '50%', width: '18px', height: '18px',
+                  fontSize: '0.7rem', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', fontWeight: 'bold'
+                }}>{viberUnreadCount}</span>
+              )}
+            </button>
+          )}
 
           {/* Admin Panel Button */}
           {nickname && nickname.trim().toLowerCase() === 'admin' && (
@@ -2759,6 +2842,19 @@ function App() {
         />
       )}
       {renderLeaderboardModal()}
+      {showViber && (
+        <ViberModal
+          messages={viberMessages}
+          onClose={() => setShowViber(false)}
+          onAcceptItem={(index) => {
+            const msg = viberMessages[index];
+            if (!msg || !msg.item || msg.accepted) return;
+            setViberMessages(prev => prev.map((m, i) => i === index ? { ...m, accepted: true } : m));
+            setGameState(prev => ({ ...prev, inventory: [...prev.inventory, msg.item] }));
+            showToast(`🎁 Παρέλαβες: ${msg.item}!`, '✅');
+          }}
+        />
+      )}
     </div>
   );
 }

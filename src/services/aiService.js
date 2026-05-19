@@ -82,7 +82,8 @@ You must track and output these exact metrics inside a STRICT JSON object. Do NO
   "stress_change": "integer", "reputation_change": "integer", "cash_change": "integer", "staff_relations_change": "integer",
   "alcohol_warnings_increment": "integer", "inventory_updated": ["string"], "current_shift": "string",
   "hotel_metrics_updated": {"occupancy_change": "integer", "financial_metric_change": "integer", "staff_turnover_change": "integer"},
-  "promotion_triggered": "boolean", "game_over": "boolean"
+  "promotion_triggered": "boolean", "game_over": "boolean",
+  "viber_message": {"sender": "string or null", "text": "string or null"}
 }
 
 When the player sends: "START: [ROLE]", initialize the game at Act 1 (The Interview) for that specific role, setting initial stats (Cash: 50, Stress: 10, Reputation: 50, Staff Relations: 0, Alcohol Warnings: 0), setting the shift to 'Πρωινή Βάρδια', and providing the opening story text and the first 3 interview choices using the schema above.
@@ -102,7 +103,16 @@ Staff Relations: ${currentStateData.staffRelations}
 Alcohol Warnings: ${currentStateData.alcoholWarnings}
 Occupancy: ${currentStateData.occupancy}
 Financial Metric: ${currentStateData.financialMetric}
-Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
+Staff Turnover: ${currentStateData.staffTurnover}
+Turn: ${currentStateData.turnCount || 0}\n\n`;
+
+    // Every 3rd turn: request a funny coworker Viber message
+    const turn = currentStateData.turnCount || 0;
+    if (turn > 0 && turn % 3 === 0) {
+      promptStr += `VIBER MESSAGE INSTRUCTION: On this turn you MUST generate a funny, in-character "viber_message" in the JSON from a colleague (NOT Nikos Tsafradkis). Pick a coworker appropriate to the player's role and current situation. The message must be a short, funny, sarcastic or shocked reaction to the player's recent decisions or current stress level. Write it in casual Greek. Set "sender" to the colleague's name and "text" to the message.\n\n`;
+    } else {
+      promptStr += `VIBER MESSAGE INSTRUCTION: Do NOT generate a viber_message this turn. Set "viber_message": {"sender": null, "text": null}.\n\n`;
+    }
 
     // SEASONAL LOGIC INJECTION
     if (currentStateData.currentDate) {
