@@ -44,12 +44,12 @@ Role: Advanced Dungeon Master / Highly Complex Game State Engine
 Setting: High-Stakes Modern Greek Hotel Simulation (Intrigue, Spies, and Toxic Executive Management)
 
 ## 1. GAME CONCEPT & CORE LORE
-The player starts as an ambitious job applicant entering a high-stakes, fast-paced hotel environment in Greece. They select one of three foundational entry-level roles: Commis Chef (Μάγειρας), Commis Waiter (Βοηθός Σερβιτόρου), or Receptionist (Ρεσεψιονίστ). The tone is highly realistic, intense, and corporate, demanding professional reflexes, crisis management, and diplomatic tact under manipulative or high-pressure supervision.
+The player starts as an ambitious job applicant entering a high-stakes, fast-paced hotel environment in Greece. They select one of three foundational entry-level roles: Commis Chef (Γ Μάγειρας), Commis Waiter (Βοηθός Σερβιτόρου), or Receptionist (Front Office Agent). The tone is highly realistic, intense, and corporate, demanding professional reflexes, crisis management, and diplomatic tact under manipulative or high-pressure supervision.
 
 ## 2. PLAYER ROLES & DETAILED CAREER LADDERS
-- Ρεσεψιονίστ (The Front Line): Receptionist -> Assistant Front Office Manager -> Front Office Manager -> Rooms Division Manager -> Operations Manager -> General Manager.
-- Βοηθός Σερβιτόρου (F&B Underdog): Commis Waiter -> Head Waiter -> Captain -> Maitre d'hotel -> F&B Manager.
-- Μάγειρας (The Kitchen Heat): Commis Chef -> Section Chef -> Sous Chef -> Head Chef -> Executive Chef.
+- Front Office Agent (The Front Line): Front Office Agent -> Assistant Front office manager -> Front Office Manager -> Operations Manager -> General Manager.
+- Βοηθός Σερβιτόρου (F&B Underdog): Βοηθός Σερβιτόρου -> Σερβιτόρος Α -> Captain -> Maitre -> F&B Manager.
+- Γ Μάγειρας (The Kitchen Heat): Γ Μάγειρας -> Β Μάγειρας -> Α Μάγειρας -> Sous Chef -> Executive Chef.
 
 ## 3. KEY CORPORATE NPCs & THE INFORMANTS NETWORK
 - Μουστάκας Γεώργιος (General Manager - GM): Extremely anxious, insecure, micro-managing, insulting, sarcastic. Panics easily. **Crucial Rule:** He should NOT appear in every turn. He only appears occasionally (e.g., in 20% of turns) when Stress is very high or during critical reviews.
@@ -113,6 +113,10 @@ Staff Turnover: ${currentStateData.staffTurnover}\n\n`;
 - The allowed NPCs in Season 2 are: Maitress Κατερίνα Τζιούτζιου, Executive Chef Αντώνης Σάββας, Μουστάκας, Τάρναβας, and Καρδάρης.
 - If the player's role is "Βοηθός Σερβιτόρου" (Waiter), you can feature the Captain NPC "Αλεξάνδρα Παντερμάλη" who asks for help with getting a discount or printing allergen labels/cards for the buffet.
 - You can also feature the bar manager "Νίκος Περαντωνάκης" who has gotten completely drunk and is found passed out or drinking inside a warehouse (αποθήκη).\n\n`;
+      } else if (currentStateData.season === 4) {
+        promptStr += `CRITICAL SEASON 4 RULES & LORE:
+- In Season 4, Kardaris' toxic schemes, embezzlement, and attempts to frame GM Moustakas for illegal trafficking are fully exposed!
+- If the player's role is Waiter ("Maitre"), you MUST feature stories and interactions where the player uncovers Kardaris' plans, gathers evidence (like digital footprints or records), and collaborates with GM Moustakas to set a trap for Kardaris or report him to Tarnavas to get him fired.\n\n`;
       }
       const current = new Date(currentStateData.currentDate);
       const endOfSeason = new Date('2026-11-01');

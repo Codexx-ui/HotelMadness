@@ -10,6 +10,21 @@ import { audioService } from './services/audioService';
 import { SPECIFIC_EVENTS, GENERAL_EVENTS } from './data/events';
 import confetti from 'canvas-confetti';
 
+const isRoleMatch = (eventRole, playerRole) => {
+  if (!eventRole) return true;
+  if (eventRole === playerRole) return true;
+  
+  const receptionistRoles = ['Front Office Agent', 'Assistant Front office manager', 'Front Office Manager', 'Operations Manager', 'General Manager', 'Ρεσεψιονίστ', 'Assistant FO Manager', 'FO Manager', 'Rooms Division Manager', 'GM'];
+  const waiterRoles = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager', 'Σερβιτόρος', 'Head Waiter', "Maitre d'hotel"];
+  const chefRoles = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef', 'Μάγειρας', 'Section Chef', 'Head Chef'];
+  
+  if (receptionistRoles.includes(eventRole) && receptionistRoles.includes(playerRole)) return true;
+  if (waiterRoles.includes(eventRole) && waiterRoles.includes(playerRole)) return true;
+  if (chefRoles.includes(eventRole) && chefRoles.includes(playerRole)) return true;
+  
+  return false;
+};
+
 const INITIAL_STATE = {
   stress: 10,
   reputation: 50,
@@ -273,7 +288,9 @@ function App() {
       };
 
       let status = 'Επιβίωσε 🎉';
-      if (state.resigned) {
+      if (state.ultimateVictory) {
+        status = 'Νικητής Παιχνιδιού 👑';
+      } else if (state.resigned) {
         status = 'Παραιτήθηκε 🏃';
       } else if (state.stress >= 100) {
         status = 'Έπαθε Burnout 🤯';
@@ -583,7 +600,11 @@ function App() {
         return;
       }
     }
-    const newState = { ...INITIAL_STATE, role: roleKey, nickname };
+    let actualRole = roleKey;
+    if (roleKey === 'Ρεσεψιονίστ') actualRole = 'Front Office Agent';
+    if (roleKey === 'Μάγειρας') actualRole = 'Γ Μάγειρας';
+    if (roleKey === 'Σερβιτόρος') actualRole = 'Βοηθός Σερβιτόρου';
+    const newState = { ...INITIAL_STATE, role: actualRole, nickname };
     setGameState(newState);
     setShowDisclaimer(true);
   };
@@ -890,7 +911,7 @@ function App() {
       const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] && (currentTurn !== 7 || currentState.season === 2);
       if (hasSpecificEvent) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
-        const roleFiltered = alternatives.filter(alt => !alt.role || alt.role === currentState.role);
+        const roleFiltered = alternatives.filter(alt => isRoleMatch(alt.role, currentState.role));
         
         // Filter by season if the event has a specific season requirement
         const seasonFiltered = roleFiltered.filter(alt => !alt.season || alt.season === currentState.season);
@@ -913,7 +934,7 @@ function App() {
         nextScene = pool[Math.floor(Math.random() * pool.length)] || alternatives[0];
       } else {
         // Filter general events so that role-specific events are only served to players with that role
-        const filteredEvents = GENERAL_EVENTS.filter(e => !e.role || e.role === currentState.role);
+        const filteredEvents = GENERAL_EVENTS.filter(e => isRoleMatch(e.role, currentState.role));
         
         // Filter by season if the event has a specific season requirement
         const seasonFiltered = filteredEvents.filter(e => !e.season || e.season === currentState.season);
@@ -1370,13 +1391,23 @@ function App() {
   const renderGameOver = () => {
     const isSeasonEnd = new Date(gameState.currentDate) >= new Date('2026-11-01');
     const isResigned = gameState.resigned;
+    const isUltimateVictory = gameState.ultimateVictory;
     const successRate = calculateSuccessRate(gameState);
-    const evalObj = getEvaluationGrade(successRate, gameState);
+    
+    let evalObj = getEvaluationGrade(successRate, gameState);
+    if (isUltimateVictory) {
+      evalObj = {
+        grade: 'S++',
+        label: 'Ultimate Legend 👑',
+        desc: 'Ολοκλήρωσες το παιχνίδι θριαμβευτικά φτάνοντας στον κορυφαίο τίτλο!'
+      };
+    }
 
     return (
       <div className="game-over-screen">
-        <div className="game-over-title" style={isSeasonEnd && !isResigned ? { color: '#4bff4b', textShadow: '0 0 25px rgba(75, 255, 75, 0.6)' } : {}}>
-          {isSeasonEnd && !isResigned ? "ΤΕΛΟΣ ΣΕΖΟΝ!" :
+        <div className="game-over-title" style={isUltimateVictory ? { color: '#ffd700', textShadow: '0 0 25px rgba(255, 215, 0, 0.8)' } : isSeasonEnd && !isResigned ? { color: '#4bff4b', textShadow: '0 0 25px rgba(75, 255, 75, 0.6)' } : {}}>
+          {isUltimateVictory ? "ΘΡΙΑΜΒΟΣ! ΟΛΟΚΛΗΡΩΣΗ ΠΑΙΧΝΙΔΙΟΥ" :
+           isSeasonEnd && !isResigned ? "ΤΕΛΟΣ ΣΕΖΟΝ!" :
            isResigned ? "ΠΑΡΑΙΤΗΣΗ! GAME OVER" :
            gameState.stress >= 100 ? "BURNOUT! GAME OVER" : 
            gameState.reputation <= 0 ? "ΑΠΟΛΥΘΗΚΕΣ! GAME OVER" : 
@@ -1384,7 +1415,13 @@ function App() {
            "GAME OVER"}
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center', lineHeight: '1.6' }}>
-          {isResigned 
+          {isUltimateVictory 
+            ? (gameState.role === 'General Manager' 
+                ? "Συγχαρητήρια! Ξεκίνησες ως απλός Front Office Agent και κατάφερες το αδιανόητο: Έγινες ο νέος General Manager της Faplantica! Ο Μουστάκας αποσύρθηκε νικημένος από το άγχος του, και πλέον εσύ κάνεις κουμάντο σε όλο το ξενοδοχείο. Η αυτοκρατορία σου ανήκει! 👑🏨"
+                : gameState.role === 'Executive Chef'
+                ? "Συγχαρητήρια! Από τις λάντζες και τις φωνές ως Γ Μάγειρας, πλέον είσαι ο Executive Chef της Faplantica! Ο Σάββας εκδιώχθηκε κακήν κακώς μετά τις τοξικές του παρασπονδίες, και πλέον εσύ ορίζεις το μενού, το προσωπικό και την κουζίνα. Η γαστρονομική δόξα είναι δική σου! 🍳👑"
+                : "Συγχαρητήρια! Ξεκίνησες ως βοηθός σερβιτόρου και έφτασες στην κορυφή. Στη 4η σεζόν αποκαλύφθηκαν όλες οι δολοπλοκίες και οι λαμογιές του Καρδάρη, ο οποίος απολύθηκε με συνοπτικές διαδικασίες από τον Τάρναβα. Πήρες πανηγυρικά τη θέση του ως F&B Manager και το παιχνίδι ολοκληρώθηκε θριαμβευτικά! 🍽️👑")
+            : isResigned 
             ? "Πέταξες τη στολή στα μούτρα του Μουστάκα, μάζεψες τα πράγματά σου και έφυγες τρέχοντας για το λιμάνι! Είσαι πλέον ένας ελεύθερος άνθρωπος μακριά από το ξενοδοχειακό χάος! 🏖️✈️"
             : isSeasonEnd 
             ? "Καλό χειμώνα! Τα καταφέρατε και επιβιώσατε άλλη μια σεζόν. Ξεκουραστείτε... γιατί του χρόνου ο εφιάλτης συνεχίζεται! 🏖️🔥"
@@ -1402,11 +1439,12 @@ function App() {
             <div style={{
               fontSize: '5rem',
               lineHeight: 1,
-              animation: isSeasonEnd && !isResigned ? 'pulse 1.5s ease-in-out infinite' : gameState.stress >= 100 ? 'shake 0.5s ease-in-out infinite' : 'none',
+              animation: isUltimateVictory ? 'pulse 1.2s ease-in-out infinite' : isSeasonEnd && !isResigned ? 'pulse 1.5s ease-in-out infinite' : gameState.stress >= 100 ? 'shake 0.5s ease-in-out infinite' : 'none',
               display: 'inline-block',
-              filter: isSeasonEnd && !isResigned ? 'drop-shadow(0 0 10px rgba(75,255,75,0.5))' : gameState.stress >= 100 ? 'drop-shadow(0 0 10px rgba(255,75,75,0.5))' : 'none'
+              filter: isUltimateVictory ? 'drop-shadow(0 0 15px rgba(255,215,0,0.6))' : isSeasonEnd && !isResigned ? 'drop-shadow(0 0 10px rgba(75,255,75,0.5))' : gameState.stress >= 100 ? 'drop-shadow(0 0 10px rgba(255,75,75,0.5))' : 'none'
             }}>
-              {isSeasonEnd && !isResigned
+              {isUltimateVictory ? '👑' :
+               isSeasonEnd && !isResigned
                 ? (successRate >= 80 ? '🥳' : successRate >= 50 ? '😤' : '😮‍💨')
                 : isResigned ? '🏃'
                 : gameState.stress >= 100 ? '🤯'
@@ -1607,9 +1645,9 @@ function App() {
 
   const getNextRole = (currentRole) => {
     const ladders = {
-      'Ρεσεψιονίστ': ['Assistant FO Manager', 'FO Manager', 'Rooms Division Manager', 'Operations Manager', 'GM'],
-      'Βοηθός Σερβιτόρου': ['Head Waiter', 'Captain', "Maitre d'hotel", 'F&B Manager'],
-      'Μάγειρας': ['Section Chef', 'Sous Chef', 'Head Chef', 'Executive Chef']
+      'Front Office Agent': ['Assistant Front office manager', 'Front Office Manager', 'Operations Manager', 'General Manager'],
+      'Βοηθός Σερβιτόρου': ['Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'],
+      'Γ Μάγειρας': ['Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef']
     };
     for (const [base, progression] of Object.entries(ladders)) {
       if (currentRole === base) return progression[0];
@@ -1631,6 +1669,23 @@ function App() {
     const nextSeason = (gameState.season || 1) + 1;
     const nextYear = 2025 + nextSeason;
     const nextRole = getNextRole(gameState.role);
+    
+    const ultimateRoles = ['Executive Chef', 'General Manager', 'F&B Manager'];
+    if (ultimateRoles.includes(nextRole)) {
+      const newState = {
+        ...gameState,
+        season: nextSeason,
+        role: nextRole,
+        turnCount: 1,
+        currentDate: `${nextYear}-04-25`,
+        ultimateVictory: true
+      };
+      setGameState(newState);
+      setGameOver(true);
+      audioService.playGameOverSound();
+      saveScoreToLeaderboard(newState);
+      return;
+    }
     
     const newState = {
       ...gameState,

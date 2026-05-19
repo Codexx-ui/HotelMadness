@@ -927,5 +927,29 @@ export const GENERAL_EVENTS = [
       { id: 2, text: "Του ρίχνω έναν κουβά παγωμένο νερό για να συνέλθει άμεσα.", stress_change: 25, reputation_change: 5, cash_change: 0, staff_relations_change: -15 },
       { id: 3, text: "Φωνάζω τον Καρδάρη για να δει σε τι κατάσταση είναι το τμήμα του.", stress_change: 15, reputation_change: 15, cash_change: 0, staff_relations_change: -30 }
     ]
+  },
+  {
+    scene_title: "Η Προδοσία του Καρδάρη (Act Season 4)",
+    season: 4,
+    role: "Maitre",
+    story_text: "Ως Maitre, βρίσκεις πεταμένα έγγραφα στο γραφείο του F&B. Είναι μια μυστική συμφωνία του Καρδάρη με τον Τάρναβα για να κατηγορήσουν ψευδώς τον Μουστάκα για υπεξαίρεση και παράνομη διακίνηση ποτών, ώστε να πάρει ο Καρδάρης τη θέση του! Τι κάνεις;",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Κρατάω αντίγραφα και τα δείχνω κρυφά στον Μουστάκα για να προστατεύσω τον GM.", stress_change: 25, reputation_change: 20, cash_change: 0, staff_relations_change: -15 },
+      { id: 2, text: "Πλησιάζω τον Καρδάρη και τον εκβιάζω για να μου δώσει μερίδιο από τη λαμογιά.", stress_change: 35, reputation_change: -25, cash_change: 150, staff_relations_change: 20 },
+      { id: 3, text: "Τα πετάω στα σκουπίδια και κάνω πως δεν είδα τίποτα. Δεν μπλέκω με τα θηρία.", stress_change: 5, reputation_change: -10, cash_change: 0, staff_relations_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Το Στήσιμο της Παγίδας (Act Season 4)",
+    season: 4,
+    role: "Maitre",
+    story_text: "Ο Μουστάκας σε καλεί πανικόβλητος: 'Ο Καρδάρης ετοιμάζεται να κάνει την τελική του κίνηση απόψε! Θα κρύψει νοθευμένα μπουκάλια στο δικό μου γραφείο και θα καλέσει την τουριστική αστυνομία. Πρέπει να τον παγιδεύσουμε!'",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Στήνουμε κρυφή κάμερα με τον Μουστάκα στο γραφείο του και καταγράφουμε τον Καρδάρη στα πράσα.", stress_change: 30, reputation_change: 30, cash_change: 50, staff_relations_change: -20 },
+      { id: 2, text: "Πηγαίνω στον Τάρναβα και του δείχνω τα στοιχεία πριν προλάβει ο Καρδάρης να δράσει.", stress_change: 20, reputation_change: 25, cash_change: 100, staff_relations_change: -30 },
+      { id: 3, text: "Λέω στον Καρδάρη ότι ο Μουστάκας ξέρει, παίζοντας διπλό παιχνίδι.", stress_change: 40, reputation_change: -15, cash_change: 80, staff_relations_change: 10 }
+    ]
   }
 ];
