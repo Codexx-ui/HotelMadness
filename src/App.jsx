@@ -788,11 +788,8 @@ function App() {
     }
   };
 
-  // State to hold the API key retrieved from local storage or environment (bypassed in production)
   const [apiKeyInput, setApiKeyInput] = useState(localStorage.getItem('gemini_api_key') || '');
-  const [isKeyConfigured, setIsKeyConfigured] = useState(
-    import.meta.env.PROD || !!(import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key'))
-  );
+  const [isKeyConfigured, setIsKeyConfigured] = useState(true);
 
   const saveApiKey = (key) => {
     const trimmed = key.trim();
@@ -1867,67 +1864,7 @@ function App() {
           </div>
         )}
         
-        {/* Premium API Key Configuration Panel (only in local development) */}
-        {!import.meta.env.PROD && (
-          <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid var(--panel-border)',
-            borderRadius: '8px',
-            padding: '1.25rem',
-            maxWidth: '500px',
-            margin: '1.5rem auto',
-            textAlign: 'left'
-          }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>
-              Gemini API Configuration
-            </label>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <input
-                type="password"
-                placeholder={import.meta.env.VITE_GEMINI_API_KEY ? "Loaded from System Env" : "Paste your Gemini API Key here (AIzaSy...)"}
-                disabled={!!import.meta.env.VITE_GEMINI_API_KEY}
-                value={apiKeyInput}
-                onChange={(e) => saveApiKey(e.target.value)}
-                style={{
-                  flex: 1,
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  border: '1px solid var(--panel-border)',
-                  borderRadius: '4px',
-                  padding: '0.5rem 0.75rem',
-                  color: '#fff',
-                  fontFamily: 'monospace',
-                  fontSize: '0.9rem'
-                }}
-              />
-              {apiKeyInput && !import.meta.env.VITE_GEMINI_API_KEY && (
-                <button
-                  onClick={() => saveApiKey('')}
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: '1px solid var(--danger-color)',
-                    color: 'var(--danger-color)',
-                    borderRadius: '4px',
-                    padding: '0 0.75rem',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem'
-                  }}
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginOpt: 0 }}>
-              {import.meta.env.VITE_GEMINI_API_KEY ? (
-                <span className="text-success">✔ API Key detected from local environment configuration.</span>
-              ) : isKeyConfigured ? (
-                <span className="text-success">✔ API Key securely cached in your local browser storage.</span>
-              ) : (
-                <span className="text-warning">⚠ A free key is required. Get one at <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)' }}>Google AI Studio</a>.</span>
-              )}
-            </p>
-          </div>
-        )}
-
+        {/* Removed API Key Panel to avoid user confusion */}
         {errorMsg && (
           <div style={{ backgroundColor: 'rgba(255, 75, 75, 0.1)', border: '1px solid var(--danger-color)', padding: '1rem', borderRadius: '8px', maxWidth: '600px', margin: '1rem auto', color: 'var(--danger-color)' }}>
             <ShieldAlert style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
@@ -1954,12 +1891,7 @@ function App() {
             <div className="role-desc">Η φωτιά της κουζίνας. Επιβιώστε από χαλασμένο εξοπλισμό, ελλείψεις υλικών και ακραίες θερμοκρασίες.</div>
           </div>
         </div>
-        {!isKeyConfigured && !import.meta.env.PROD && (
-          <p style={{ marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            * Configure your Gemini API Key in the panel above to unlock role selection.
-          </p>
-        )}
-      </div>
+        </div>
     );
   };
 
