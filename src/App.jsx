@@ -311,13 +311,13 @@ function App() {
   const getDifficultyMultipliers = () => {
     switch (difficulty) {
       case 'easy':
-        return { stressUp: 0.5, stressDown: 1.4, repUp: 1.4, repDown: 0.5, cash: 1.3 };
+        return { stressUp: 0.4, stressDown: 1.68, repUp: 1.68, repDown: 0.4, cash: 1.56 };
       case 'hard':
-        return { stressUp: 1.1, stressDown: 0.95, repUp: 0.95, repDown: 1.1, cash: 0.9 };
+        return { stressUp: 0.88, stressDown: 1.14, repUp: 1.14, repDown: 0.88, cash: 1.08 };
       case 'nightmare':
-        return { stressUp: 1.4, stressDown: 0.75, repUp: 0.75, repDown: 1.4, cash: 0.7 };
+        return { stressUp: 1.12, stressDown: 0.9, repUp: 0.9, repDown: 1.12, cash: 0.84 };
       default:
-        return { stressUp: 0.8, stressDown: 1.15, repUp: 1.15, repDown: 0.8, cash: 1.1 };
+        return { stressUp: 0.64, stressDown: 1.38, repUp: 1.38, repDown: 0.64, cash: 1.32 };
     }
   };
 
@@ -2340,18 +2340,36 @@ function App() {
                 <span style={{ fontSize: '0.8rem', color: 'var(--warning-color)', background: 'rgba(255, 170, 0, 0.1)', border: '1px solid var(--warning-color)', padding: '0.2rem 0.6rem', borderRadius: '12px', marginLeft: '0.5rem', fontWeight: 600 }}>LOCAL 📂</span>
               )}
             </h3>
-            <button 
-              onClick={() => setShowLeaderboard(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--text-secondary)',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
-              }}
-            >
-              ✕
-            </button>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <button 
+                onClick={fetchOnlineLeaderboard}
+                disabled={isLeaderboardLoading}
+                style={{
+                  background: 'var(--accent-color)',
+                  border: 'none',
+                  color: '#000',
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: isLeaderboardLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLeaderboardLoading ? 0.6 : 1
+                }}
+              >
+                Ανανέωση
+              </button>
+              <button 
+                onClick={() => setShowLeaderboard(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer'
+                }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
           <div style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '0.5rem' }}>
