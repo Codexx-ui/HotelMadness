@@ -2385,7 +2385,6 @@ function App() {
                   <th style={{ padding: '0.75rem 0.5rem' }}>Tips</th>
                   <th style={{ padding: '0.75rem 0.5rem' }}>Δυσκολία</th>
                   <th style={{ padding: '0.75rem 0.5rem' }}>Κατάσταση</th>
-                  <th style={{ padding: '0.75rem 0.5rem' }}>Ενέργεια</th>
                 </tr>
               </thead>
               <tbody>
@@ -2415,34 +2414,6 @@ function App() {
                       <td style={{ padding: '0.75rem 0.5rem', color: '#ffd700' }}>€{entry.tips.toLocaleString('el-GR')}</td>
                       <td style={{ padding: '0.75rem 0.5rem', fontSize: '0.8rem' }}>{entry.difficulty}</td>
                       <td style={{ padding: '0.75rem 0.5rem', fontSize: '0.8rem' }}>{entry.status}</td>
-                      <td style={{ padding: '0.75rem 0.5rem' }}>
-                        {entry.saveData ? (
-                          <button
-                            onClick={() => {
-                              if (window.confirm(`Θέλεις να φορτώσεις το παιχνίδι του/της ${entry.nickname} (Σεζόν ${entry.season}, Γύρος ${entry.turns});`)) {
-                                checkAndLoadState(entry.saveData.gameState, entry.saveData.sceneData, entry.saveData.nickname);
-                                setShowLeaderboard(false);
-                                showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
-                              }
-                            }}
-                            style={{
-                              backgroundColor: 'rgba(102, 252, 241, 0.15)',
-                              border: '1px solid var(--accent-color)',
-                              color: 'var(--accent-color)',
-                              borderRadius: '4px',
-                              padding: '0.2rem 0.5rem',
-                              cursor: 'pointer',
-                              fontSize: '0.8rem',
-                              fontWeight: 'bold',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            Φόρτωση 💾
-                          </button>
-                        ) : (
-                          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>—</span>
-                        )}
-                      </td>
                     </tr>
                   );
                 })}
