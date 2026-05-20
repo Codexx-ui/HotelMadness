@@ -19,13 +19,75 @@ export default async function handler(req, res) {
         .order('season', { ascending: false })
         .order('turns', { ascending: false })
         .order('cash', { ascending: false })
-        .limit(100);
+        .limit(1000);
 
       if (error) {
         throw error;
       }
 
-      return res.status(200).json({ success: true, scores: data });
+      // Deduplicate by nickname and role, keeping the highest score
+      const uniqueMap = new Map();
+      const motdEntries = [];
+
+      for (const entry of data) {
+        if (entry.nickname === '__MOTD__') {
+          motdEntries.push(entry);
+          continue;
+        }
+
+        const nicknameKey = (entry.nickname || '').trim().toLowerCase();
+        const roleKey = (entry.role || '').trim().toLowerCase();
+        const key = `${nicknameKey}_${roleKey}`;
+
+        if (!uniqueMap.has(key)) {
+          uniqueMap.set(key, entry);
+        } else {
+          // Compare and keep the better score
+          const existing = uniqueMap.get(key);
+          const currentSeason = entry.season || 1;
+          const existingSeason = existing.season || 1;
+          
+          let isCurrentBetter = false;
+          if (currentSeason > existingSeason) {
+            isCurrentBetter = true;
+          } else if (currentSeason === existingSeason) {
+            const currentTurns = entry.turns || 0;
+            const existingTurns = existing.turns || 0;
+            if (currentTurns > existingTurns) {
+              isCurrentBetter = true;
+            } else if (currentTurns === existingTurns) {
+              const currentCash = entry.cash || 0;
+              const existingCash = existing.cash || 0;
+              if (currentCash > existingCash) {
+                isCurrentBetter = true;
+              }
+            }
+          }
+
+          if (isCurrentBetter) {
+            uniqueMap.set(key, entry);
+          }
+        }
+      }
+
+      const deduplicated = [...uniqueMap.values()];
+      deduplicated.sort((a, b) => {
+        const seasonA = a.season || 1;
+        const seasonB = b.season || 1;
+        if (seasonB !== seasonA) return seasonB - seasonA;
+
+        const turnsA = a.turns || 0;
+        const turnsB = b.turns || 0;
+        if (turnsB !== turnsA) return turnsB - turnsA;
+
+        const cashA = a.cash || 0;
+        const cashB = b.cash || 0;
+        return cashB - cashA;
+      });
+
+      const finalScores = [...motdEntries, ...deduplicated];
+
+      return res.status(200).json({ success: true, scores: finalScores });
     } catch (err) {
       console.warn('Supabase fetch failed, returning empty list:', err.message);
       // Return empty list so the client can fallback gracefully

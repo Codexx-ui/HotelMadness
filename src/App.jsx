@@ -4,6 +4,8 @@ import EventTerminal from './components/EventTerminal';
 import Auth from './components/Auth';
 import SlapOMeter from './components/SlapOMeter';
 import DishwasherModal from './components/DishwasherModal';
+import FrappeModal from './components/FrappeModal';
+import RoomCleaningModal from './components/RoomCleaningModal';
 import ViberModal from './components/ViberModal';
 import { supabase } from './supabaseClient';
 import { generateNextState } from './services/aiService';
@@ -51,7 +53,8 @@ const INITIAL_STATE = {
   grandmaCashPurchasedCount: 0,
   viberMessages: [],
   viberUnreadCount: 0,
-  opsManagerSpawnsThisSeason: 0
+  opsManagerSpawnsThisSeason: 0,
+  christosRelation: 50
 };
 
 function App() {
@@ -113,6 +116,8 @@ function App() {
   const [showDishwasher, setShowDishwasher] = useState(false);
   const [hasWashedDishesThisTurn, setHasWashedDishesThisTurn] = useState(false);
   const [pendingChoiceData, setPendingChoiceData] = useState(null);
+  const [showFrappe, setShowFrappe] = useState(false);
+  const [showRoomCleaning, setShowRoomCleaning] = useState(false);
   const [showViber, setShowViber] = useState(false);
   const [opsManagerSpawnsThisSeason, setOpsManagerSpawnsThisSeason] = useState(0);
 
@@ -162,6 +167,65 @@ function App() {
     } else {
       showToast(`Καθάρισες μόνο ${score} πιάτα! Stress +15`, '🤦‍♂️');
     }
+  };
+
+  // ─── Frappe Mini-Game Handler ───
+  const handleFrappeComplete = ({ result, correctCount }) => {
+    const mult = getDifficultyMultipliers();
+    let stressChange = 0, cashChange = 0, repChange = 0;
+    if (result === 'perfect') {
+      stressChange = -25; cashChange = 20;
+    } else if (result === 'good') {
+      stressChange = -10; cashChange = 5;
+    } else {
+      stressChange = 20; repChange = -10;
+    }
+    
+    if (pendingChoiceData) {
+      const { choice, updatedState } = pendingChoiceData;
+      updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + (stressChange > 0 ? stressChange * mult.stressUp : stressChange * mult.stressDown)));
+      updatedState.cash += Math.round(cashChange * mult.cash);
+      updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + (repChange > 0 ? repChange * mult.repUp : repChange * mult.repDown)));
+      setGameState(updatedState);
+      processTurn(`I choose option ${choice.id}: ${choice.text}. Mini-game result: ${result}.`, updatedState);
+      setPendingChoiceData(null);
+    } else {
+      setGameState(prev => ({
+        ...prev,
+        stress: Math.max(0, Math.min(100, prev.stress + (stressChange > 0 ? stressChange * mult.stressUp : stressChange * mult.stressDown))),
+        cash: Math.max(0, prev.cash + Math.round(cashChange * mult.cash)),
+        reputation: Math.max(0, Math.min(100, prev.reputation + (repChange > 0 ? repChange * mult.repUp : repChange * mult.repDown)))
+      }));
+    }
+
+    if (result === 'perfect') showToast('Τέλειος καφές! Stress -25, +20€ φιλοδώρημα! ☕✨', '🏆');
+    else if (result === 'good') showToast('Σχεδόν σωστός καφές! Stress -10, +5€', '☕');
+    else showToast('Λάθος καφές! Stress +20, Reputation -10', '💀');
+  };
+
+  // ─── Room Cleaning Mini-Game Handler ───
+  const handleRoomCleaningComplete = ({ success, score }) => {
+    const mult = getDifficultyMultipliers();
+    const stressChange = success ? -20 : 25;
+    const repChange = success ? 15 : -15;
+    
+    if (pendingChoiceData) {
+      const { choice, updatedState } = pendingChoiceData;
+      updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + (stressChange > 0 ? stressChange * mult.stressUp : stressChange * mult.stressDown)));
+      updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + (repChange > 0 ? repChange * mult.repUp : repChange * mult.repDown)));
+      setGameState(updatedState);
+      processTurn(`I choose option ${choice.id}: ${choice.text}. Mini-game result: ${success ? 'Success' : 'Failure'}.`, updatedState);
+      setPendingChoiceData(null);
+    } else {
+      setGameState(prev => ({
+        ...prev,
+        stress: Math.max(0, Math.min(100, prev.stress + (stressChange > 0 ? stressChange * mult.stressUp : stressChange * mult.stressDown))),
+        reputation: Math.max(0, Math.min(100, prev.reputation + (repChange > 0 ? repChange * mult.repUp : repChange * mult.repDown)))
+      }));
+    }
+
+    if (success) showToast(`Μάζεψες ${score} αντικείμενα! Stress -20, Reputation +15 🧹✨`, '✅');
+    else showToast(`Μόνο ${score} αντικείμενα! Stress +25, Reputation -15`, '💀');
   };
 
   const showToast = (text, icon = '💵') => {
@@ -386,14 +450,59 @@ function App() {
       };
 
       const currentLeaderboard = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
+      const targetRole = roleMap[state.role] || state.role || '—';
       
-      const existingIndex = currentLeaderboard.findIndex(e => e.id === runId);
       let updatedLeaderboard;
-      if (existingIndex !== -1) {
-        updatedLeaderboard = [...currentLeaderboard];
-        updatedLeaderboard[existingIndex] = newEntry;
+      if (isGameOver) {
+        // For completed game: remove the active save for this run first
+        let cleanLeaderboard = currentLeaderboard.filter(e => e.id !== runId);
+        
+        // Find if there is an existing completed score for the same user and role
+        const existingCompIndex = cleanLeaderboard.findIndex(e => 
+          e.status !== 'Εργάζεται' &&
+          (e.nickname || '').trim().toLowerCase() === resolvedNickname.trim().toLowerCase() &&
+          e.role === targetRole
+        );
+        
+        if (existingCompIndex !== -1) {
+          const existing = cleanLeaderboard[existingCompIndex];
+          const newSeason = newEntry.season || 1;
+          const oldSeason = existing.season || 1;
+          
+          let isNewBetter = false;
+          if (newSeason > oldSeason) {
+            isNewBetter = true;
+          } else if (newSeason === oldSeason) {
+            const newTurns = newEntry.turns || 0;
+            const oldTurns = existing.turns || 0;
+            if (newTurns > oldTurns) {
+              isNewBetter = true;
+            } else if (newTurns === oldTurns) {
+              const newCash = newEntry.cash || 0;
+              const oldCash = existing.cash || 0;
+              if (newCash > oldCash) {
+                isNewBetter = true;
+              }
+            }
+          }
+          
+          if (isNewBetter) {
+            cleanLeaderboard[existingCompIndex] = newEntry;
+          }
+        } else {
+          // No completed score exists yet, so append newEntry
+          cleanLeaderboard = [newEntry, ...cleanLeaderboard];
+        }
+        updatedLeaderboard = cleanLeaderboard;
       } else {
-        updatedLeaderboard = [newEntry, ...currentLeaderboard];
+        // For active game: overwrite the active save entry with this run ID
+        const existingIndex = currentLeaderboard.findIndex(e => e.id === runId);
+        if (existingIndex !== -1) {
+          updatedLeaderboard = [...currentLeaderboard];
+          updatedLeaderboard[existingIndex] = newEntry;
+        } else {
+          updatedLeaderboard = [newEntry, ...currentLeaderboard];
+        }
       }
       
       // Sort by season (descending), then turns (descending), then cash (descending)
@@ -406,35 +515,37 @@ function App() {
       // Keep top 100 entries
       localStorage.setItem('hotel_madness_leaderboard', JSON.stringify(updatedLeaderboard.slice(0, 100)));
 
-      // POST to global online database (include auth token if logged in)
-      const token = localStorage.getItem('auth_token');
-      const headers = {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      };
-      fetch('/api/leaderboard', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          nickname: resolvedNickname,
-          role: roleMap[state.role] || state.role || '—',
-          turns: state.turnCount || 0,
-          season: state.season || 1,
-          cash: state.cash || 0,
-          tips: state.tips || 0,
-          difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
-          status: status,
-          success_rate: successRate,
-          evaluation: `${evalObj.grade} - ${evalObj.label}`
+      // POST to global online database ONLY if game is completed
+      if (isGameOver) {
+        const token = localStorage.getItem('auth_token');
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        };
+        fetch('/api/leaderboard', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            nickname: resolvedNickname,
+            role: targetRole,
+            turns: state.turnCount || 0,
+            season: state.season || 1,
+            cash: state.cash || 0,
+            tips: state.tips || 0,
+            difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
+            status: status,
+            success_rate: successRate,
+            evaluation: `${evalObj.grade} - ${evalObj.label}`
+          })
         })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          console.log('Saved score to global online database!');
-        }
-      })
-      .catch(err => console.warn('Failed to save score online, saved locally:', err));
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Saved score to global online database!');
+          }
+        })
+        .catch(err => console.warn('Failed to save score online, saved locally:', err));
+      }
     } catch (e) {
       console.error('Failed to save to leaderboard:', e);
     }
@@ -769,6 +880,16 @@ function App() {
     if (choice.trigger_dishwasher) {
       setPendingChoiceData({ choice, updatedState });
       setShowDishwasher(true);
+      return;
+    }
+    if (choice.trigger_frappe) {
+      setPendingChoiceData({ choice, updatedState });
+      setShowFrappe(true);
+      return;
+    }
+    if (choice.trigger_cleaning) {
+      setPendingChoiceData({ choice, updatedState });
+      setShowRoomCleaning(true);
       return;
     }
     if (updatedState.thesfapaClicked) {
@@ -2223,15 +2344,61 @@ function App() {
         uniqueScores.push(mockEntry);
       }
     });
+
+    const rawList = isOnlineConnected ? uniqueScores : offlineList;
+
+    // Deduplicate by nickname and role, keeping the highest completed/final score
+    const uniqueMap = new Map();
+    for (const entry of rawList) {
+      // Exclude active/in-progress games from the public high-score leaderboard modal
+      if (entry.status === 'Εργάζεται') {
+        continue;
+      }
+
+      const nicknameKey = (entry.nickname || '').trim().toLowerCase();
+      const roleKey = (entry.role || '').trim().toLowerCase();
+      const key = `${nicknameKey}_${roleKey}`;
+
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, entry);
+      } else {
+        const existing = uniqueMap.get(key);
+        const newSeason = entry.season || 1;
+        const oldSeason = existing.season || 1;
+        
+        let isNewBetter = false;
+        if (newSeason > oldSeason) {
+          isNewBetter = true;
+        } else if (newSeason === oldSeason) {
+          const newTurns = entry.turns || 0;
+          const oldTurns = existing.turns || 0;
+          if (newTurns > oldTurns) {
+            isNewBetter = true;
+          } else if (newTurns === oldTurns) {
+            const newCash = entry.cash || 0;
+            const oldCash = existing.cash || 0;
+            if (newCash > oldCash) {
+              isNewBetter = true;
+            }
+          }
+        }
+        
+        if (isNewBetter) {
+          uniqueMap.set(key, entry);
+        }
+      }
+    }
+
+    const sortedList = [...uniqueMap.values()];
     
     // Sort by season (descending), then turns (descending), then cash (descending)
-    uniqueScores.sort((a, b) => {
+    sortedList.sort((a, b) => {
       if (b.season !== a.season) return b.season - a.season;
       if (b.turns !== a.turns) return b.turns - a.turns;
       return b.cash - a.cash;
     });
 
-    const list = isOnlineConnected ? uniqueScores : offlineList;
+    const list = sortedList.slice(0, 10);
     const isOnline = isOnlineConnected;
 
     return (
@@ -2239,7 +2406,7 @@ function App() {
         <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: '2rem', maxWidth: '850px', width: '95%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
             <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <Trophy color="var(--warning-color)" /> Hall of Fame - Κατάταξη 
+              <Trophy color="var(--warning-color)" /> Hall of Fame - Top 10 Κατάταξη 
               {isLeaderboardLoading ? (
                 <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'rgba(102, 252, 241, 0.1)', border: '1px solid var(--accent-color)', padding: '0.2rem 0.6rem', borderRadius: '12px', marginLeft: '0.5rem', fontWeight: 600 }}>ΑΝΑΝΕΩΣΗ... ⏳</span>
               ) : isOnline ? (
@@ -3012,6 +3179,38 @@ function App() {
                 >
                   🧼 ΠΑΙΞΕ ΤΗ ΛΑΝΤΖΑ (TEST)
                 </button>
+
+                <button
+                  style={{
+                    marginTop: '0.5rem',
+                    background: 'linear-gradient(135deg, #fbbf24, #d97706)',
+                    border: 'none', borderRadius: '8px',
+                    padding: '0.6rem 1.5rem', color: '#000',
+                    fontWeight: 'bold', cursor: 'pointer',
+                    boxShadow: '0 0 10px rgba(251,191,36,0.3)',
+                    transition: 'all 0.2s', width: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                  onClick={() => { setShowAdminPanel(false); setShowFrappe(true); }}
+                >
+                  ☕ ΠΑΙΞΕ ΤΗ ΜΑΧΗ ΤΟΥ ΦΡΑΠΕ (TEST)
+                </button>
+
+                <button
+                  style={{
+                    marginTop: '0.5rem',
+                    background: 'linear-gradient(135deg, #34d399, #059669)',
+                    border: 'none', borderRadius: '8px',
+                    padding: '0.6rem 1.5rem', color: '#fff',
+                    fontWeight: 'bold', cursor: 'pointer',
+                    boxShadow: '0 0 10px rgba(52,211,153,0.3)',
+                    transition: 'all 0.2s', width: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                  onClick={() => { setShowAdminPanel(false); setShowRoomCleaning(true); }}
+                >
+                  🧹 ΠΑΙΞΕ ΚΑΘΑΡΙΣΜΟ ΔΩΜΑΤΙΟΥ (TEST)
+                </button>
               </div>
 
             </div>
@@ -3222,6 +3421,20 @@ function App() {
           isOpen={showDishwasher}
           onClose={() => setShowDishwasher(false)}
           onComplete={handleDishwasherComplete}
+        />
+      )}
+      {showFrappe && (
+        <FrappeModal
+          isOpen={showFrappe}
+          onClose={() => setShowFrappe(false)}
+          onComplete={(res) => { setShowFrappe(false); handleFrappeComplete(res); }}
+        />
+      )}
+      {showRoomCleaning && (
+        <RoomCleaningModal
+          isOpen={showRoomCleaning}
+          onClose={() => setShowRoomCleaning(false)}
+          onComplete={(res) => { setShowRoomCleaning(false); handleRoomCleaningComplete(res); }}
         />
       )}
       {renderLeaderboardModal()}

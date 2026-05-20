@@ -1107,5 +1107,61 @@ export const GENERAL_EVENTS = [
       { id: 2, text: "Αλλάζω θέμα συζήτησης και αρχίζω να της μιλάω για τις ελλείψεις στα ποτήρια.", stress_change: 10, reputation_change: 5, cash_change: 0, staff_relations_change: 10 },
       { id: 3, text: "Φεύγω δικαιολογούμενος ότι με φωνάζει επειγόντως ο Μουστάκας.", stress_change: 15, reputation_change: 0, cash_change: 0, staff_relations_change: 0 }
     ]
+  },
+  {
+    scene_title: "Η Μάχη του Φραπέ! (Mini-Game)",
+    season: 4,
+    role: null,
+    story_text: "Το μπαρ έχει γεμίσει, ο Μουστάκας φωνάζει, και ο πελάτης θέλει τον καφέ του ΤΩΡΑ! Πρέπει να τον φτιάξεις σωστά για να σώσεις τη φήμη του ξενοδοχείου.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Αναλαμβάνω τον καφέ! (Mini-Game)", trigger_frappe: true, stress_change: 0, reputation_change: 0, cash_change: 0, staff_relations_change: 0 },
+      { id: 2, text: "Δεν προλαβαίνω, ας το φτιάξει ο βοηθός! (Αποτυχία)", stress_change: 15, reputation_change: -10, cash_change: 0, staff_relations_change: -5 }
+    ]
+  },
+  {
+    scene_title: "Έκτακτος Καθαρισμός Δωματίου 314! (Mini-Game)",
+    season: 4,
+    role: null,
+    story_text: "Η καμαριέρα αρρώστησε και το δωμάτιο του VIP πελάτη μοιάζει με βομβαρδισμένο τοπίο! Ο πελάτης φτάνει σε 25 λεπτά. Τι κάνεις;",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Πάω να το καθαρίσω μόνος/η μου! (Mini-Game)", trigger_cleaning: true, stress_change: 0, reputation_change: 0, cash_change: 0, staff_relations_change: 0 },
+      { id: 2, text: "Αρνούμαι. Δεν είναι δική μου δουλειά! (Χάνεις Reputation)", stress_change: 5, reputation_change: -15, cash_change: 0, staff_relations_change: 0 }
+    ]
+  },
+  {
+    scene_title: "Ο Χρήστος Sztour, Υπεύθυνος Συντήρησης",
+    season: 4,
+    role: null,
+    story_text: "Συναντάς τον Χρήστο 'Sztour', τον θρυλικό υπεύθυνο συντήρησης του ξενοδοχείου, δίπλα στο λεβητοστάσιο. Φαίνεται ιδρωμένος και εκνευρισμένος με μια βαλβίδα που στάζει. Είναι σημαντικό να έχεις καλές σχέσεις μαζί του για τις βλάβες.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τον βοηθάω να σφίξει τη βαλβίδα και του προσφέρω έναν καφέ. (+Σχέση)", stress_change: 10, reputation_change: 5, cash_change: -5, staff_relations_change: 20 },
+      { id: 2, text: "Τον χαιρετάω τυπικά και συνεχίζω τη δουλειά μου.", stress_change: 0, reputation_change: 0, cash_change: 0, staff_relations_change: 5 },
+      { id: 3, text: "Του παραπονιέμαι που το AC στη ρεσεψιόν δεν δουλεύει καλά. (-Σχέση)", stress_change: -5, reputation_change: 0, cash_change: 0, staff_relations_change: -15 }
+    ]
+  },
+  {
+    scene_title: "Ο Χρήστος Sztour και το φραγμένο σιφόνι",
+    season: 1,
+    role: null,
+    story_text: "Στο δωμάτιο 102 υπάρχει διαρροή. Ο Χρήστος φτάνει με τα εργαλεία του, αλλά του λείπει ένας ειδικός κάβουρας που ξέχασε στην αποθήκη. Βιάζεται γιατί το λόμπι γεμίζει νερά.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Τρέχω εγώ να του φέρω τον κάβουρα για να τελειώσει γρήγορα.", stress_change: 15, reputation_change: 10, cash_change: 0, staff_relations_change: 15 },
+      { id: 2, text: "Τον αφήνω να πάει να τον φέρει μόνος του. Δική του ευθύνη.", stress_change: 10, reputation_change: -5, cash_change: 0, staff_relations_change: -10 }
+    ]
+  },
+  {
+    scene_title: "Διακοπή Ρεύματος και ο Χρήστος Sztour",
+    season: 2,
+    role: null,
+    story_text: "Πέφτει το ρεύμα σε όλο τον όροφο. Ο Χρήστος είναι ήδη στους πίνακες αλλά δεν βλέπει καλά λόγω σκότους. Ο Μουστάκας ουρλιάζει από τον ασύρματο.",
+    requires_text_input: null,
+    choices: [
+      { id: 1, text: "Πάω να του κρατήσω τον φακό και τον ηρεμώ. (+Σχέση)", stress_change: 20, reputation_change: 15, cash_change: 0, staff_relations_change: 20 },
+      { id: 2, text: "Παίρνω τηλέφωνο να παραπονεθώ στον Μουστάκα για την αργοπορία.", stress_change: 0, reputation_change: -10, cash_change: 0, staff_relations_change: -20 }
+    ]
   }
 ];
