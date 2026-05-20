@@ -2372,7 +2372,7 @@ function App() {
             </div>
           </div>
 
-          <div style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+          <div style={{ paddingRight: '0.5rem', overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid rgba(102, 252, 241, 0.3)', color: 'var(--accent-color)' }}>
