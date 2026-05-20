@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Hotel Madness</string>
+    <string name="title_activity_main">Hotel Madness</string>
+    <string name="package_name">com.codexx.hotelmadness</string>
+    <string name="custom_url_scheme">com.codexx.hotelmadness</string>
+</resources>
