@@ -800,18 +800,11 @@ function App() {
       setErrorMsg('');
     } else {
       localStorage.removeItem('gemini_api_key');
-      setIsKeyConfigured(!!import.meta.env.VITE_GEMINI_API_KEY);
+      setIsKeyConfigured(true);
     }
   };
 
   const startGame = async (roleKey) => {
-    if (!import.meta.env.PROD) {
-      const currentKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key');
-      if (!currentKey) {
-        setErrorMsg("Setup Required: Please enter your Google Gemini API Key below to initiate the simulator.");
-        return;
-      }
-    }
     let actualRole = roleKey;
     if (roleKey === 'Ρεσεψιονίστ') actualRole = 'Front Office Agent';
     if (roleKey === 'Μάγειρας') actualRole = 'Γ Μάγειρας';
