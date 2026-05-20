@@ -328,7 +328,7 @@ function App() {
     return { grade: 'F', label: 'Απολυμένος 💼', desc: 'Δεν άντεξες ούτε τη βασική εκπαίδευση. Ο τουρισμός δεν είναι για σένα.' };
   };
 
-  const saveScoreToLeaderboard = (state) => {
+  const saveScoreToLeaderboard = (state, forceGameOver = false) => {
     try {
       const difficultyMap = {
         easy: 'HR Lover 💖',
@@ -345,7 +345,7 @@ function App() {
         maintenance: 'Συντήρηση 🔧'
       };
 
-      const isGameOver = state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3 || state.resigned;
+      const isGameOver = forceGameOver || state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3 || state.resigned || state.ultimateVictory;
       let status = 'Εργάζεται';
       if (state.ultimateVictory) {
         status = 'Συνταξιοδοτήθηκε';
@@ -378,7 +378,7 @@ function App() {
         evaluationGrade: evalObj.grade,
         evaluationLabel: evalObj.label,
         date: new Date().toLocaleDateString('el-GR'),
-        saveData: {
+        saveData: isGameOver ? null : {
           gameState: { ...state, runId },
           sceneData: sceneData,
           nickname: resolvedNickname
@@ -607,7 +607,7 @@ function App() {
     }
     if (gameOver) {
       // Save game over state to leaderboard
-      saveScoreToLeaderboard(gameState);
+      saveScoreToLeaderboard(gameState, true);
       
       localStorage.removeItem('hotel_saved_game');
       setHasSavedGame(false);
@@ -632,27 +632,48 @@ function App() {
     }
   }, [gameState, sceneData, gameOver, session, gameStarted, nickname]);
 
+  const checkAndLoadState = (loadedState, loadedSceneData, loadedNickname) => {
+    if (!loadedState) return;
+
+    // Check if the loaded state is a Game Over state
+    const isGameOverState =
+      loadedState.stress >= 100 ||
+      loadedState.reputation <= 0 ||
+      loadedState.alcoholWarnings >= 3 ||
+      loadedState.resigned ||
+      loadedState.ultimateVictory ||
+      loadedSceneData?.game_over ||
+      loadedState.gameOver;
+
+    setGameState(loadedState);
+    setSceneData(loadedSceneData || {
+      scene_title: "Επιβίωση",
+      story_text: "Συνέχεια παιχνιδιού...",
+      choices: []
+    });
+    setNickname(loadedNickname || '');
+    setNicknameConfirmed(true);
+    setGameStarted(true);
+    setOpsManagerSpawnsThisSeason(loadedState.opsManagerSpawnsThisSeason || 0);
+
+    if (isGameOverState) {
+      setGameOver(true);
+    } else {
+      setGameOver(false);
+    }
+  };
+
   const loadSavedGame = () => {
     if (savedGame) {
-      setGameState(savedGame.gameState);
-      setSceneData(savedGame.sceneData);
-      setNickname(savedGame.nickname || '');
-      setNicknameConfirmed(true);
-      setGameStarted(true);
+      checkAndLoadState(savedGame.gameState, savedGame.sceneData, savedGame.nickname);
       setHasSavedGame(false);
-      setOpsManagerSpawnsThisSeason(savedGame.gameState?.opsManagerSpawnsThisSeason || 0);
     }
   };
 
   const loadCloudSave = () => {
     if (cloudSaveData) {
-      setGameState(cloudSaveData.game_state);
-      setSceneData(cloudSaveData.scene_data);
-      setNickname(cloudSaveData.nickname || '');
-      setNicknameConfirmed(true);
-      setGameStarted(true);
+      checkAndLoadState(cloudSaveData.game_state, cloudSaveData.scene_data, cloudSaveData.nickname);
       setHasCloudSave(false);
-      setOpsManagerSpawnsThisSeason(cloudSaveData.game_state?.opsManagerSpawnsThisSeason || 0);
     }
   };
 
@@ -687,7 +708,8 @@ function App() {
     if (roleKey === 'Ρεσεψιονίστ') actualRole = 'Front Office Agent';
     if (roleKey === 'Μάγειρας') actualRole = 'Γ Μάγειρας';
     if (roleKey === 'Σερβιτόρος') actualRole = 'Βοηθός Σερβιτόρου';
-    const newState = { ...INITIAL_STATE, role: actualRole, nickname };
+    const newRunId = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const newState = { ...INITIAL_STATE, role: actualRole, nickname, runId: newRunId };
     setGameState(newState);
     setOpsManagerSpawnsThisSeason(0);
     setShowDisclaimer(true);
@@ -848,7 +870,7 @@ function App() {
         audioService.playGameOverSound();
         const rejectedState = { ...updatedState, turnCount: 0, resigned: false };
         setGameState(rejectedState);
-        saveScoreToLeaderboard(rejectedState);
+        saveScoreToLeaderboard(rejectedState, true);
         return;
       }
     }
@@ -995,6 +1017,40 @@ function App() {
     }
   };
 
+  const getWelcomeViberMessage = (role) => {
+    const welcomeMsgs = [
+      { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στη Reception της Faplantica. Κουράγιο για την πρώτη σου μέρα, ο Μουστάκας είναι σε τρελά κέφια σήμερα... 😅' },
+      { sender: 'Chef Αντώνης', text: 'Καλώς τον νέο! Ετοιμάσου να ιδρώσεις, έχουμε 400 άτομα buffet το βράδυ. Μην καθυστερήσεις στη βάρδια σου! 🍳' },
+      { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Γεια! Καλώς ήρθες στην ομάδα του service. Πάρε βαθιά ανάσα, σήμερα έχει γάμο στο beach bar και θα τρέχουμε όλοι. 😅' },
+      { sender: 'Κώστας (Maintenance)', text: 'Καλώς ήρθες φίλε/φίλη! Είμαι ο Κώστας από τη συντήρηση. Αν σου χαλάσει κάνα air condition ή βγάλει καπνούς το POS, πάρε με αλλά μην το πεις στον Μουστάκα αμέσως! 🔧' },
+      { sender: 'Μαρία (Housekeeping)', text: 'Γεια σου! Καλή αρχή! Είμαι η Μαρία από τις οροφοκομίες. Αν δεις πελάτες να ζητάνε έξτρα μαξιλάρια στη βάρδια σου, στείλε μου Viber να το κανονίσω! 🧹' },
+      { sender: 'Γιώργος (Bellboy)', text: 'Καλώς ήρθες στην τρέλα! Εγώ κουβαλάω τις βαλίτσες. Αν δεις τον Μουστάκα να τρέχει με κόκκινο πρόσωπο, κρύψου πίσω από τις κολόνες, είναι η καλύτερη άμυνα! 🧳' },
+      { sender: 'Ελένη (Spa)', text: 'Καλή αρχή στο ξενοδοχείο! Είμαι η Ελένη από το Spa. Αν νιώσεις ότι το stress σου χτυπάει 100%, έλα από δω κρυφά να σου κάνω κάνα μασάζ να συνέλθεις! 💆' },
+      { sender: 'Νίκος (Μπαρ)', text: 'Γεια σου συνάδελφε! Καλώς όρισες. Είμαι στο κεντρικό μπαρ. Το βράδυ μετά το σχόλασμα κερνάω σφηνάκι για το καλωσόρισμα, θα το χρειαστείς σίγουρα! 🍹' },
+      { sender: 'Κατερίνα (Guest Relations)', text: 'Γεια σου και καλή αρχή! Είμαι η Κατερίνα. Αν έχεις πελάτες που φωνάζουν για το παραμικρό, στείλτους σε μένα να τους φλομώσω στα welcome drinks και στα free vouchers! 🥂' },
+      { sender: 'Σπύρος (Pool Bar)', text: 'Καλώς ήρθες στην ομάδα! Εδώ Pool Bar. Έχουμε φουλ κρατήσεις σήμερα, αν περάσεις από δω φέρε κάνα μπουκάλι νερό γιατί έχουμε λιώσει από τη ζέστη! 🏊' },
+      { sender: 'Στέλιος (Night Auditor)', text: 'Καλή αρχή! Εγώ δουλεύω νύχτα οπότε μάλλον δεν θα βλεπόμαστε πολύ. Απλά πρόσεχε τα reports σου γιατί ο Μουστάκας τα ελέγχει στις 7 το πρωί! 📊' },
+      { sender: 'Χριστίνα (Κρατήσεις)', text: 'Γεια σου! Καλώς ήρθες στη Faplantica! Σου εύχομαι καλή υπομονή. Αν δεις ότι κάναμε overbooking (που κάνουμε κάθε μέρα), κάνε τον ανήξερο! 😉' },
+      { sender: 'Θωμάς (Ασφάλεια)', text: 'Καλώς ήρθες στην ομάδα. Είμαι ο Θωμάς από την ασφάλεια. Αν δεις κάνα μεθυσμένο Άγγλο να προσπαθεί να κάνει βουτιά από το μπαλκόνι, σφύρα μου! 👮' },
+      { sender: 'Μανώλης (Κηπουρός)', text: 'Καλή αρχή παιδί μου! Είμαι ο Μανώλης. Πρόσεχε εκεί που περπατάς στους κήπους, έβαλα αυτόματο πότισμα και θα σε κάνει λούτσα! 💦' },
+      { sender: 'Ανθή (Animation)', text: 'Γειαααα! Καλή αρχή! Είμαστε η ομάδα του animation. Αν σε δούμε να ζορίζεσαι, θα σε βάλουμε να χορέψεις club dance μαζί μας να σου φύγει το άγχος! 💃' },
+      { sender: 'Δημήτρης (Purchasing)', text: 'Καλώς ήρθες! Είμαι ο Δημήτρης στις προμήθειες. Αν σου λείψουν στυλό, χαρτιά ή καφέδες, στείλε μου αλλά κράτα χαμηλό προφίλ! 📝' },
+      { sender: 'Βάσω (Λογιστήριο)', text: 'Καλή αρχή στη Faplantica. Είμαι η Βάσω. Για τις πληρωμές και τα tips θα μιλάς με μένα. Μην καθυστερείς τα reports των shift σου! 💶' },
+      { sender: 'Τσαφρακίδης Νίκος (Operations Manager)', text: 'Καλώς ήρθες! Είμαι ο Νίκος. Πρόσεχε τον Μουστάκα, έχει νεύρα σήμερα. Αν δεις τα σκούρα, στείλε μου Viber, θα σε καλύψω! 😉' },
+      { sender: 'Σάββας (Sous Chef)', text: 'Καλώς ήρθες! Αν δουλεύεις κουζίνα, πρόσεχε πώς κόβεις τα κρεμμύδια. Αν δουλεύεις service, μην αργείς να παίρνεις τα πιάτα γιατί κρυώνουν! 🔪' },
+      { sender: 'Γιάννα (Υποδοχή)', text: 'Γεια σου και καλή αρχή! Είμαστε μαζί στη Reception. Αν δεις τηλέφωνα να χτυπάνε non-stop, απλά χαμογέλα και πες ότι το σύστημα έχει κολλήσει! ☎️' }
+    ];
+
+    const roleFiltered = welcomeMsgs.filter(m => {
+      if (role === 'Front Office Agent' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
+      if (role === 'Γ Μάγειρας' && (m.sender.includes('Chef') || m.sender.includes('Sous Chef'))) return false;
+      if (role === 'Βοηθός Σερβιτόρου' && (m.sender.includes('Captain') || m.sender.includes('Μπαρ') || m.sender.includes('Pool Bar'))) return false;
+      return true;
+    });
+
+    return roleFiltered[Math.floor(Math.random() * roleFiltered.length)];
+  };
+
   const getFallbackCoworkerMessage = (role) => {
     const messages = [
       { sender: 'Γιάννης (Reception)', text: 'Ρε συ, είδες τι έγινε χθες με τον Μουστάκα; Ούρλιαζε πάλι για τις πετσέτες. Κουράγιο...' },
@@ -1005,11 +1061,30 @@ function App() {
       { sender: 'Βασίλης (Beach Bar)', text: 'Φίλε έχει 40 βαθμούς έξω και έχει τελειώσει ο πάγος. Αν δεν φέρουν σε μισή ώρα, φεύγω.' },
       { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Κάποιος έσπασε 3 δίσκους στην κουζίνα και ο Chef κοντεύει να πάθει εγκεφαλικό. Μην πλησιάζεις.' },
       { sender: 'Νίκος (Μπαρ)', text: 'Φίλε, κρύψε καμιά μπύρα στην αποθήκη. Θα περάσω μετά το σχόλασμα να την πιούμε κρυφά 🤫' },
-      { sender: 'Γιώργος (Bellboy)', text: 'Ήρθαν κάτι VIPs με 10 βαλίτσες ο καθένας και δεν λειτουργεί το ασανσέρ. Μάλλον θα παραιτηθώ σήμερα.' }
+      { sender: 'Γιώργος (Bellboy)', text: 'Ήρθαν κάτι VIPs με 10 βαλίτσες ο καθένας και δεν λειτουργεί το ασανσέρ. Μάλλον θα παραιτηθώ σήμερα.' },
+      { sender: 'Γιάννης (Reception)', text: 'Ένας τύπος στο 203 ισχυρίζεται ότι το φάντασμα της Faplantica του έκλεψε τις κάλτσες. Θέλεις να πας εσύ ή να στείλω τον Μανώλη;' },
+      { sender: 'Μαρία (Housekeeping)', text: 'Ο πελάτης στο 402 έχει κλειδωθεί στο μπαλκόνι από τις 5 το πρωί και φωνάζει. Η συντήρηση δεν απαντάει, τι να κάνουμε;' },
+      { sender: 'Chef Αντώνης', text: 'Ποιος έβαλε τις γαρίδες δίπλα στα παγωτά; Το παγωτό βανίλια μυρίζει ψαρίλα τώρα! Αν το μάθει ο Μουστάκας, απολυόμαστε όλοι!' },
+      { sender: 'Κώστας (Maintenance)', text: 'Το τζακούζι στη σουίτα 505 άρχισε να βγάζει πράσινους αφρούς. Μάλλον έβαλαν μέσα λάθος σαπούνι. Μην αφήσεις κανέναν να μπει!' },
+      { sender: 'Ελένη (Spa)', text: 'Ήρθε μια περίεργη influencer και ζητάει δωρεάν μασάζ με αντάλλαγμα 2 stories στο Instagram. Της είπα ότι ο Μουστάκας θα την κάνει tag σε καταγγελία του ΙΚΑ!' },
+      { sender: 'Βασίλης (Beach Bar)', text: 'Ένα group από μεθυσμένους άρχισε να παίζει beach volley με τις καρύδες από το ντεκόρ. Ήδη έσπασαν ένα τραπέζι. Βοήθεια!' },
+      { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Το γκρουπ των Γερμανών ήπιε όλο το βαρελίσιο κρασί σε 1 ώρα. Τώρα ζητάνε ούζο. Αν δεν έχουμε, θα γίνει εξέγερση.' },
+      { sender: 'Νίκος (Μπαρ)', text: 'Ο Μουστάκας με είδε να πίνω freddo espresso. Μου είπε ότι ο καφές μειώνει το corporate speed μου. Έχω πάθει σοκ.' },
+      { sender: 'Γιώργος (Bellboy)', text: 'Μια οικογένεια έχασε το σκυλάκι της και νομίζει ότι μπήκε στις αποσκευές άλλου πελάτη που έφυγε για το αεροδρόμιο. Τρέχω!' },
+      { sender: 'Χριστίνα (Κρατήσεις)', text: 'Έχουμε 3 overbookings στη VIP κατηγορία σήμερα. Πρέπει να πείσουμε κάποιον να κοιμηθεί στο staff house. Ποιος προσφέρεται;' },
+      { sender: 'Σπύρος (Pool Bar)', text: 'Κάποιος έριξε ολόκληρο καρπούζι στην πισίνα και κόλλησε στο φίλτρο. Το νερό έχει γίνει κόκκινο. Ο Μουστάκας έρχεται με το buggy!' },
+      { sender: 'Θωμάς (Ασφάλεια)', text: 'Οι πελάτες στο 112 κάνουν πάρτι με ελληνικά λαϊκά στις 3 το μεσημέρι. Οι γείτονες απειλούν με αστυνομία. Πάω να τους κάνω ντάντεμα.' },
+      { sender: 'Μανώλης (Κηπουρός)', text: 'Ο Μουστάκας θέλει να κουρέψω το γκαζόν σε σχήμα Faplantica logo. Αν δεν τα καταφέρω, μου είπε θα με βάλει να ποτίζω με το ποτήρι!' },
+      { sender: 'Ανθή (Animation)', text: 'Ο DJ μας έπαθε ηλίαση και δεν έχουμε μουσική για το aqua aerobic. Μπορείς να έρθεις να κάνεις beatbox;' },
+      { sender: 'Δημήτρης (Purchasing)', text: 'Ήρθαν 200 κιλά λάχανα αντί για μαρούλια. Ο Chef Αντώνης κρατάει μπαλτά και με ψάχνει. Αν με ρωτήσει κανείς, είμαι στην Αθήνα.' },
+      { sender: 'Βάσω (Λογιστήριο)', text: 'Βρήκα μια απόδειξη για "ειδικά κοκτέιλ Μουστάκα" ύψους 500 ευρώ. Ποιος το ενέκρινε αυτό; Θα μας κλείσει η εφορία!' },
+      { sender: 'Γιάννα (Υποδοχή)', text: 'Ένα ζευγάρι τσακώνεται στη Reception επειδή η θέα στη θάλασσα κρύβεται από έναν φοίνικα. Θέλουν να κόψουμε τον φοίνικα τώρα!' },
+      { sender: 'Σάββας (Sous Chef)', text: 'Κάποιος έφαγε το μισό προφιτερόλ που είχαμε για τον VIP πελάτη. Αν σε πιάσω με σοκολάτα στα μούτρα, αλίμονό σου!' }
     ];
     const roleFiltered = messages.filter(m => {
-      if (role === 'Front Office Agent' && m.sender.includes('Reception')) return false;
-      if (role === 'Γ Μάγειρας' && m.sender.includes('Chef')) return false;
+      if (role === 'Front Office Agent' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
+      if (role === 'Γ Μάγειρας' && (m.sender.includes('Chef') || m.sender.includes('Sous Chef'))) return false;
+      if (role === 'Βοηθός Σερβιτόρου' && (m.sender.includes('Captain') || m.sender.includes('Μπαρ') || m.sender.includes('Pool Bar'))) return false;
       return true;
     });
     return roleFiltered[Math.floor(Math.random() * roleFiltered.length)];
@@ -1048,7 +1123,7 @@ function App() {
       setGameOver(true);
       audioService.playGameOverSound();
       setIsLoading(false);
-      saveScoreToLeaderboard(currentState);
+      saveScoreToLeaderboard(currentState, true);
       return;
     }
 
@@ -1131,12 +1206,7 @@ function App() {
 
       // Coworker Viber message check
       if (updatedState.turnCount === 1) {
-        const welcomeMsgs = {
-          'Front Office Agent': { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στη Reception της Faplantica. Κουράγιο για την πρώτη σου μέρα, ο Μουστάκας είναι σε τρελά κέφια σήμερα... 😅' },
-          'Γ Μάγειρας': { sender: 'Chef Αντώνης', text: 'Καλώς τον νέο! Ετοιμάσου να ιδρώσεις, έχουμε 400 άτομα buffet το βράδυ. Μην καθυστερήσεις στη βάρδια σου! 🍳' },
-          'Βοηθός Σερβιτόρου': { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Γεια! Καλώς ήρθες στην ομάδα του service. Πάρε βαθιά ανάσα, σήμερα έχει γάμο στο beach bar και θα τρέχουμε όλοι. 😅' }
-        };
-        const welcome = welcomeMsgs[updatedState.role] || { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στην ομάδα της Faplantica. Κουράγιο για την πρώτη σου μέρα! 😅' };
+        const welcome = getWelcomeViberMessage(updatedState.role);
         const coworkerMsg = { sender: welcome.sender, text: welcome.text, item: null, accepted: false };
         updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
         updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
@@ -1223,12 +1293,7 @@ function App() {
           accepted: false
         };
       } else if (newState.turnCount === 1) {
-        const welcomeMsgs = {
-          'Front Office Agent': { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στη Reception της Faplantica. Κουράγιο για την πρώτη σου μέρα, ο Μουστάκας είναι σε τρελά κέφια σήμερα... 😅' },
-          'Γ Μάγειρας': { sender: 'Chef Αντώνης', text: 'Καλώς τον νέο! Ετοιμάσου να ιδρώσεις, έχουμε 400 άτομα buffet το βράδυ. Μην καθυστερήσεις στη βάρδια σου! 🍳' },
-          'Βοηθός Σερβιτόρου': { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Γεια! Καλώς ήρθες στην ομάδα του service. Πάρε βαθιά ανάσα, σήμερα έχει γάμο στο beach bar και θα τρέχουμε όλοι. 😅' }
-        };
-        const welcome = welcomeMsgs[newState.role] || { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στην ομάδα της Faplantica. Κουράγιο για την πρώτη σου μέρα! 😅' };
+        const welcome = getWelcomeViberMessage(newState.role);
         coworkerMsg = { sender: welcome.sender, text: welcome.text, item: null, accepted: false };
       } else if (newState.turnCount > 0 && newState.turnCount % 3 === 0) {
         const fallback = getFallbackCoworkerMessage(newState.role);
@@ -1253,7 +1318,7 @@ function App() {
       if (response.game_over || newState.stress >= 100 || newState.reputation <= 0 || newState.alcoholWarnings >= 3) {
         setGameOver(true);
         audioService.playGameOverSound();
-        saveScoreToLeaderboard(newState);
+        saveScoreToLeaderboard(newState, true);
       }
     } catch (error) {
       console.warn("AI Generation failed. Falling back to a hardcoded generic event.", error);
@@ -1272,12 +1337,7 @@ function App() {
       }
       // Coworker Viber message check fallback
       if (updatedState.turnCount === 1) {
-        const welcomeMsgs = {
-          'Front Office Agent': { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στη Reception της Faplantica. Κουράγιο για την πρώτη σου μέρα, ο Μουστάκας είναι σε τρελά κέφια σήμερα... 😅' },
-          'Γ Μάγειρας': { sender: 'Chef Αντώνης', text: 'Καλώς τον νέο! Ετοιμάσου να ιδρώσεις, έχουμε 400 άτομα buffet το βράδυ. Μην καθυστερήσεις στη βάρδια σου! 🍳' },
-          'Βοηθός Σερβιτόρου': { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Γεια! Καλώς ήρθες στην ομάδα του service. Πάρε βαθιά ανάσα, σήμερα έχει γάμο στο beach bar και θα τρέχουμε όλοι. 😅' }
-        };
-        const welcome = welcomeMsgs[updatedState.role] || { sender: 'Γιάννης (Reception)', text: 'Γεια σου! Καλώς όρισες στην ομάδα της Faplantica. Κουράγιο για την πρώτη σου μέρα! 😅' };
+        const welcome = getWelcomeViberMessage(updatedState.role);
         const coworkerMsg = { sender: welcome.sender, text: welcome.text, item: null, accepted: false };
         updatedState.viberMessages = [...(updatedState.viberMessages || []), coworkerMsg];
         updatedState.viberUnreadCount = (updatedState.viberUnreadCount || 0) + 1;
@@ -1292,8 +1352,13 @@ function App() {
 
       checkNikosViberInjection(updatedState);
       setGameState(updatedState);
-
       setSceneData({ ...randomGen });
+
+      if (randomGen.game_over || updatedState.stress >= 100 || updatedState.reputation <= 0 || updatedState.alcoholWarnings >= 3) {
+        setGameOver(true);
+        audioService.playGameOverSound();
+        saveScoreToLeaderboard(updatedState, true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -1414,13 +1479,7 @@ function App() {
                   <button
                     onClick={() => {
                       if (window.confirm(`Θέλεις να φορτώσεις το παιχνίδι σου (Σεζόν ${save.season}, Γύρος ${save.turns});`)) {
-                        setGameState(save.saveData.gameState);
-                        setSceneData(save.saveData.sceneData);
-                        setNickname(save.saveData.nickname);
-                        setNicknameConfirmed(true);
-                        setGameStarted(true);
-                        setGameOver(false);
-                        setOpsManagerSpawnsThisSeason(save.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
+                        checkAndLoadState(save.saveData.gameState, save.saveData.sceneData, save.saveData.nickname);
                         showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
                       }
                     }}
@@ -1665,13 +1724,7 @@ function App() {
                   <button
                     onClick={() => {
                       if (window.confirm(`Θέλεις να φορτώσεις το παιχνίδι σου (Σεζόν ${save.season}, Γύρος ${save.turns});`)) {
-                        setGameState(save.saveData.gameState);
-                        setSceneData(save.saveData.sceneData);
-                        setNickname(save.saveData.nickname);
-                        setNicknameConfirmed(true);
-                        setGameStarted(true);
-                        setGameOver(false);
-                        setOpsManagerSpawnsThisSeason(save.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
+                        checkAndLoadState(save.saveData.gameState, save.saveData.sceneData, save.saveData.nickname);
                         showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
                       }
                     }}
@@ -2257,13 +2310,7 @@ function App() {
                           <button
                             onClick={() => {
                               if (window.confirm(`Θέλεις να φορτώσεις το παιχνίδι του/της ${entry.nickname} (Σεζόν ${entry.season}, Γύρος ${entry.turns});`)) {
-                                setGameState(entry.saveData.gameState);
-                                setSceneData(entry.saveData.sceneData);
-                                setNickname(entry.saveData.nickname);
-                                setNicknameConfirmed(true);
-                                setGameStarted(true);
-                                setGameOver(false);
-                                setOpsManagerSpawnsThisSeason(entry.saveData.gameState?.opsManagerSpawnsThisSeason || 0);
+                                checkAndLoadState(entry.saveData.gameState, entry.saveData.sceneData, entry.saveData.nickname);
                                 setShowLeaderboard(false);
                                 showToast("🎮 Το παιχνίδι φορτώθηκε με επιτυχία!", "✅");
                               }
