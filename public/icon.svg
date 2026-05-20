@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1127"/>
+      <stop offset="100%" style="stop-color:#1a1a3e"/>
+    </linearGradient>
+    <linearGradient id="bell" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+  <!-- Glow circle behind bell -->
+  <circle cx="256" cy="230" r="130" fill="#fbbf24" opacity="0.08"/>
+  <!-- Bell body -->
+  <path d="M256 120 C180 120 140 180 140 260 L140 300 L372 300 L372 260 C372 180 332 120 256 120Z" fill="url(#bell)" filter="url(#glow)"/>
+  <!-- Bell top knob -->
+  <circle cx="256" cy="112" r="20" fill="url(#bell)"/>
+  <rect x="246" y="108" width="20" height="20" fill="url(#bell)"/>
+  <!-- Bell base plate -->
+  <rect x="120" y="298" width="272" height="22" rx="11" fill="url(#bell)"/>
+  <!-- Bell clapper -->
+  <circle cx="256" cy="315" r="16" fill="#92400e"/>
+  <!-- Stress bar at bottom -->
+  <rect x="80" y="370" width="352" height="12" rx="6" fill="rgba(255,255,255,0.08)"/>
+  <rect x="80" y="370" width="220" height="12" rx="6" fill="#ef4444"/>
+  <!-- Stars decoration -->
+  <text x="150" y="430" font-size="28" fill="#fbbf24" opacity="0.8" text-anchor="middle">★</text>
+  <text x="256" y="440" font-size="34" fill="#fbbf24" text-anchor="middle">★</text>
+  <text x="362" y="430" font-size="28" fill="#fbbf24" opacity="0.8" text-anchor="middle">★</text>
+</svg>
