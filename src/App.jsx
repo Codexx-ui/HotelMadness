@@ -434,8 +434,6 @@ function App() {
         status = 'Παραιτήθηκε';
       } else if (state.ultimateVictory) {
         status = 'Συνταξιοδοτήθηκε';
-      } else if (isGameOver) {
-        status = `Ολοκλήρωσε τη Σεζόν ${state.season || 1}`;
       }
 
       const successRate = calculateSuccessRate(state);
@@ -1122,21 +1120,16 @@ function App() {
     const currentSpawns = stateToUpdate.opsManagerSpawnsThisSeason || 0;
     const canNikosSend = currentSpawns < 2;
     let nikosShouldSend = false;
+
     if (currentSeason === 1 && currentTurn >= 15 && canNikosSend) {
       nikosShouldSend = Math.random() < 0.2;
     } else if (currentSeason >= 2 && canNikosSend) {
       nikosShouldSend = Math.random() < 0.15;
     }
+    
     if (nikosShouldSend) {
       let nikosItem = 'Lexotanil 💊';
       let nikosText = 'Γεια ρε! Είδα πως το βγάζεις... Πάρε αυτό να σε βοηθήσει. Μην το λες στον Μουστάκα δεν ξέρει ότι σου στείλνω αυτά. Για το καλό 🤫';
-      if (currentSeason === 2) {
-        nikosItem = 'Xanax 💊';
-        nikosText = 'Μαν το βλέπω αυτή τη σεζόν και ανησυχώ. Πήρε αυτό να κρατάς. Ο Μουστάκας δεν πρέπει να το μάθει ποτέ 🤫';
-      } else if (currentSeason >= 3) {
-        nikosItem = 'Πορτοκαλάδα-Λεμονάδα Μιξ 70-30% 🍹';
-        nikosText = 'Έχω άλλα λεφτά για φαρμακεία. Πήρε αυτή την πορτοκαλάδα από τον μπουφέ. 70 πορτοκάλι, 30 λεμόνι - όπως το λέμε εμείς 😁';
-      }
       const nikosMsg = { sender: 'Τσαφρακίδης Νίκος (Οπερατιονς Manager)', text: nikosText, item: nikosItem, accepted: false };
 
       const newMsgs = [...(stateToUpdate.viberMessages || []), nikosMsg];
@@ -1260,8 +1253,7 @@ function App() {
       setGameOver(true);
       audioService.playGameOverSound();
       setIsLoading(false);
-      setGameState(currentState);
-      saveScoreToLeaderboard(currentState, true);
+      saveScoreToLeaderboard(currentState);
       return;
     }
 
