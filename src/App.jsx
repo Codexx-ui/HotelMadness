@@ -406,7 +406,22 @@ function App() {
         reception: 'Υποδοχή 🛎️',
         waiter: 'Σέρβις 🍽️',
         chef: 'Chef 🍳',
-        maintenance: 'Συντήρηση 🔧'
+        maintenance: 'Συντήρηση 🔧',
+        'Ρεσεψιονίστ': 'Ρεσεψιονίστ 🛎️',
+        'Assistant Fom': 'Assistant Fom 🛎️',
+        'Front Office Manager': 'Front Office Manager 🛎️',
+        'Operations Manager': 'Operations Manager 🛎️',
+        'General Manager': 'General Manager 🛎️',
+        'Βοηθός Σερβιτόρου': 'Βοηθός Σερβιτόρου 🍽️',
+        'Σερβιτόρος Α': 'Σερβιτόρος Α 🍽️',
+        'Captain': 'Captain 🍽️',
+        'Maitre': 'Maitre 🍽️',
+        'F&B Manager': 'F&B Manager 🍽️',
+        'Γ Μάγειρας': 'Γ Μάγειρας 🍳',
+        'Β Μάγειρας': 'Β Μάγειρας 🍳',
+        'Α Μάγειρας': 'Α Μάγειρας 🍳',
+        'Sous Chef': 'Sous Chef 🍳',
+        'Executive Chef': 'Executive Chef 🍳'
       };
 
       const isGameOver = forceGameOver || state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3 || state.resigned || state.ultimateVictory;
