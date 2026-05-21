@@ -411,10 +411,14 @@ function App() {
 
       const isGameOver = forceGameOver || state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3 || state.resigned || state.ultimateVictory;
       let status = 'Εργάζεται';
-      if (state.ultimateVictory) {
-        status = 'Συνταξιοδοτήθηκε';
-      } else if (isGameOver) {
+      
+      const isFired = state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3;
+      if (isFired) {
         status = 'Απολύθηκε';
+      } else if (state.resigned) {
+        status = 'Παραιτήθηκε';
+      } else if (state.ultimateVictory) {
+        status = 'Συνταξιοδοτήθηκε';
       }
 
       const successRate = calculateSuccessRate(state);
@@ -460,8 +464,7 @@ function App() {
         // Find if there is an existing completed score for the same user and role
         const existingCompIndex = cleanLeaderboard.findIndex(e =>
           e.status !== 'Εργάζεται' &&
-          (e.nickname || '').trim().toLowerCase() === resolvedNickname.trim().toLowerCase() &&
-          e.role === targetRole
+          (e.nickname || '').trim().toLowerCase() === resolvedNickname.trim().toLowerCase()
         );
 
         if (existingCompIndex !== -1) {

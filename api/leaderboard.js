@@ -36,8 +36,7 @@ export default async function handler(req, res) {
         }
 
         const nicknameKey = (entry.nickname || '').trim().toLowerCase();
-        const roleKey = (entry.role || '').trim().toLowerCase();
-        const key = `${nicknameKey}_${roleKey}`;
+        const key = `${nicknameKey}`;
 
         if (!uniqueMap.has(key)) {
           uniqueMap.set(key, entry);
