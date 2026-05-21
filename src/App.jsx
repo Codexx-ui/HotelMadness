@@ -1128,8 +1128,17 @@ function App() {
     }
     
     if (nikosShouldSend) {
+      const randItem = Math.random();
       let nikosItem = 'Lexotanil 💊';
       let nikosText = 'Γεια ρε! Είδα πως το βγάζεις... Πάρε αυτό να σε βοηθήσει. Μην το λες στον Μουστάκα δεν ξέρει ότι σου στείλνω αυτά. Για το καλό 🤫';
+      
+      if (randItem > 0.8) {
+        nikosItem = 'Xanax 💊';
+        nikosText = 'Μαν το βλέπω πως ζορίζεσαι και ανησυχώ. Πάρε αυτό να κρατάς. Ο Μουστάκας δεν πρέπει να το μάθει ποτέ 🤫';
+      } else if (randItem > 0.5) {
+        nikosItem = 'Πορτοκαλάδα-Λεμονάδα Μιξ 70-30% 🍹';
+        nikosText = 'Δεν έχω άλλα λεφτά για φαρμακεία. Πάρε αυτή την πορτοκαλάδα από τον μπουφέ. 70 πορτοκάλι, 30 λεμόνι - όπως το λέμε εμείς 😁';
+      }
       const nikosMsg = { sender: 'Τσαφρακίδης Νίκος (Οπερατιονς Manager)', text: nikosText, item: nikosItem, accepted: false };
 
       const newMsgs = [...(stateToUpdate.viberMessages || []), nikosMsg];
