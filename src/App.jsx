@@ -18,7 +18,7 @@ const isRoleMatch = (eventRole, playerRole) => {
   if (!eventRole) return true;
   if (eventRole === playerRole) return true;
 
-  const receptionistRoles = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager'];
+  const receptionistRoles = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'];
   const waiterRoles = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager', 'Σερβιτόρος', 'Head Waiter', "Maitre d'hotel"];
   const chefRoles = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef', 'Μάγειρας', 'Section Chef', 'Head Chef'];
 
@@ -1201,7 +1201,7 @@ function App() {
   };
 
   const promoteUser = (currentRole) => {
-    const FO_LADDER = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager'];
+    const FO_LADDER = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'];
     const FB_LADDER = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'];
     const KITCHEN_LADDER = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef'];
 
@@ -1944,8 +1944,8 @@ function App() {
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center', lineHeight: '1.6' }}>
           {isUltimateVictory
-            ? (gameState.role === 'General Manager'
-              ? "Συγχαρητήρια! Ξεκίνησες ως απλός Ρεσεψιονίστ και κατάφερες το αδιανόητο: Έγινες ο νέος Operations Manager της Faplantica! Ο Μουστάκας αποσύρθηκε νικημένος από το άγχος του, και πλέον εσύ κάνεις κουμάντο. Η αυτοκρατορία σου ανήκει! 👑🏨"
+            ? (gameState.role === 'General Manager' || gameState.role === 'Operations Manager'
+              ? "Συγχαρητήρια! Ξεκίνησες ως απλός Ρεσεψιονίστ και κατάφερες το αδιανόητο: Έγινες ο νέος General Manager της Faplantica! Ο Μουστάκας αποσύρθηκε νικημένος από το άγχος του, και πλέον εσύ κάνεις κουμάντο σε όλο το ξενοδοχείο. Η αυτοκρατορία σου ανήκει! 👑🏨"
               : gameState.role === 'Executive Chef'
                 ? "Συγχαρητήρια! Από τις λάντζες και τις φωνές ως Γ Μάγειρας, πλέον είσαι ο Executive Chef της Faplantica! Ο Σάββας εκδιώχθηκε κακήν κακώς μετά τις τοξικές του παρασπονδίες, και πλέον εσύ ορίζεις το μενού, το προσωπικό και την κουζίνα. Η γαστρονομική δόξα είναι δική σου! 🍳👑"
                 : "Συγχαρητήρια! Ξεκίνησες ως βοηθός σερβιτόρου και έφτασες στην κορυφή. Στη 4η σεζόν αποκαλύφθηκαν όλες οι δολοπλοκίες και οι λαμογιές του Καρδάρη, ο οποίος απολύθηκε με συνοπτικές διαδικασίες από τον Τάρναβα. Πήρες πανηγυρικά τη θέση του ως F&B Manager και το παιχνίδι ολοκληρώθηκε θριαμβευτικά! 🍽️👑")
@@ -2173,7 +2173,7 @@ function App() {
 
   const getNextRole = (currentRole) => {
     const ladders = {
-      'Ρεσεψιονίστ': ['Assistant Fom', 'Front Office Manager', 'Operations Manager'],
+      'Ρεσεψιονίστ': ['Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'],
       'Βοηθός Σερβιτόρου': ['Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'],
       'Γ Μάγειρας': ['Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef']
     };
