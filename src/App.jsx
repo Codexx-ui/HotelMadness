@@ -534,37 +534,35 @@ function App() {
       // Keep top 100 entries
       localStorage.setItem('hotel_madness_leaderboard', JSON.stringify(updatedLeaderboard.slice(0, 100)));
 
-      // POST to global online database ONLY if game is completed
-      if (isGameOver) {
-        const token = localStorage.getItem('auth_token');
-        const headers = {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        };
-        fetch('/api/leaderboard', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            nickname: resolvedNickname,
-            role: targetRole,
-            turns: state.turnCount || 0,
-            season: state.season || 1,
-            cash: state.cash || 0,
-            tips: state.tips || 0,
-            difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
-            status: status,
-            success_rate: successRate,
-            evaluation: `${evalObj.grade} - ${evalObj.label}`
-          })
+      // POST to global online database (both for active saves at season end, and game over)
+      const token = localStorage.getItem('auth_token');
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
+      fetch('/api/leaderboard', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          nickname: resolvedNickname,
+          role: targetRole,
+          turns: state.turnCount || 0,
+          season: state.season || 1,
+          cash: state.cash || 0,
+          tips: state.tips || 0,
+          difficulty: difficultyMap[diff] || 'Normal Shift ⚙️',
+          status: status,
+          success_rate: successRate,
+          evaluation: `${evalObj.grade} - ${evalObj.label}`
         })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              console.log('Saved score to global online database!');
-            }
-          })
-          .catch(err => console.warn('Failed to save score online, saved locally:', err));
-      }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Saved score to global online database!');
+          }
+        })
+        .catch(err => console.warn('Failed to save score online, saved locally:', err));
     } catch (e) {
       console.error('Failed to save to leaderboard:', e);
     }
@@ -1127,10 +1125,10 @@ function App() {
       const randItem = Math.random();
       let nikosItem = 'Lexotanil 💊';
       let nikosText = 'Επειδη σε βλεπω δεν την παλευεις.. Πάρε αυτό να σε βοηθήσει. Μην το πεις στον Μουστάκα δεν ξέρει ότι σου τα στελνω.🤫';
-      
+
       if (randItem > 0.8) {
         nikosItem = 'Xanax 💊';
-        nikosText = 'Μαν το βλέπω πως ζορίζεσαι και ανησυχώ. Πάρε αυτό να κρατάς. Ο Μουστάκας δεν πρέπει να το μάθει ποτέ 🤫';
+        nikosText = 'Σε βλέπω πως ζορίζεσαι και ανησυχώ. Πάρε αυτό! Ο Μουστάκας δεν πρέπει να το μάθει ποτέ 🤫';
       } else if (randItem > 0.5) {
         nikosItem = 'Πορτοκαλάδα-Λεμονάδα Μιξ 70-30% 🍹';
         nikosText = 'Δεν έχω άλλα λεφτά για φαρμακεία. Πάρε αυτή την πορτοκαλάδα από τον μπουφέ. 70 πορτοκάλι, 30 λεμόνι - όπως το λέμε εμείς 😁';

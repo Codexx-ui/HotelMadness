@@ -25,7 +25,24 @@ export default async function handler(req, res) {
         throw error;
       }
 
-      // Deduplicate by nickname and role, keeping the highest score
+      // Helper to get base role for deduplication
+      const getBaseRole = (role) => {
+        const r = (role || '').trim();
+        const FO_LADDER = ['F.O AGENT', 'Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'];
+        const FB_LADDER = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'];
+        const KITCHEN_LADDER = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef'];
+        
+        if (FO_LADDER.includes(r)) return 'F.O AGENT';
+        if (FB_LADDER.includes(r)) return 'Βοηθός Σερβιτόρου';
+        if (KITCHEN_LADDER.includes(r)) return 'Γ Μάγειρας';
+        // Handle mapped names from UI
+        if (r === 'F.O AGENT 🏨' || r === 'Front Office Agent') return 'F.O AGENT';
+        if (r === 'Σερβιτόρος ☕' || r === 'Σερβιτόρος' || r === 'Βοηθός Σερβιτόρου') return 'Βοηθός Σερβιτόρου';
+        if (r === 'Μάγειρας 🍳' || r === 'Μάγειρας' || r === 'Γ Μάγειρας') return 'Γ Μάγειρας';
+        return r;
+      };
+
+      // Deduplicate by nickname and base role, keeping the highest score
       const uniqueMap = new Map();
       const motdEntries = [];
 
@@ -36,7 +53,7 @@ export default async function handler(req, res) {
         }
 
         const nicknameKey = (entry.nickname || '').trim().toLowerCase();
-        const roleKey = (entry.role || '').trim().toLowerCase();
+        const roleKey = getBaseRole(entry.role).toLowerCase();
         const key = `${nicknameKey}_${roleKey}`;
 
         if (!uniqueMap.has(key)) {
