@@ -1117,20 +1117,16 @@ function App() {
   const checkNikosViberInjection = (stateToUpdate) => {
     const currentSeason = stateToUpdate.season || 1;
     const currentTurn = stateToUpdate.turnCount || 0;
-    const currentSpawns = stateToUpdate.opsManagerSpawnsThisSeason || 0;
-    const canNikosSend = currentSpawns < 2;
-    let nikosShouldSend = false;
-
     if (currentSeason === 1 && currentTurn >= 15 && canNikosSend) {
       nikosShouldSend = Math.random() < 0.2;
     } else if (currentSeason >= 2 && canNikosSend) {
       nikosShouldSend = Math.random() < 0.15;
     }
-    
+
     if (nikosShouldSend) {
       const randItem = Math.random();
       let nikosItem = 'Lexotanil 💊';
-      let nikosText = 'Γεια ρε! Είδα πως το βγάζεις... Πάρε αυτό να σε βοηθήσει. Μην το λες στον Μουστάκα δεν ξέρει ότι σου στείλνω αυτά. Για το καλό 🤫';
+      let nikosText = 'Επειδη σε βλεπω δεν την παλευεις.. Πάρε αυτό να σε βοηθήσει. Μην το πεις στον Μουστάκα δεν ξέρει ότι σου τα στελνω.🤫';
       
       if (randItem > 0.8) {
         nikosItem = 'Xanax 💊';
