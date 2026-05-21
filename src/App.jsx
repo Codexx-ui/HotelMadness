@@ -17,15 +17,15 @@ import confetti from 'canvas-confetti';
 const isRoleMatch = (eventRole, playerRole) => {
   if (!eventRole) return true;
   if (eventRole === playerRole) return true;
-  
-  const receptionistRoles = ['Front Office Agent', 'Assistant Front office manager', 'Front Office Manager', 'Operations Manager', 'General Manager', 'Ρεσεψιονίστ', 'Assistant FO Manager', 'FO Manager', 'Rooms Division Manager', 'GM'];
+
+  const receptionistRoles = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager'];
   const waiterRoles = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager', 'Σερβιτόρος', 'Head Waiter', "Maitre d'hotel"];
   const chefRoles = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef', 'Μάγειρας', 'Section Chef', 'Head Chef'];
-  
+
   if (receptionistRoles.includes(eventRole) && receptionistRoles.includes(playerRole)) return true;
   if (waiterRoles.includes(eventRole) && waiterRoles.includes(playerRole)) return true;
   if (chefRoles.includes(eventRole) && chefRoles.includes(playerRole)) return true;
-  
+
   return false;
 };
 
@@ -128,8 +128,8 @@ function App() {
     if (pendingChoiceData) {
       const { choice, updatedState } = pendingChoiceData;
       const mult = getDifficultyMultipliers();
-      let stressDelta = stressChange > 0 
-        ? stressChange * mult.stressUp 
+      let stressDelta = stressChange > 0
+        ? stressChange * mult.stressUp
         : stressChange * mult.stressDown;
       let cashDelta = Math.round(cashChange * mult.cash);
 
@@ -158,7 +158,7 @@ function App() {
       });
       setHasWashedDishesThisTurn(true);
     }
-    
+
     if (success) {
       if (useSFX) {
         audioService.playCashSound();
@@ -180,7 +180,7 @@ function App() {
     } else {
       stressChange = 20; repChange = -10;
     }
-    
+
     if (pendingChoiceData) {
       const { choice, updatedState } = pendingChoiceData;
       updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + (stressChange > 0 ? stressChange * mult.stressUp : stressChange * mult.stressDown)));
@@ -208,7 +208,7 @@ function App() {
     const mult = getDifficultyMultipliers();
     const stressChange = success ? -20 : 25;
     const repChange = success ? 15 : -15;
-    
+
     if (pendingChoiceData) {
       const { choice, updatedState } = pendingChoiceData;
       updatedState.stress = Math.max(0, Math.min(100, updatedState.stress + (stressChange > 0 ? stressChange * mult.stressUp : stressChange * mult.stressDown)));
@@ -290,34 +290,34 @@ function App() {
     }
 
     if (item.id === 'grandma') {
-      newState.cash += 20;
+      newState.cash += 50;
       newState.grandmaCashPurchasedCount = (newState.grandmaCashPurchasedCount || 0) + 1;
     }
 
     setGameState(newState);
     setHasPurchasedThisTurn(true);
-    
+
     if (item.id === 'grandma') {
-      showToast("👵 Η γιαγιά σου έδωσε 20€ και σε ρώτησε πότε θα παντρευτείς!", "❤️");
+      showToast("👵 Η γιαγιά σου έδωσε 50€ και σε ρώτησε πότε θα παντρευτείς!", "❤️");
     } else if (item.id === 'eye') {
       showToast("🧿 Αγόρασες το Μαγικό Μάτι! Σε προστατεύει από την επόμενη αναποδιά.", "🔮");
     } else {
       showToast(`Αγόρασες ${item.name}!`, item.emoji);
     }
-    
+
     audioService.playCashSound();
   };
 
   const getDifficultyMultipliers = () => {
     switch (difficulty) {
       case 'easy':
-        return { stressUp: 0.4, stressDown: 1.68, repUp: 1.68, repDown: 0.4, cash: 1.56 };
+        return { stressUp: 0.4, stressDown: 1.68, repUp: 1.68, repDown: 0.4, cash: 1.56 * 4 };
       case 'hard':
-        return { stressUp: 0.88, stressDown: 1.14, repUp: 1.14, repDown: 0.88, cash: 1.08 };
+        return { stressUp: 0.88, stressDown: 1.14, repUp: 1.14, repDown: 0.88, cash: 1.08 * 4 };
       case 'nightmare':
-        return { stressUp: 1.12, stressDown: 0.9, repUp: 0.9, repDown: 1.12, cash: 0.84 };
+        return { stressUp: 1.12, stressDown: 0.9, repUp: 0.9, repDown: 1.12, cash: 0.84 * 4 };
       default:
-        return { stressUp: 0.64, stressDown: 1.38, repUp: 1.38, repDown: 0.64, cash: 1.32 };
+        return { stressUp: 0.64, stressDown: 1.38, repUp: 1.38, repDown: 0.64, cash: 1.32 * 4 };
     }
   };
 
@@ -344,16 +344,16 @@ function App() {
 
     let score = (turnWeight * 40) + (cashWeight * 60) + repBonus - stressPenalty;
     if (state.resigned) score -= 15;
-    
+
     const isSeasonEnd = new Date(state.currentDate) >= new Date(`${2025 + (state.season || 1)}-11-01`);
-    
+
     if (!isSeasonEnd && (state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3)) {
-        score = score * 0.6;
+      score = score * 0.6;
     }
-    
+
     // Bonus for surviving the season
     if (isSeasonEnd) {
-        score += 15;
+      score += 15;
     }
 
     return Math.max(0, Math.min(100, Math.round(score)));
@@ -366,7 +366,7 @@ function App() {
       if (rate >= 70) return { grade: 'B-', label: 'Συνειδητοποιημένος Δραπέτης 🏃', desc: 'Έφυγες με γεμάτες τσέπες, αφήνοντας τον Μουστάκα στα κρύα του λουτρού!' };
       return { grade: 'D', label: 'Λιποτάκτης 🏃', desc: 'Πέταξες τη ποδιά και έφυγες τρέχοντας για το πλοίο της επιστροφής.' };
     }
-    
+
     if (!isSeasonEnd) {
       if (state.stress >= 100) {
         return { grade: 'F+', label: 'Θύμα του Συστήματος 🤯', desc: 'Κατέρρευσες από το ακραίο stress. Σε βρήκαν στην αποθήκη να κλαις αγκαλιά με ένα σεντόνι.' };
@@ -378,17 +378,17 @@ function App() {
         return { grade: 'F', label: 'Αλκοολικός της Faplantica ⚠️', desc: 'Σε έπιασαν να πίνεις το σφηνάκι του VIP. Σε έστειλαν σπίτι σου με 3 πειθαρχικές προειδοποιήσεις.' };
       }
     }
-    
+
     if (rate >= 95) return { grade: 'S+', label: 'Διάδοχος του Μουστάκα 👑', desc: 'Αδιανόητο! Έγινες ο φόβος και ο τρόμος των υπαλλήλων. Ο Μουστάκας υποκλίνεται στο μεγαλείο σου!' };
     if (rate >= 85) return { grade: 'A', label: 'Υπάλληλος της Χρονιάς 🏆', desc: 'Το HR σε έχει ως πρότυπο (αν και ακόμα δεν σου έχουν πληρώσει τις υπερωρίες).' };
     if (rate >= 70) return { grade: 'B', label: 'Έμπειρος Επαγγελματίας 🛎️', desc: 'Ξέρεις πώς να κρύβεις τα λάθη σου και πώς να παίρνεις tips. Ένας αληθινός επαγγελματίας.' };
     if (rate >= 50) return { grade: 'C', label: 'Επιζών της Σεζόν 🩹', desc: 'Με μισό κουτί depon την ημέρα και άπειρο καφέ, κατάφερες να βγάλεις τη σεζόν όρθιος.' };
     if (rate >= 30) return { grade: 'D', label: 'Φοβισμένο Γατάκι 🐱', desc: 'Κρυβόσουν στις τουαλέτες κάθε φορά που φώναζε ο Μουστάκας. Αλλά τουλάχιστον πληρώθηκες.' };
-    
+
     if (isSeasonEnd) {
       return { grade: 'D-', label: 'Με το Ζόρι Επιζών 🤕', desc: 'Η χειρότερη σεζόν της ζωής σου. Ο Μουστάκας κλαίει τα λεφτά που σε πλήρωσε, αλλά τουλάχιστον έφτασες στο τέλος χωρίς να απολυθείς!' };
     }
-    
+
     return { grade: 'F', label: 'Απολυμένος 💼', desc: 'Δεν άντεξες ούτε τη βασική εκπαίδευση. Ο τουρισμός δεν είναι για σένα.' };
   };
 
@@ -421,10 +421,10 @@ function App() {
       const evalObj = getEvaluationGrade(successRate, state);
 
       // Robust resolved nickname finder
-      const resolvedNickname = nickname || 
-                               (session?.user?.user_metadata?.full_name) || 
-                               (session?.user?.email ? session.user.email.split('@')[0] : '') || 
-                               'Guest';
+      const resolvedNickname = nickname ||
+        (session?.user?.user_metadata?.full_name) ||
+        (session?.user?.email ? session.user.email.split('@')[0] : '') ||
+        'Guest';
 
       const runId = state.runId || `run_${Date.now()}`;
 
@@ -451,24 +451,24 @@ function App() {
 
       const currentLeaderboard = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
       const targetRole = roleMap[state.role] || state.role || '—';
-      
+
       let updatedLeaderboard;
       if (isGameOver) {
         // For completed game: remove the active save for this run first
         let cleanLeaderboard = currentLeaderboard.filter(e => e.id !== runId);
-        
+
         // Find if there is an existing completed score for the same user and role
-        const existingCompIndex = cleanLeaderboard.findIndex(e => 
+        const existingCompIndex = cleanLeaderboard.findIndex(e =>
           e.status !== 'Εργάζεται' &&
           (e.nickname || '').trim().toLowerCase() === resolvedNickname.trim().toLowerCase() &&
           e.role === targetRole
         );
-        
+
         if (existingCompIndex !== -1) {
           const existing = cleanLeaderboard[existingCompIndex];
           const newSeason = newEntry.season || 1;
           const oldSeason = existing.season || 1;
-          
+
           let isNewBetter = false;
           if (newSeason > oldSeason) {
             isNewBetter = true;
@@ -485,7 +485,7 @@ function App() {
               }
             }
           }
-          
+
           if (isNewBetter) {
             cleanLeaderboard[existingCompIndex] = newEntry;
           }
@@ -504,7 +504,7 @@ function App() {
           updatedLeaderboard = [newEntry, ...currentLeaderboard];
         }
       }
-      
+
       // Sort by season (descending), then turns (descending), then cash (descending)
       updatedLeaderboard.sort((a, b) => {
         if (b.season !== a.season) return b.season - a.season;
@@ -538,13 +538,13 @@ function App() {
             evaluation: `${evalObj.grade} - ${evalObj.label}`
           })
         })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            console.log('Saved score to global online database!');
-          }
-        })
-        .catch(err => console.warn('Failed to save score online, saved locally:', err));
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              console.log('Saved score to global online database!');
+            }
+          })
+          .catch(err => console.warn('Failed to save score online, saved locally:', err));
       }
     } catch (e) {
       console.error('Failed to save to leaderboard:', e);
@@ -592,7 +592,7 @@ function App() {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
 
@@ -605,7 +605,7 @@ function App() {
 
       const randomInRange = (min, max) => Math.random() * (max - min) + min;
 
-      const interval = setInterval(function() {
+      const interval = setInterval(function () {
         const timeLeft = animationEnd - Date.now();
 
         if (timeLeft <= 0) {
@@ -630,11 +630,11 @@ function App() {
         if (session.access_token) {
           localStorage.setItem('auth_token', session.access_token);
         }
-        
+
         // Resolve google display name or email prefix
-        const resolvedName = session.user.user_metadata?.full_name || 
-                             (session.user.email ? session.user.email.split('@')[0] : '');
-        
+        const resolvedName = session.user.user_metadata?.full_name ||
+          (session.user.email ? session.user.email.split('@')[0] : '');
+
         if (resolvedName) {
           setNickname(resolvedName);
           localStorage.setItem('player_nickname', resolvedName);
@@ -693,12 +693,12 @@ function App() {
         currentState = { ...gameState, runId: newRunId };
         setGameState(currentState);
       }
-      
+
       localStorage.setItem('hotel_saved_game', JSON.stringify({ gameState: currentState, sceneData, gameStarted, nickname }));
-      
+
       // Save current turn state to leaderboard
       saveScoreToLeaderboard(currentState);
-      
+
       // If user is logged in, sync to Supabase server in background
       if (session) {
         fetch('/api/save', {
@@ -719,11 +719,11 @@ function App() {
     if (gameOver) {
       // Save game over state to leaderboard
       saveScoreToLeaderboard(gameState, true);
-      
+
       localStorage.removeItem('hotel_saved_game');
       setHasSavedGame(false);
       setHasCloudSave(false);
-      
+
       // If logged in, delete or clear save on server
       if (session) {
         fetch('/api/save', {
@@ -806,7 +806,6 @@ function App() {
 
   const startGame = async (roleKey) => {
     let actualRole = roleKey;
-    if (roleKey === 'Ρεσεψιονίστ') actualRole = 'Front Office Agent';
     if (roleKey === 'Μάγειρας') actualRole = 'Γ Μάγειρας';
     if (roleKey === 'Σερβιτόρος') actualRole = 'Βοηθός Σερβιτόρου';
     const newRunId = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -827,7 +826,7 @@ function App() {
         newState.stress = Math.max(0, newState.stress - 40);
         newState.reputation = Math.min(100, newState.reputation + 10);
         newState.cash += 50;
-        
+
         try {
           confetti({
             particleCount: 150,
@@ -835,7 +834,7 @@ function App() {
             origin: { y: 0.6 },
             colors: ['#66fcf1', '#45a29e', '#4bff4b', '#ffdd67']
           });
-        } catch (e) {}
+        } catch (e) { }
 
         setTimeout(() => {
           showToast("💥 FLAWLESS MEGASLAP! Το stress μειώθηκε κατά 40%, κέρδισες +10% Φήμη και +50€ tips!", "⚡");
@@ -849,7 +848,7 @@ function App() {
       } else {
         newState.stress = Math.min(100, newState.stress + 15);
         newState.reputation = Math.max(0, newState.reputation - 15);
-        
+
         // Ensure warnings exists
         const currentWarnings = newState.warnings || 0;
         newState.warnings = Math.min(3, currentWarnings + 1);
@@ -866,7 +865,7 @@ function App() {
     setHasPurchasedThisTurn(false);
     setHasWashedDishesThisTurn(false);
     const updatedState = { ...gameState };
-    
+
     if (choice.trigger_dishwasher) {
       setPendingChoiceData({ choice, updatedState });
       setShowDishwasher(true);
@@ -885,12 +884,12 @@ function App() {
     if (updatedState.thesfapaClicked) {
       updatedState.turnsSinceThesfapa += 1;
     }
-    
+
     // Calendar Progression
     let monthChanged = false;
     let oldMonth = -1;
     if (updatedState.currentDate && updatedState.turnCount > 0) {
-       oldMonth = new Date(updatedState.currentDate).getMonth();
+      oldMonth = new Date(updatedState.currentDate).getMonth();
     }
 
     if (updatedState.turnCount === 0) {
@@ -900,7 +899,7 @@ function App() {
       const current = new Date(updatedState.currentDate);
       current.setDate(current.getDate() + 7);
       updatedState.currentDate = current.toISOString().split('T')[0];
-      
+
       const newMonth = current.getMonth();
       if (oldMonth !== -1 && oldMonth !== newMonth) {
         monthChanged = true;
@@ -915,7 +914,7 @@ function App() {
       if (currentSeason === 2) salary = 1200;
       else if (currentSeason === 3) salary = 1400;
       else if (currentSeason >= 4) salary = 1800;
-      
+
       updatedState.cash += salary;
     }
 
@@ -923,8 +922,8 @@ function App() {
 
     // Apply hardcoded stat changes if they exist on the choice object
     if (choice.stress_change !== undefined) {
-      let stressDelta = choice.stress_change > 0 
-        ? choice.stress_change * mult.stressUp 
+      let stressDelta = choice.stress_change > 0
+        ? choice.stress_change * mult.stressUp
         : choice.stress_change * mult.stressDown;
       let repDelta = choice.reputation_change > 0
         ? choice.reputation_change * mult.repUp
@@ -957,7 +956,7 @@ function App() {
       updatedState.reputation = Math.max(0, Math.min(100, updatedState.reputation + repDelta));
       updatedState.cash += cashDelta;
       updatedState.staffRelations = Math.max(-100, Math.min(100, updatedState.staffRelations + staffDelta));
-      
+
       if (stressDelta > 0 || repDelta < 0) {
         audioService.playSlapSound();
       }
@@ -993,7 +992,7 @@ function App() {
 
   const [fakeScore, setFakeScore] = useState({ nickname: 'Μουστάκας Θεός', cash: 9999999, turns: 50, season: 2 });
   const [motdInput, setMotdInput] = useState('');
-  
+
   const injectFakeScore = async () => {
     try {
       const payload = {
@@ -1039,7 +1038,7 @@ function App() {
           await fetch('/api/leaderboard?id=' + existing.id, { method: 'DELETE' });
         }
       }
-      
+
       if (motdInput.trim() !== '') {
         const payload = {
           nickname: '__MOTD__',
@@ -1072,7 +1071,7 @@ function App() {
     const newInv = [...gameState.inventory];
     newInv.splice(idx, 1);
     let newState = { ...gameState, inventory: newInv };
-    
+
     if (item.includes('Φραπέ') || item.includes('Frappe') || item.includes('☕')) {
       newState.stress = Math.max(0, newState.stress - 8);
       showToast("☕ Ο Φραπές σε ηρεμεί! -8% Stress", "😌");
@@ -1117,7 +1116,7 @@ function App() {
         nikosText = 'Έχω άλλα λεφτά για φαρμακεία. Πήρε αυτή την πορτοκαλάδα από τον μπουφέ. 70 πορτοκάλι, 30 λεμόνι - όπως το λέμε εμείς 😁';
       }
       const nikosMsg = { sender: 'Τσαφρακίδης Νίκος (Οπερατιονς Manager)', text: nikosText, item: nikosItem, accepted: false };
-      
+
       const newMsgs = [...(stateToUpdate.viberMessages || []), nikosMsg];
       stateToUpdate.viberMessages = newMsgs;
       stateToUpdate.viberUnreadCount = (stateToUpdate.viberUnreadCount || 0) + 1;
@@ -1153,7 +1152,7 @@ function App() {
     ];
 
     const roleFiltered = welcomeMsgs.filter(m => {
-      if (role === 'Front Office Agent' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
+      if (role === 'Ρεσεψιονίστ' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
       if (role === 'Γ Μάγειρας' && (m.sender.includes('Chef') || m.sender.includes('Sous Chef'))) return false;
       if (role === 'Βοηθός Σερβιτόρου' && (m.sender.includes('Captain') || m.sender.includes('Μπαρ') || m.sender.includes('Pool Bar'))) return false;
       return true;
@@ -1193,12 +1192,32 @@ function App() {
       { sender: 'Σάββας (Sous Chef)', text: 'Κάποιος έφαγε το μισό προφιτερόλ που είχαμε για τον VIP πελάτη. Αν σε πιάσω με σοκολάτα στα μούτρα, αλίμονό σου!' }
     ];
     const roleFiltered = messages.filter(m => {
-      if (role === 'Front Office Agent' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
+      if (role === 'Ρεσεψιονίστ' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
       if (role === 'Γ Μάγειρας' && (m.sender.includes('Chef') || m.sender.includes('Sous Chef'))) return false;
       if (role === 'Βοηθός Σερβιτόρου' && (m.sender.includes('Captain') || m.sender.includes('Μπαρ') || m.sender.includes('Pool Bar'))) return false;
       return true;
     });
     return roleFiltered[Math.floor(Math.random() * roleFiltered.length)];
+  };
+
+  const promoteUser = (currentRole) => {
+    const FO_LADDER = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager'];
+    const FB_LADDER = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'];
+    const KITCHEN_LADDER = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef'];
+
+    if (FO_LADDER.includes(currentRole)) {
+      const idx = FO_LADDER.indexOf(currentRole);
+      return idx < FO_LADDER.length - 1 ? FO_LADDER[idx + 1] : currentRole;
+    }
+    if (FB_LADDER.includes(currentRole)) {
+      const idx = FB_LADDER.indexOf(currentRole);
+      return idx < FB_LADDER.length - 1 ? FB_LADDER[idx + 1] : currentRole;
+    }
+    if (KITCHEN_LADDER.includes(currentRole)) {
+      const idx = KITCHEN_LADDER.indexOf(currentRole);
+      return idx < KITCHEN_LADDER.length - 1 ? KITCHEN_LADDER[idx + 1] : currentRole;
+    }
+    return currentRole;
   };
 
   const processTurn = async (playerInput, currentState) => {
@@ -1239,7 +1258,7 @@ function App() {
     }
 
     const currentTurn = currentState.turnCount;
-    const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] && 
+    const hasSpecificEvent = SPECIFIC_EVENTS[currentTurn] &&
       SPECIFIC_EVENTS[currentTurn].some(alt => (!alt.season || alt.season === currentState.season) && isRoleMatch(alt.role, currentState.role));
     // AI is used on Turn 0 (Interview) and every 5th turn (5, 10, 15, etc.) EXCEPT if there's a SPECIFIC_EVENT
     const isAITurn = useAI && (currentTurn === 0 || currentTurn % 5 === 0) && !hasSpecificEvent;
@@ -1250,46 +1269,46 @@ function App() {
       if (hasSpecificEvent) {
         const alternatives = SPECIFIC_EVENTS[currentTurn];
         const roleFiltered = alternatives.filter(alt => isRoleMatch(alt.role, currentState.role));
-        
+
         // Filter by season if the event has a specific season requirement
         const seasonFiltered = roleFiltered.filter(alt => !alt.season || alt.season === currentState.season);
-        
+
         // Exclude Fasli and Valantis in Season 2
         let filteredAlts = seasonFiltered;
         if (currentState.season === 2) {
-          filteredAlts = seasonFiltered.filter(alt => 
-            !alt.story_text.includes('Βαλάντης') && 
-            !alt.story_text.includes('Φασλί') && 
+          filteredAlts = seasonFiltered.filter(alt =>
+            !alt.story_text.includes('Βαλάντης') &&
+            !alt.story_text.includes('Φασλί') &&
             !alt.story_text.includes('Fasli') &&
             !alt.scene_title.includes('Βαλάντης') &&
             !alt.scene_title.includes('Φασλί') &&
             !alt.scene_title.includes('Fasli')
           );
         }
-        
+
         const unused = filteredAlts.filter(alt => !currentState.usedEventTexts?.includes(alt.story_text));
         const pool = unused.length > 0 ? unused : (filteredAlts.length > 0 ? filteredAlts : roleFiltered);
         nextScene = pool[Math.floor(Math.random() * pool.length)] || alternatives[0];
       } else {
         // Filter general events so that role-specific events are only served to players with that role
         const filteredEvents = GENERAL_EVENTS.filter(e => isRoleMatch(e.role, currentState.role));
-        
+
         // Filter by season if the event has a specific season requirement
         const seasonFiltered = filteredEvents.filter(e => !e.season || e.season === currentState.season);
-        
+
         // Exclude Fasli and Valantis in Season 2
         let finalEvents = seasonFiltered;
         if (currentState.season === 2) {
-          finalEvents = seasonFiltered.filter(e => 
-            !e.story_text.includes('Βαλάντης') && 
-            !e.story_text.includes('Φασλί') && 
+          finalEvents = seasonFiltered.filter(e =>
+            !e.story_text.includes('Βαλάντης') &&
+            !e.story_text.includes('Φασλί') &&
             !e.story_text.includes('Fasli') &&
             !e.scene_title.includes('Βαλάντης') &&
             !e.scene_title.includes('Φασλί') &&
             !e.scene_title.includes('Fasli')
           );
         }
-        
+
         const unused = finalEvents.filter(e => !currentState.usedEventTexts?.includes(e.story_text));
         const pool = unused.length > 0 ? unused : finalEvents;
         const randomGen = pool[Math.floor(Math.random() * pool.length)];
@@ -1343,14 +1362,14 @@ function App() {
 
     try {
       const response = await generateNextState(playerInput, currentState);
-      
+
       const mult = getDifficultyMultipliers();
 
       // Update Game State
       const newState = { ...currentState };
       if (response.stress_change) {
-        const stressDelta = response.stress_change > 0 
-          ? response.stress_change * mult.stressUp 
+        const stressDelta = response.stress_change > 0
+          ? response.stress_change * mult.stressUp
           : response.stress_change * mult.stressDown;
         newState.stress = Math.max(0, Math.min(100, newState.stress + stressDelta));
       }
@@ -1377,16 +1396,25 @@ function App() {
       if (response.alcohol_warnings_increment) newState.alcoholWarnings += response.alcohol_warnings_increment;
       if (response.current_shift) newState.shift = response.current_shift;
       if (response.inventory_updated) newState.inventory = response.inventory_updated;
-      
+
       if (response.hotel_metrics_updated) {
         if (response.hotel_metrics_updated.occupancy_change) newState.occupancy += response.hotel_metrics_updated.occupancy_change;
         if (response.hotel_metrics_updated.financial_metric_change) newState.financialMetric += response.hotel_metrics_updated.financial_metric_change;
         if (response.hotel_metrics_updated.staff_turnover_change) newState.staffTurnover += response.hotel_metrics_updated.staff_turnover_change;
       }
 
+      if (response.promotion_triggered) {
+        const newRole = promoteUser(newState.role);
+        if (newRole !== newState.role) {
+          newState.role = newRole;
+          setTimeout(() => showToast(`Συγχαρητήρια! Προήχθης σε ${newRole}! 🎉`, "🎓"), 1000);
+          audioService.playCashSound();
+        }
+      }
+
       // Dynamic Thesfapa Injection
       if (!newState.thesfapaTargetTurn) {
-        newState.thesfapaTargetTurn = Math.floor(Math.random() * 15) + 11; // Turn 11 to 25
+        newState.thesfapaTargetTurn = Math.floor(Math.random() * 19) + 1; // Turn 1 to 19 for Season 1
       }
       const isSeason1 = !newState.season || newState.season === 1;
       if (isSeason1 && newState.turnCount === newState.thesfapaTargetTurn && !newState.thesfapaSpawnedThisSeason) {
@@ -1484,10 +1512,10 @@ function App() {
         return [];
       }
     })();
-    const activeSaves = leaderboard.filter(entry => 
-      entry.nickname && 
-      entry.nickname.trim().toLowerCase() === userNickname.trim().toLowerCase() && 
-      entry.status === 'Εργάζεται' && 
+    const activeSaves = leaderboard.filter(entry =>
+      entry.nickname &&
+      entry.nickname.trim().toLowerCase() === userNickname.trim().toLowerCase() &&
+      entry.status === 'Εργάζεται' &&
       entry.saveData
     );
 
@@ -1668,7 +1696,7 @@ function App() {
       <p style={{ color: 'var(--text-secondary)', fontSize: '1.35rem', maxWidth: '750px', margin: '1.5rem auto 1.5rem auto', lineHeight: '1.6' }}>
         Καλώς ήρθατε στον κορυφαίο εξομοιωτή Ελληνικής Φιλοξενίας. Επιβιώστε από τον GM Μουστάκα, διαχειριστείτε υπερκρατήσεις, αγενείς VIP και το ακραίο εργασιακό stress.
       </p>
-      
+
       <div style={{
         backgroundColor: 'rgba(255, 255, 255, 0.03)',
         border: '1px solid var(--panel-border)',
@@ -1713,7 +1741,7 @@ function App() {
       <div className="intro-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80vh', padding: '1rem 0' }}>
         <div className="intro-subtitle" style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', letterSpacing: '0.25em', marginBottom: '1rem', animation: 'fadeUp 1.5s ease-out' }}>GREEK TOURISM RPG</div>
         <h1 className="intro-main-title" style={{ fontSize: '3.6rem', textShadow: '0 0 20px rgba(102, 252, 241, 0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', animation: 'fadeUp 2s ease-out' }}>HOTEL MADNESS</h1>
-        
+
         <div className="intro-narrative" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2rem' }}>
           <div className="intro-line line-1" style={{ fontSize: '1.45rem', color: 'var(--text-primary)' }}>ΕΛΛΗΝΙΚΟΣ ΤΟΥΡΙΣΜΟΣ. 2026.</div>
           <div className="intro-line line-2" style={{ fontSize: '1.45rem', color: 'var(--text-primary)' }}>Υψηλές προσδοκίες. Ακραίο Stress. Ατελείωτες βάρδιες.</div>
@@ -1783,10 +1811,10 @@ function App() {
         return [];
       }
     })();
-    const activeSaves = leaderboard.filter(entry => 
-      entry.nickname && 
-      entry.nickname.trim().toLowerCase() === userNickname.trim().toLowerCase() && 
-      entry.status === 'Εργάζεται' && 
+    const activeSaves = leaderboard.filter(entry =>
+      entry.nickname &&
+      entry.nickname.trim().toLowerCase() === userNickname.trim().toLowerCase() &&
+      entry.status === 'Εργάζεται' &&
       entry.saveData
     );
 
@@ -1856,7 +1884,7 @@ function App() {
             </div>
           </div>
         )}
-        
+
         {/* Removed API Key Panel to avoid user confusion */}
         {errorMsg && (
           <div style={{ backgroundColor: 'rgba(255, 75, 75, 0.1)', border: '1px solid var(--danger-color)', padding: '1rem', borderRadius: '8px', maxWidth: '600px', margin: '1rem auto', color: 'var(--danger-color)' }}>
@@ -1871,20 +1899,20 @@ function App() {
             <div className="role-title">Ρεσεψιονίστ</div>
             <div className="role-desc">Η πρώτη γραμμή άμυνας. Διαχειριστείτε υπερκρατήσεις, VIP πελάτες και την εταιρική ευθυγράμμιση.</div>
           </div>
-          
+
           <div className="role-card" onClick={() => startGame('Σερβιτόρος')}>
             <Coffee className="role-icon" color="var(--accent-color)" />
             <div className="role-title">Σερβιτόρος</div>
             <div className="role-desc">Ο αφανής ήρωας του F&B. Αντιμετωπίστε αγενείς πελάτες, το χάος της σάλας και το κυνήγι του φιλοδωρήματος.</div>
           </div>
-          
+
           <div className="role-card" onClick={() => startGame('Μάγειρας')}>
             <ChefHat className="role-icon" color="var(--accent-color)" />
             <div className="role-title">Μάγειρας</div>
             <div className="role-desc">Η φωτιά της κουζίνας. Επιβιώστε από χαλασμένο εξοπλισμό, ελλείψεις υλικών και ακραίες θερμοκρασίες.</div>
           </div>
         </div>
-        </div>
+      </div>
     );
   };
 
@@ -1893,7 +1921,7 @@ function App() {
     const isResigned = gameState.resigned;
     const isUltimateVictory = gameState.ultimateVictory;
     const successRate = calculateSuccessRate(gameState);
-    
+
     let evalObj = getEvaluationGrade(successRate, gameState);
     if (isUltimateVictory) {
       evalObj = {
@@ -1907,25 +1935,25 @@ function App() {
       <div className="game-over-screen">
         <div className="game-over-title" style={isUltimateVictory ? { color: '#ffd700', textShadow: '0 0 25px rgba(255, 215, 0, 0.8)' } : isSeasonEnd && !isResigned ? { color: '#4bff4b', textShadow: '0 0 25px rgba(75, 255, 75, 0.6)' } : {}}>
           {isUltimateVictory ? "ΘΡΙΑΜΒΟΣ! ΟΛΟΚΛΗΡΩΣΗ ΠΑΙΧΝΙΔΙΟΥ" :
-           isSeasonEnd && !isResigned ? "ΤΕΛΟΣ ΣΕΖΟΝ!" :
-           isResigned ? "ΠΑΡΑΙΤΗΣΗ! GAME OVER" :
-           gameState.stress >= 100 ? "BURNOUT! GAME OVER" : 
-           gameState.reputation <= 0 ? "ΑΠΟΛΥΘΗΚΕΣ! GAME OVER" : 
-           gameState.alcoholWarnings >= 3 ? "ΠΕΙΘΑΡΧΙΚΗ ΑΠΟΛΥΣΗ! GAME OVER" : 
-           "GAME OVER"}
+            isSeasonEnd && !isResigned ? "ΤΕΛΟΣ ΣΕΖΟΝ!" :
+              isResigned ? "ΠΑΡΑΙΤΗΣΗ! GAME OVER" :
+                gameState.stress >= 100 ? "BURNOUT! GAME OVER" :
+                  gameState.reputation <= 0 ? "ΑΠΟΛΥΘΗΚΕΣ! GAME OVER" :
+                    gameState.alcoholWarnings >= 3 ? "ΠΕΙΘΑΡΧΙΚΗ ΑΠΟΛΥΣΗ! GAME OVER" :
+                      "GAME OVER"}
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center', lineHeight: '1.6' }}>
-          {isUltimateVictory 
-            ? (gameState.role === 'General Manager' 
-                ? "Συγχαρητήρια! Ξεκίνησες ως απλός Front Office Agent και κατάφερες το αδιανόητο: Έγινες ο νέος General Manager της Faplantica! Ο Μουστάκας αποσύρθηκε νικημένος από το άγχος του, και πλέον εσύ κάνεις κουμάντο σε όλο το ξενοδοχείο. Η αυτοκρατορία σου ανήκει! 👑🏨"
-                : gameState.role === 'Executive Chef'
+          {isUltimateVictory
+            ? (gameState.role === 'General Manager'
+              ? "Συγχαρητήρια! Ξεκίνησες ως απλός Ρεσεψιονίστ και κατάφερες το αδιανόητο: Έγινες ο νέος Operations Manager της Faplantica! Ο Μουστάκας αποσύρθηκε νικημένος από το άγχος του, και πλέον εσύ κάνεις κουμάντο. Η αυτοκρατορία σου ανήκει! 👑🏨"
+              : gameState.role === 'Executive Chef'
                 ? "Συγχαρητήρια! Από τις λάντζες και τις φωνές ως Γ Μάγειρας, πλέον είσαι ο Executive Chef της Faplantica! Ο Σάββας εκδιώχθηκε κακήν κακώς μετά τις τοξικές του παρασπονδίες, και πλέον εσύ ορίζεις το μενού, το προσωπικό και την κουζίνα. Η γαστρονομική δόξα είναι δική σου! 🍳👑"
                 : "Συγχαρητήρια! Ξεκίνησες ως βοηθός σερβιτόρου και έφτασες στην κορυφή. Στη 4η σεζόν αποκαλύφθηκαν όλες οι δολοπλοκίες και οι λαμογιές του Καρδάρη, ο οποίος απολύθηκε με συνοπτικές διαδικασίες από τον Τάρναβα. Πήρες πανηγυρικά τη θέση του ως F&B Manager και το παιχνίδι ολοκληρώθηκε θριαμβευτικά! 🍽️👑")
-            : isResigned 
-            ? "Πέταξες τη στολή στα μούτρα του Μουστάκα, μάζεψες τα πράγματά σου και έφυγες τρέχοντας για το λιμάνι! Είσαι πλέον ένας ελεύθερος άνθρωπος μακριά από το ξενοδοχειακό χάος! 🏖️✈️"
-            : isSeasonEnd 
-            ? "Καλό χειμώνα! Τα καταφέρατε και επιβιώσατε άλλη μια σεζόν. Ξεκουραστείτε... γιατί του χρόνου ο εφιάλτης συνεχίζεται! 🏖️🔥"
-            : "Υπέκυψες στην αβάσταχτη πίεση του σύγχρονου ελληνικού ξενοδοχειακού management. Ο GM Μουστάκας σε αντικατέστησε ήδη."}
+            : isResigned
+              ? "Πέταξες τη στολή στα μούτρα του Μουστάκα, μάζεψες τα πράγματά σου και έφυγες τρέχοντας για το λιμάνι! Είσαι πλέον ένας ελεύθερος άνθρωπος μακριά από το ξενοδοχειακό χάος! 🏖️✈️"
+              : isSeasonEnd
+                ? "Καλό χειμώνα! Τα καταφέρατε και επιβιώσατε άλλη μια σεζόν. Ξεκουραστείτε... γιατί του χρόνου ο εφιάλτης συνεχίζεται! 🏖️🔥"
+                : "Υπέκυψες στην αβάσταχτη πίεση του σύγχρονου ελληνικού ξενοδοχειακού management. Ο GM Μουστάκας σε αντικατέστησε ήδη."}
         </p>
         <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
           <div>Τελικό Άγχος: <span className="text-danger">{gameState.stress}%</span></div>
@@ -1934,36 +1962,36 @@ function App() {
         </div>
 
 
-          {/* Animated Character Avatar */}
-          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <div style={{
-              fontSize: '5rem',
-              lineHeight: 1,
-              animation: isUltimateVictory ? 'pulse 1.2s ease-in-out infinite' : isSeasonEnd && !isResigned ? 'pulse 1.5s ease-in-out infinite' : gameState.stress >= 100 ? 'shake 0.5s ease-in-out infinite' : 'none',
-              display: 'inline-block',
-              filter: isUltimateVictory ? 'drop-shadow(0 0 15px rgba(255,215,0,0.6))' : isSeasonEnd && !isResigned ? 'drop-shadow(0 0 10px rgba(75,255,75,0.5))' : gameState.stress >= 100 ? 'drop-shadow(0 0 10px rgba(255,75,75,0.5))' : 'none'
-            }}>
-              {isUltimateVictory ? '👑' :
-               isSeasonEnd && !isResigned
+        {/* Animated Character Avatar */}
+        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <div style={{
+            fontSize: '5rem',
+            lineHeight: 1,
+            animation: isUltimateVictory ? 'pulse 1.2s ease-in-out infinite' : isSeasonEnd && !isResigned ? 'pulse 1.5s ease-in-out infinite' : gameState.stress >= 100 ? 'shake 0.5s ease-in-out infinite' : 'none',
+            display: 'inline-block',
+            filter: isUltimateVictory ? 'drop-shadow(0 0 15px rgba(255,215,0,0.6))' : isSeasonEnd && !isResigned ? 'drop-shadow(0 0 10px rgba(75,255,75,0.5))' : gameState.stress >= 100 ? 'drop-shadow(0 0 10px rgba(255,75,75,0.5))' : 'none'
+          }}>
+            {isUltimateVictory ? '👑' :
+              isSeasonEnd && !isResigned
                 ? (successRate >= 80 ? '🥳' : successRate >= 50 ? '😤' : '😮‍💨')
                 : isResigned ? '🏃'
-                : gameState.stress >= 100 ? '🤯'
-                : gameState.reputation <= 0 ? '😰'
-                : gameState.alcoholWarnings >= 3 ? '🍷'
-                : successRate >= 70 ? '😎'
-                : '😵'}
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>
-              {isSeasonEnd && !isResigned
-                ? (successRate >= 80 ? 'Επιτυχία! Αξίζεις διακοπές!' : 'Φύγαμε για χειμώνα!')
-                : isResigned ? 'Λευτεριά!'
-                : gameState.stress >= 100 ? 'Burnout!'
-                : gameState.reputation <= 0 ? 'Εκτός Ελέγχου!'
-                : gameState.alcoholWarnings >= 3 ? 'Disciplinary Action!'
-                : successRate >= 70 ? 'Καλή δουλειά!'
-                : 'Επόμενη φορά!'}
-            </div>
+                  : gameState.stress >= 100 ? '🤯'
+                    : gameState.reputation <= 0 ? '😰'
+                      : gameState.alcoholWarnings >= 3 ? '🍷'
+                        : successRate >= 70 ? '😎'
+                          : '😵'}
           </div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>
+            {isSeasonEnd && !isResigned
+              ? (successRate >= 80 ? 'Επιτυχία! Αξίζεις διακοπές!' : 'Φύγαμε για χειμώνα!')
+              : isResigned ? 'Λευτεριά!'
+                : gameState.stress >= 100 ? 'Burnout!'
+                  : gameState.reputation <= 0 ? 'Εκτός Ελέγχου!'
+                    : gameState.alcoholWarnings >= 3 ? 'Disciplinary Action!'
+                      : successRate >= 70 ? 'Καλή δουλειά!'
+                        : 'Επόμενη φορά!'}
+          </div>
+        </div>
 
         {/* GORGEOUS EMPLOYEE CAREER CARD */}
         <div className="employee-profile-card" style={{
@@ -2040,37 +2068,37 @@ function App() {
         </div>
 
 
-          {/* Share Button */}
-          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-            <button
-              onClick={() => {
-                const msg = `🏨 Hotel Madness - Faplantica\n👤 ${nickname || 'Άγνωστος'} (${gameState.role})\n📊 Σεζόν: ${gameState.season} | Γύροι: ${gameState.turnCount} | Χρήματα: €${gameState.cash.toLocaleString('el-GR')}\n⭐ Αξιολόγηση: ${evalObj.grade} - ${evalObj.label}\n✅ Ποσοστό Επιτυχίας: ${successRate}%\n\nΠαίξε κι εσύ 👉 https://hotel-madness.vercel.app`;
-                if (navigator.share) {
-                  navigator.share({ title: 'Hotel Madness - Faplantica', text: msg });
-                } else {
-                  navigator.clipboard.writeText(msg);
-                  showToast("📋 Το σκορ σου αντιγράφηκε! Επικόλλησέ το σε WhatsApp/Instagram!", "🎉");
-                }
-              }}
-              style={{
-                background: 'linear-gradient(135deg, #25D366, #128C7E)',
-                border: 'none',
-                borderRadius: '30px',
-                padding: '0.6rem 2rem',
-                color: '#ffffff',
-                fontWeight: 'bold',
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(37, 211, 102, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                margin: '0 auto'
-              }}
-            >
-              📤 Μοιράσου το Σκορ σου!
-            </button>
-          </div>
+        {/* Share Button */}
+        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <button
+            onClick={() => {
+              const msg = `🏨 Hotel Madness - Faplantica\n👤 ${nickname || 'Άγνωστος'} (${gameState.role})\n📊 Σεζόν: ${gameState.season} | Γύροι: ${gameState.turnCount} | Χρήματα: €${gameState.cash.toLocaleString('el-GR')}\n⭐ Αξιολόγηση: ${evalObj.grade} - ${evalObj.label}\n✅ Ποσοστό Επιτυχίας: ${successRate}%\n\nΠαίξε κι εσύ 👉 https://hotel-madness.vercel.app`;
+              if (navigator.share) {
+                navigator.share({ title: 'Hotel Madness - Faplantica', text: msg });
+              } else {
+                navigator.clipboard.writeText(msg);
+                showToast("📋 Το σκορ σου αντιγράφηκε! Επικόλλησέ το σε WhatsApp/Instagram!", "🎉");
+              }
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #25D366, #128C7E)',
+              border: 'none',
+              borderRadius: '30px',
+              padding: '0.6rem 2rem',
+              color: '#ffffff',
+              fontWeight: 'bold',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(37, 211, 102, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              margin: '0 auto'
+            }}
+          >
+            📤 Μοιράσου το Σκορ σου!
+          </button>
+        </div>
 
         {/* HR SUBMISSION PANEL */}
         <div style={{ marginTop: '1.5rem', backgroundColor: 'rgba(255,255,255,0.04)', padding: '1.25rem', borderRadius: '12px', maxWidth: '550px', margin: '1.5rem auto', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -2079,14 +2107,14 @@ function App() {
           </h3>
           {!feedbackSent ? (
             <>
-              <textarea 
+              <textarea
                 value={feedbackText}
                 onChange={(e) => setFeedbackText(e.target.value)}
                 placeholder="Γράψε εδώ τα παράπονά σου (δεν θα τα διαβάσει κανείς στο HR)..."
                 style={{ width: '100%', height: '80px', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--panel-border)', backgroundColor: 'rgba(0,0,0,0.3)', color: 'var(--text-primary)', marginTop: '0.5rem', resize: 'vertical', fontSize: '0.9rem' }}
               />
-              <button 
-                className="btn-primary" 
+              <button
+                className="btn-primary"
                 style={{ marginTop: '0.75rem', width: '100%', padding: '0.6rem 1rem' }}
                 onClick={async () => {
                   if (!feedbackText.trim()) return;
@@ -2130,11 +2158,11 @@ function App() {
           )}
         </div>
 
-        <button className="btn-restart" onClick={() => { 
+        <button className="btn-restart" onClick={() => {
           if (isSeasonEnd) {
             startNextSeason();
           } else {
-            setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); setFeedbackSent(false); setFeedbackText(''); 
+            setGameStarted(false); setNicknameConfirmed(false); setIsGuest(false); setNickname(localStorage.getItem('player_nickname') || ''); setFeedbackSent(false); setFeedbackText('');
           }
         }}>
           {isSeasonEnd ? "Αίτηση για την Επόμενη Σεζόν" : "Αναζήτηση Νέας Δουλειάς"}
@@ -2145,7 +2173,7 @@ function App() {
 
   const getNextRole = (currentRole) => {
     const ladders = {
-      'Front Office Agent': ['Assistant Front office manager', 'Front Office Manager', 'Operations Manager', 'General Manager'],
+      'Ρεσεψιονίστ': ['Assistant Fom', 'Front Office Manager', 'Operations Manager'],
       'Βοηθός Σερβιτόρου': ['Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'],
       'Γ Μάγειρας': ['Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef']
     };
@@ -2169,7 +2197,7 @@ function App() {
     const nextSeason = (gameState.season || 1) + 1;
     const nextYear = 2025 + nextSeason;
     const nextRole = getNextRole(gameState.role);
-    
+
     const ultimateRoles = ['Executive Chef', 'General Manager', 'F&B Manager'];
     if (ultimateRoles.includes(nextRole)) {
       const newState = {
@@ -2186,7 +2214,7 @@ function App() {
       saveScoreToLeaderboard(newState);
       return;
     }
-    
+
     const newState = {
       ...gameState,
       season: nextSeason,
@@ -2208,7 +2236,7 @@ function App() {
     setGameOver(false);
     setFeedbackSent(false);
     setFeedbackText('');
-    
+
     setSceneData({
       scene_title: `Καλώς Ήρθες στη Σεζόν ${nextSeason}`,
       story_text: `Ο χειμώνας πέρασε. Επέστρεψες στην Faplantica. Φέτος τα πράγματα αλλάζουν: Πήρες προαγωγή σε ${nextRole}! Ο Μουστάκας σε περιμένει...`,
@@ -2228,15 +2256,15 @@ function App() {
           <br /><br />
           Αν όμως νομίζεις ότι κάτι σου θυμίζει... μάλλον έχεις δίκιο.
         </p>
-        <button 
-          className="btn-primary" 
+        <button
+          className="btn-primary"
           style={{ marginTop: '1.5rem', padding: '0.85rem 3rem', fontSize: '1.2rem', borderRadius: '30px' }}
           onClick={async () => {
-             setShowDisclaimer(false);
-             setGameStarted(true);
-             setGameOver(false);
-             setErrorMsg('');
-             await processTurn(`START: ${gameState.role}. Player nickname: ${nickname || 'Άγνωστος'}`, gameState);
+            setShowDisclaimer(false);
+            setGameStarted(true);
+            setGameOver(false);
+            setErrorMsg('');
+            await processTurn(`START: ${gameState.role}. Player nickname: ${nickname || 'Άγνωστος'}`, gameState);
           }}
         >
           Συνέχεια
@@ -2248,13 +2276,13 @@ function App() {
   const renderLeaderboardModal = () => {
     if (!showLeaderboard) return null;
     const offlineList = JSON.parse(localStorage.getItem('hotel_madness_leaderboard')) || getMockLeaderboard();
-    
+
     // Merge online scores with offline list and mock scores
     const uniqueScores = [...onlineScores];
-    
+
     // Add local scores to uniqueScores if they aren't already represented online
     offlineList.forEach(localEntry => {
-      const exists = uniqueScores.some(e => 
+      const exists = uniqueScores.some(e =>
         (e.id && e.id === localEntry.id) ||
         (e.nickname === localEntry.nickname && e.turns === localEntry.turns && e.cash === localEntry.cash && e.season === localEntry.season)
       );
@@ -2290,7 +2318,7 @@ function App() {
         const existing = uniqueMap.get(key);
         const newSeason = entry.season || 1;
         const oldSeason = existing.season || 1;
-        
+
         let isNewBetter = false;
         if (newSeason > oldSeason) {
           isNewBetter = true;
@@ -2307,7 +2335,7 @@ function App() {
             }
           }
         }
-        
+
         if (isNewBetter) {
           uniqueMap.set(key, entry);
         }
@@ -2315,7 +2343,7 @@ function App() {
     }
 
     const sortedList = [...uniqueMap.values()];
-    
+
     // Sort by season (descending), then turns (descending), then cash (descending)
     sortedList.sort((a, b) => {
       if (b.season !== a.season) return b.season - a.season;
@@ -2331,7 +2359,7 @@ function App() {
         <div style={{ background: '#0b0c10', border: '1px solid #66fcf1', borderRadius: '16px', padding: '2rem', maxWidth: '850px', width: '95%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
             <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <Trophy color="var(--warning-color)" /> Hall of Fame - Top 10 Κατάταξη 
+              <Trophy color="var(--warning-color)" /> Hall of Fame - Top 10 Κατάταξη
               {isLeaderboardLoading ? (
                 <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'rgba(102, 252, 241, 0.1)', border: '1px solid var(--accent-color)', padding: '0.2rem 0.6rem', borderRadius: '12px', marginLeft: '0.5rem', fontWeight: 600 }}>ΑΝΑΝΕΩΣΗ... ⏳</span>
               ) : isOnline ? (
@@ -2341,7 +2369,7 @@ function App() {
               )}
             </h3>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <button 
+              <button
                 onClick={fetchOnlineLeaderboard}
                 disabled={isLeaderboardLoading}
                 style={{
@@ -2357,7 +2385,7 @@ function App() {
               >
                 Ανανέωση
               </button>
-              <button 
+              <button
                 onClick={() => setShowLeaderboard(false)}
                 style={{
                   background: 'none',
@@ -2392,9 +2420,9 @@ function App() {
                   const isTop3 = index < 3;
                   const medalEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
                   return (
-                    <tr 
-                      key={entry.id || index} 
-                      style={{ 
+                    <tr
+                      key={entry.id || index}
+                      style={{
                         borderBottom: '1px solid rgba(255,255,255,0.05)',
                         backgroundColor: index % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent',
                         fontWeight: isTop3 ? '600' : '400',
@@ -2422,8 +2450,8 @@ function App() {
           </div>
 
           <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-            <button 
-              className="btn-primary" 
+            <button
+              className="btn-primary"
               onClick={() => setShowLeaderboard(false)}
               style={{ padding: '0.6rem 2.5rem', width: 'auto' }}
             >
@@ -2455,12 +2483,12 @@ function App() {
       )}
       <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '2rem' }}>
         <div>
-          <h1 
-            style={{ 
-              margin: 0, 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.6rem', 
+          <h1
+            style={{
+              margin: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
               cursor: 'pointer',
               userSelect: 'none'
             }}
@@ -2548,8 +2576,8 @@ function App() {
           {/* Viber Button */}
           {gameStarted && !gameOver && (
             <button
-              onClick={() => { 
-                setShowViber(true); 
+              onClick={() => {
+                setShowViber(true);
                 setGameState(prev => ({ ...prev, viberUnreadCount: 0 }));
               }}
               style={{
@@ -2691,10 +2719,10 @@ function App() {
       </div>
 
       {errorMsg && gameStarted && !gameOver && (
-         <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(0,0,0,0.9)', border: '1px solid var(--danger-color)', padding: '1rem', borderRadius: '8px', color: 'var(--danger-color)', zIndex: 100 }}>
-           <ShieldAlert size={16} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
-           {errorMsg}
-         </div>
+        <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(0,0,0,0.9)', border: '1px solid var(--danger-color)', padding: '1rem', borderRadius: '8px', color: 'var(--danger-color)', zIndex: 100 }}>
+          <ShieldAlert size={16} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+          {errorMsg}
+        </div>
       )}
       {showSettings && (
         <div className="modal-overlay">
@@ -2703,14 +2731,14 @@ function App() {
               <h2>⚙️ Ρυθμίσεις Παιχνιδιού</h2>
               <button className="modal-close-btn" onClick={() => setShowSettings(false)}>×</button>
             </div>
-            
+
             <div className="settings-section">
               <div className="settings-section-title">Δυσκολία (Difficulty)</div>
               <div className="settings-row">
                 <span className="settings-label">Επίπεδο Δυσκολίας:</span>
-                <select 
-                  className="settings-select" 
-                  value={difficulty} 
+                <select
+                  className="settings-select"
+                  value={difficulty}
                   onChange={(e) => {
                     setDifficulty(e.target.value);
                     localStorage.setItem('game_difficulty', e.target.value);
@@ -2728,13 +2756,13 @@ function App() {
               <div className="settings-section-title">Ήχος (Audio)</div>
               <div className="settings-row">
                 <span className="settings-label">Ένταση Μουσικής:</span>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.1" 
-                  className="settings-slider" 
-                  value={musicVolume} 
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  className="settings-slider"
+                  value={musicVolume}
                   onChange={(e) => {
                     const vol = parseFloat(e.target.value);
                     setMusicVolume(vol);
@@ -2746,9 +2774,9 @@ function App() {
               <div className="settings-row">
                 <span className="settings-label">Ηχητικά Εφέ (SFX):</span>
                 <label className="switch">
-                  <input 
-                    type="checkbox" 
-                    checked={useSFX} 
+                  <input
+                    type="checkbox"
+                    checked={useSFX}
                     onChange={(e) => {
                       setUseSFX(e.target.checked);
                       localStorage.setItem('game_use_sfx', e.target.checked.toString());
@@ -2759,9 +2787,9 @@ function App() {
               </div>
               <div className="settings-row" style={{ marginTop: '0.75rem' }}>
                 <span className="settings-label">Κανάλι Μουσικής:</span>
-                <select 
-                  className="settings-select" 
-                  value={musicPlaylist} 
+                <select
+                  className="settings-select"
+                  value={musicPlaylist}
                   onChange={(e) => {
                     const pl = e.target.value;
                     setMusicPlaylist(pl);
@@ -2793,9 +2821,9 @@ function App() {
               <div className="settings-row">
                 <span className="settings-label">Ενεργοποίηση AI Συμβάντων:</span>
                 <label className="switch">
-                  <input 
-                    type="checkbox" 
-                    checked={useAI} 
+                  <input
+                    type="checkbox"
+                    checked={useAI}
                     onChange={(e) => {
                       setUseAI(e.target.checked);
                       localStorage.setItem('game_use_ai', e.target.checked.toString());
@@ -2806,10 +2834,10 @@ function App() {
               </div>
               <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                 <span className="settings-label" style={{ marginBottom: '0.25rem' }}>Δικό σου Gemini API Key:</span>
-                <input 
-                  type="password" 
-                  className="settings-input" 
-                  placeholder="Εισαγωγή API Key..." 
+                <input
+                  type="password"
+                  className="settings-input"
+                  placeholder="Εισαγωγή API Key..."
                   value={apiKeyInput}
                   onChange={(e) => {
                     setApiKeyInput(e.target.value);
@@ -2825,8 +2853,8 @@ function App() {
               <div className="settings-section-title">Δεδομένα & Πρόοδος</div>
               <div className="settings-row">
                 <span className="settings-label">Επαναφορά Καριέρας:</span>
-                <button 
-                  className="settings-btn danger" 
+                <button
+                  className="settings-btn danger"
                   onClick={() => {
                     if (confirm("Είσαι σίγουρος ότι θέλεις να διαγράψεις όλη την πρόοδό σου, τις ρυθμίσεις και την κατάταξη για να ξεκινήσεις από την αρχή;")) {
                       localStorage.removeItem('game_difficulty');
@@ -2852,9 +2880,9 @@ function App() {
               </div>
             </div>
 
-            <button 
-              className="btn-primary" 
-              style={{ width: '100%', marginTop: '1rem' }} 
+            <button
+              className="btn-primary"
+              style={{ width: '100%', marginTop: '1rem' }}
               onClick={() => setShowSettings(false)}
             >
               Αποθήκευση & Κλείσιμο
@@ -2873,15 +2901,15 @@ function App() {
               </h2>
               <button className="modal-close-btn" style={{ color: '#ff4b4b' }} onClick={() => setShowAdminPanel(false)}>x</button>
             </div>
-            
+
             <div className="settings-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '75vh', overflowY: 'auto' }}>
-              
+
               {/* God Mode Stats */}
               <div className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '8px' }}>
                 <div className="settings-section-title" style={{ color: '#ffdd67', borderBottom: '1px solid rgba(255, 221, 103, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
                   👼 Βασικά Stats
                 </div>
-                
+
                 <div className="settings-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <span className="settings-label">🤯 Άγχος (Stress): <strong>{gameState.stress}%</strong></span>
                   <button onClick={() => { setGameState(prev => ({ ...prev, stress: 0 })); showToast("🧘 Το Stress μηδενίστηκε!", "😇"); }} style={{ background: 'rgba(75, 255, 75, 0.1)', border: '1px solid #4bff4b', color: '#4bff4b', padding: '0.3rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>
@@ -2910,7 +2938,7 @@ function App() {
                   ⏱️ Έλεγχος Χρόνου & Σεζόν
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <button 
+                  <button
                     onClick={() => {
                       setGameState(prev => ({ ...prev, currentDate: '2026-08-01', turnCount: prev.turnCount + 24, occupancy: 100 }));
                       showToast("☀️ Καλωσήρθες στον Δεκαπενταύγουστο!", "🔥");
@@ -2919,7 +2947,7 @@ function App() {
                   >
                     🔥 Μετάβαση στον Αύγουστο (Peak)
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setGameState(prev => ({ ...prev, currentDate: '2026-11-01' }));
                       showToast("❄️ Ο χειμώνας έφτασε! Κάνε μια ενέργεια για να τερματίσεις.", "⛄");
@@ -2949,7 +2977,7 @@ function App() {
                   🌪️ Απόλυτο Χάος (Disaster Triggers)
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <button 
+                  <button
                     onClick={() => {
                       setGameState(prev => ({ ...prev, occupancy: 120, reputation: Math.max(0, prev.reputation - 20) }));
                       showToast("🚨 Overbooking! Η πληρότητα πήγε στο 120% και η φήμη έπεσε!", "🔥");
@@ -2958,7 +2986,7 @@ function App() {
                   >
                     🔥 Πρόβλημα Overbooking (120%)
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setGameState(prev => ({ ...prev, reputation: Math.max(0, prev.reputation - 35), stress: Math.min(100, prev.stress + 40) }));
                       showToast("🤢 Μαζική Τροφική Δηλητηρίαση! Τεράστιο πλήγμα στη φήμη!", "🤮");
@@ -2967,7 +2995,7 @@ function App() {
                   >
                     🤮 Μαζική Τροφική Δηλητηρίαση
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setGameState(prev => ({ ...prev, staffTurnover: 100, staffRelations: -50 }));
                       showToast("😡 Το προσωπικό παραιτείται μαζικά!", "📉");
@@ -2984,13 +3012,13 @@ function App() {
                 <div className="settings-section-title" style={{ color: '#b388ff', borderBottom: '1px solid rgba(179, 136, 255, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.75rem' }}>
                   🌐 Online Multiplayer Control
                 </div>
-                
+
                 {/* MOTD */}
                 <div style={{ marginBottom: '1rem' }}>
                   <label style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'block', marginBottom: '0.3rem' }}>Παγκόσμια Ανακοίνωση (MOTD):</label>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="Μήνυμα σε όλους τους παίκτες..."
                       value={motdInput}
                       onChange={(e) => setMotdInput(e.target.value)}
@@ -3004,12 +3032,12 @@ function App() {
                 <div style={{ marginBottom: '1rem', borderTop: '1px dashed rgba(179, 136, 255, 0.3)', paddingTop: '1rem' }}>
                   <label style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'block', marginBottom: '0.3rem' }}>Ένεση Ψεύτικου Σκορ (Trolling):</label>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <input type="text" value={fakeScore.nickname} onChange={e => setFakeScore({...fakeScore, nickname: e.target.value})} placeholder="Όνομα" style={{ width: '120px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #45a29e', background: 'rgba(0,0,0,0.3)', color: '#fff' }} />
-                    <input type="number" value={fakeScore.cash} onChange={e => setFakeScore({...fakeScore, cash: parseInt(e.target.value)})} placeholder="Χρήματα" style={{ width: '100px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #45a29e', background: 'rgba(0,0,0,0.3)', color: '#fff' }} />
+                    <input type="text" value={fakeScore.nickname} onChange={e => setFakeScore({ ...fakeScore, nickname: e.target.value })} placeholder="Όνομα" style={{ width: '120px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #45a29e', background: 'rgba(0,0,0,0.3)', color: '#fff' }} />
+                    <input type="number" value={fakeScore.cash} onChange={e => setFakeScore({ ...fakeScore, cash: parseInt(e.target.value) })} placeholder="Χρήματα" style={{ width: '100px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #45a29e', background: 'rgba(0,0,0,0.3)', color: '#fff' }} />
                     <button onClick={injectFakeScore} style={{ background: 'rgba(69, 162, 158, 0.2)', border: '1px solid #45a29e', color: '#45a29e', padding: '0.4rem 1rem', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Inject</button>
                   </div>
                 </div>
-                
+
                 {/* Leaderboard Wipe */}
                 <div style={{ borderTop: '1px dashed rgba(179, 136, 255, 0.3)', paddingTop: '1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -3047,7 +3075,7 @@ function App() {
                 >
                   ⚡ Force "ΦαΠ-Ο-Μέτρο" Link (Next Arc)
                 </button>
-                
+
                 <button
                   style={{
                     marginTop: '0.5rem',
@@ -3128,10 +3156,10 @@ function App() {
               </div>
 
             </div>
-            
-            <button 
-              className="btn-primary" 
-              style={{ width: '100%', marginTop: '1.25rem', background: '#ff4b4b', color: '#ffffff', border: 'none' }} 
+
+            <button
+              className="btn-primary"
+              style={{ width: '100%', marginTop: '1.25rem', background: '#ff4b4b', color: '#ffffff', border: 'none' }}
               onClick={() => setShowAdminPanel(false)}
             >
               Κλείσιμο Πάνελ
@@ -3147,11 +3175,11 @@ function App() {
               <h2 style={{ margin: 0, color: '#66fcf1' }}>🛍️ Κατάστημα Faplantica</h2>
               <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowStore(false)}>×</button>
             </div>
-            
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
               <div style={{ color: hasPurchasedThisTurn ? '#ff4b4b' : '#a8b2d8', fontSize: '0.95rem', fontWeight: hasPurchasedThisTurn ? 'bold' : 'normal' }}>
-                {hasPurchasedThisTurn 
-                  ? "⚠️ Έχετε ήδη πραγματοποιήσει 1 αγορά σε αυτή τη βάρδια." 
+                {hasPurchasedThisTurn
+                  ? "⚠️ Έχετε ήδη πραγματοποιήσει 1 αγορά σε αυτή τη βάρδια."
                   : "Αγόρασε είδη πρώτης ανάγκης για να μειώσεις το άγχος της σεζόν."
                 }
               </div>
@@ -3164,7 +3192,7 @@ function App() {
             <div className="store-grid">
               {STORE_ITEMS.map((item) => {
                 const canAfford = gameState.cash >= item.price;
-                
+
                 // Seasonal limits checks
                 let isLimitReached = false;
                 let limitText = null;
@@ -3201,7 +3229,7 @@ function App() {
                     </div>
 
                     <div style={{ fontSize: '2.2rem', lineHeight: 1 }}>{item.emoji}</div>
-                    
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>{item.name}</div>
                       {limitText && (
@@ -3271,39 +3299,39 @@ function App() {
                         disabled={isDisabled}
                         onClick={() => buyStoreItem(item)}
                         style={{
-                          background: isLimitReached 
-                            ? 'rgba(255, 75, 75, 0.08)' 
-                            : (hasPurchasedThisTurn 
-                                ? 'rgba(255, 255, 255, 0.05)' 
-                                : (!canAfford 
-                                    ? 'rgba(255, 75, 75, 0.08)' 
-                                    : 'linear-gradient(135deg, #66fcf1, #45a29e)')),
-                          border: isLimitReached 
-                            ? '1px solid rgba(255, 75, 75, 0.4)' 
-                            : (hasPurchasedThisTurn 
-                                ? '1px solid rgba(255, 255, 255, 0.15)' 
-                                : (!canAfford 
-                                    ? '1px solid rgba(255, 75, 75, 0.4)' 
-                                    : 'none')),
+                          background: isLimitReached
+                            ? 'rgba(255, 75, 75, 0.08)'
+                            : (hasPurchasedThisTurn
+                              ? 'rgba(255, 255, 255, 0.05)'
+                              : (!canAfford
+                                ? 'rgba(255, 75, 75, 0.08)'
+                                : 'linear-gradient(135deg, #66fcf1, #45a29e)')),
+                          border: isLimitReached
+                            ? '1px solid rgba(255, 75, 75, 0.4)'
+                            : (hasPurchasedThisTurn
+                              ? '1px solid rgba(255, 255, 255, 0.15)'
+                              : (!canAfford
+                                ? '1px solid rgba(255, 75, 75, 0.4)'
+                                : 'none')),
                           borderRadius: '6px',
                           padding: '0.5rem 1.2rem',
-                          color: isLimitReached 
-                            ? '#ff4b4b' 
-                            : (hasPurchasedThisTurn 
-                                ? 'rgba(255, 255, 255, 0.4)' 
-                                : (!canAfford 
-                                    ? '#ff4b4b' 
-                                    : '#0b0c10')),
+                          color: isLimitReached
+                            ? '#ff4b4b'
+                            : (hasPurchasedThisTurn
+                              ? 'rgba(255, 255, 255, 0.4)'
+                              : (!canAfford
+                                ? '#ff4b4b'
+                                : '#0b0c10')),
                           fontWeight: 700,
                           fontSize: '0.9rem',
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           transition: 'all 0.2s',
                           whiteSpace: 'nowrap',
-                          boxShadow: !isDisabled 
-                            ? '0 0 10px rgba(102, 252, 241, 0.2)' 
-                            : (!canAfford && !hasPurchasedThisTurn && !isLimitReached 
-                                ? '0 0 10px rgba(255, 75, 75, 0.15)' 
-                                : 'none')
+                          boxShadow: !isDisabled
+                            ? '0 0 10px rgba(102, 252, 241, 0.2)'
+                            : (!canAfford && !hasPurchasedThisTurn && !isLimitReached
+                              ? '0 0 10px rgba(255, 75, 75, 0.15)'
+                              : 'none')
                         }}
                       >
                         {isLimitReached ? 'Όριο Σεζόν' : (hasPurchasedThisTurn ? '1 Αγορά/Βάρδια' : 'Αγορά')}
@@ -3314,9 +3342,9 @@ function App() {
               })}
             </div>
 
-            <button 
-              className="btn-primary" 
-              style={{ width: '100%', marginTop: '1.5rem' }} 
+            <button
+              className="btn-primary"
+              style={{ width: '100%', marginTop: '1.5rem' }}
               onClick={() => setShowStore(false)}
             >
               Κλείσιμο Καταστήματος
@@ -3361,10 +3389,10 @@ function App() {
             const msg = currentMsgs[index];
             if (!msg || !msg.item || msg.accepted) return;
             const updated = currentMsgs.map((m, i) => i === index ? { ...m, accepted: true } : m);
-            setGameState(prev => ({ 
-              ...prev, 
+            setGameState(prev => ({
+              ...prev,
               viberMessages: updated,
-              inventory: [...(prev.inventory || []), msg.item] 
+              inventory: [...(prev.inventory || []), msg.item]
             }));
             showToast(`🎁 Παρέλαβες: ${msg.item}!`, '✅');
           }}

@@ -48,7 +48,7 @@ export const SPECIFIC_EVENTS = {
     {
       role: "Ρεσεψιονίστ",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
-      story_text: "Ο Μουστάκας κουνάει το δάχτυλο: «Θέλουμε 5-αστέρες στο TripAdvisor πάση θυσία. Πώς θα πείσεις έναν εξαιρετικά δυσαρεστημένο πελάτη να γράψει καλή κριτική πριν φύγει;»",
+      story_text: "Ο Μουστάκας κουνάει το δάχτυλο: «Θέλουμε 5-αστέρια στο TripAdvisor πάση θυσία. Πώς θα πείσεις έναν εξαιρετικά δυσαρεστημένο πελάτη να γράψει καλή κριτική πριν φύγει;»",
       requires_text_input: null,
       choices: [
         { id: 1, text: "Του προσφέρω 50% έκπτωση στην επόμενη διαμονή και δωρεάν κρασί.", stress_change: 10, reputation_change: 20, cash_change: -30 },
@@ -483,6 +483,7 @@ export const SPECIFIC_EVENTS = {
   7: [
     {
       scene_title: "Διάδρομος Προσωπικού (Act 7)",
+      season: 2,
       story_text: "Σε πλησιάζει ο ρεσεψιονίστ γελώντας πονηρά. 'Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει;' Σου στέλνει κρυφά το link: https://codexx-ui.github.io/Thesfapa/",
       requires_text_input: null,
       choices: [
@@ -493,6 +494,7 @@ export const SPECIFIC_EVENTS = {
     },
     {
       scene_title: "Αποδυτήρια Προσωπικού (Act 7)",
+      season: 2,
       story_text: "Βρίσκεις ένα χαρτάκι κολλημένο στο ντουλάπι σου. Γράφει: 'Ο Τάρναβας πρέπει να πληρώσει. Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει; Μπες εδώ: https://codexx-ui.github.io/Thesfapa/ '",
       requires_text_input: null,
       choices: [
@@ -954,8 +956,10 @@ export const GENERAL_EVENTS = [
     requires_text_input: null,
     choices: [
       { id: 1, text: "Τρέχω μπροστά του και σκουπίζω γρήγορα με ένα πανί.", stress_change: 25, reputation_change: 10, cash_change: 0 },
-      { id: 2, text: "Του λέω ότι η κουζίνα καθαρίζεται στο τέλος της βάρδιας βάσει HACCAP.",
-        stress_change: 15, reputation_change: 5, cash_change: 0 },
+      {
+        id: 2, text: "Του λέω ότι η κουζίνα καθαρίζεται στο τέλος της βάρδιας βάσει HACCAP.",
+        stress_change: 15, reputation_change: 5, cash_change: 0
+      },
       { id: 3, text: "Του ρίχνω επίτηδες λίγο αλεύρι στο σακάκι για να αποσπάσω την προσοχή του.", stress_change: 30, reputation_change: -15, cash_change: 0 }
     ]
   },
