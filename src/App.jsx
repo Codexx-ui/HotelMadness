@@ -18,7 +18,7 @@ const isRoleMatch = (eventRole, playerRole) => {
   if (!eventRole) return true;
   if (eventRole === playerRole) return true;
 
-  const receptionistRoles = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'];
+  const receptionistRoles = ['F.O AGENT', 'Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'];
   const waiterRoles = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager', 'Σερβιτόρος', 'Head Waiter', "Maitre d'hotel"];
   const chefRoles = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef', 'Μάγειρας', 'Section Chef', 'Head Chef'];
 
@@ -407,7 +407,7 @@ function App() {
         waiter: 'Σέρβις 🍽️',
         chef: 'Chef 🍳',
         maintenance: 'Συντήρηση 🔧',
-        'Ρεσεψιονίστ': 'Ρεσεψιονίστ 🛎️',
+        'F.O AGENT': 'F.O AGENT 🛎️',
         'Assistant Fom': 'Assistant Fom 🛎️',
         'Front Office Manager': 'Front Office Manager 🛎️',
         'Operations Manager': 'Operations Manager 🛎️',
@@ -426,7 +426,7 @@ function App() {
 
       const isGameOver = forceGameOver || state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3 || state.resigned || state.ultimateVictory;
       let status = 'Εργάζεται';
-      
+
       const isFired = state.stress >= 100 || state.reputation <= 0 || state.alcoholWarnings >= 3;
       if (isFired) {
         status = 'Απολύθηκε';
@@ -434,6 +434,8 @@ function App() {
         status = 'Παραιτήθηκε';
       } else if (state.ultimateVictory) {
         status = 'Συνταξιοδοτήθηκε';
+      } else if (isGameOver) {
+        status = `Ολοκλήρωσε τη Σεζόν ${state.season || 1}`;
       }
 
       const successRate = calculateSuccessRate(state);
@@ -479,7 +481,8 @@ function App() {
         // Find if there is an existing completed score for the same user and role
         const existingCompIndex = cleanLeaderboard.findIndex(e =>
           e.status !== 'Εργάζεται' &&
-          (e.nickname || '').trim().toLowerCase() === resolvedNickname.trim().toLowerCase()
+          (e.nickname || '').trim().toLowerCase() === resolvedNickname.trim().toLowerCase() &&
+          (e.role || '').trim().toLowerCase() === targetRole.trim().toLowerCase()
         );
 
         if (existingCompIndex !== -1) {
@@ -826,6 +829,7 @@ function App() {
     let actualRole = roleKey;
     if (roleKey === 'Μάγειρας') actualRole = 'Γ Μάγειρας';
     if (roleKey === 'Σερβιτόρος') actualRole = 'Βοηθός Σερβιτόρου';
+    if (roleKey === 'Ρεσεψιονίστ') actualRole = 'F.O AGENT';
     const newRunId = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const newState = { ...INITIAL_STATE, role: actualRole, nickname, runId: newRunId };
     setGameState(newState);
@@ -1170,7 +1174,7 @@ function App() {
     ];
 
     const roleFiltered = welcomeMsgs.filter(m => {
-      if (role === 'Ρεσεψιονίστ' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
+      if (role === 'F.O AGENT' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
       if (role === 'Γ Μάγειρας' && (m.sender.includes('Chef') || m.sender.includes('Sous Chef'))) return false;
       if (role === 'Βοηθός Σερβιτόρου' && (m.sender.includes('Captain') || m.sender.includes('Μπαρ') || m.sender.includes('Pool Bar'))) return false;
       return true;
@@ -1184,9 +1188,9 @@ function App() {
       { sender: 'Γιάννης (Reception)', text: 'Ρε συ, είδες τι έγινε χθες με τον Μουστάκα; Ούρλιαζε πάλι για τις πετσέτες. Κουράγιο...' },
       { sender: 'Μαρία (Housekeeping)', text: 'Έχουμε 5 check-out στο 2ο όροφο και είμαστε μόνο δύο κοπέλες. Αν δεις τον Τάρναβα πες του ότι καθαρίζουμε!' },
       { sender: 'Chef Αντώνης', text: 'Πάλι τελείωσε το ελαιόλαδο. Ποιος ξέχασε να παραγγείλει; Θα γίνει σφαγή σήμερα...' },
-      { sender: 'Κώστας (Maintenance)', text: 'Το air condition στο 104 πάλι στάζει. Μην νοικιάσετε αυτό το δωμάτιο, θα φάμε TripAdvisor κράξιμο!' },
+      { sender: 'Ταρακας (Maintenance)', text: 'Το air condition στο 104 πάλι στάζει. Μην νοικιάσετε αυτό το δωμάτιο, θα φάμε TripAdvisor κράξιμο!' },
       { sender: 'Ελένη (Spa)', text: 'Ήρθε μια περίεργη κυρία και ζητάει δωρεάν μασάζ επειδή λέει είδε μια μέλισσα στην πισίνα. Τι να της πω;' },
-      { sender: 'Βασίλης (Beach Bar)', text: 'Φίλε έχει 40 βαθμούς έξω και έχει τελειώσει ο πάγος. Αν δεν φέρουν σε μισή ώρα, φεύγω.' },
+      { sender: 'Αγγελος (Beach Bar)', text: 'Φίλε έχει 40 βαθμούς έξω και έχει τελειώσει ο πάγος. Αν δεν φέρουν σε μισή ώρα, φεύγω.' },
       { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Κάποιος έσπασε 3 δίσκους στην κουζίνα και ο Chef κοντεύει να πάθει εγκεφαλικό. Μην πλησιάζεις.' },
       { sender: 'Νίκος (Μπαρ)', text: 'Φίλε, κρύψε καμιά μπύρα στην αποθήκη. Θα περάσω μετά το σχόλασμα να την πιούμε κρυφά 🤫' },
       { sender: 'Γιώργος (Bellboy)', text: 'Ήρθαν κάτι VIPs με 10 βαλίτσες ο καθένας και δεν λειτουργεί το ασανσέρ. Μάλλον θα παραιτηθώ σήμερα.' },
@@ -1197,20 +1201,20 @@ function App() {
       { sender: 'Ελένη (Spa)', text: 'Ήρθε μια περίεργη influencer και ζητάει δωρεάν μασάζ με αντάλλαγμα 2 stories στο Instagram. Της είπα ότι ο Μουστάκας θα την κάνει tag σε καταγγελία του ΙΚΑ!' },
       { sender: 'Βασίλης (Beach Bar)', text: 'Ένα group από μεθυσμένους άρχισε να παίζει beach volley με τις καρύδες από το ντεκόρ. Ήδη έσπασαν ένα τραπέζι. Βοήθεια!' },
       { sender: 'Αλεξάνδρα (F&B Captain)', text: 'Το γκρουπ των Γερμανών ήπιε όλο το βαρελίσιο κρασί σε 1 ώρα. Τώρα ζητάνε ούζο. Αν δεν έχουμε, θα γίνει εξέγερση.' },
-      { sender: 'Νίκος (Μπαρ)', text: 'Ο Μουστάκας με είδε να πίνω freddo espresso. Μου είπε ότι ο καφές μειώνει το corporate speed μου. Έχω πάθει σοκ.' },
-      { sender: 'Γιώργος (Bellboy)', text: 'Μια οικογένεια έχασε το σκυλάκι της και νομίζει ότι μπήκε στις αποσκευές άλλου πελάτη που έφυγε για το αεροδρόμιο. Τρέχω!' },
-      { sender: 'Χριστίνα (Κρατήσεις)', text: 'Έχουμε 3 overbookings στη VIP κατηγορία σήμερα. Πρέπει να πείσουμε κάποιον να κοιμηθεί στο staff house. Ποιος προσφέρεται;' },
+      { sender: 'Αγγελος (Μπαρ)', text: 'Ο Μουστάκας με είδε να πίνω freddo espresso. Μου είπε ότι ο καφές μειώνει το corporate speed μου. Έχω πάθει σοκ.' },
+      { sender: 'Νικος Μουσκ (Bellboy)', text: 'Μια οικογένεια έχασε το σκυλάκι της και νομίζει ότι μπήκε στις αποσκευές άλλου πελάτη που έφυγε για το αεροδρόμιο. Τρέχω!' },
+      { sender: 'Φαφουτη (Κρατήσεις)', text: 'Έχουμε 3 overbookings στη VIP κατηγορία σήμερα. Πρέπει να πείσουμε κάποιον να κοιμηθεί στο staff house. Ποιος προσφέρεται;' },
       { sender: 'Σπύρος (Pool Bar)', text: 'Κάποιος έριξε ολόκληρο καρπούζι στην πισίνα και κόλλησε στο φίλτρο. Το νερό έχει γίνει κόκκινο. Ο Μουστάκας έρχεται με το buggy!' },
-      { sender: 'Θωμάς (Ασφάλεια)', text: 'Οι πελάτες στο 112 κάνουν πάρτι με ελληνικά λαϊκά στις 3 το μεσημέρι. Οι γείτονες απειλούν με αστυνομία. Πάω να τους κάνω ντάντεμα.' },
+      { sender: 'Παναγιωτης (Ασφάλεια)', text: 'Οι πελάτες στο 112 κάνουν πάρτι με ελληνικά λαϊκά στις 3 το μεσημέρι. Οι γείτονες απειλούν με αστυνομία. Πάω να τους κάνω ντάντεμα.' },
       { sender: 'Μανώλης (Κηπουρός)', text: 'Ο Μουστάκας θέλει να κουρέψω το γκαζόν σε σχήμα Faplantica logo. Αν δεν τα καταφέρω, μου είπε θα με βάλει να ποτίζω με το ποτήρι!' },
       { sender: 'Ανθή (Animation)', text: 'Ο DJ μας έπαθε ηλίαση και δεν έχουμε μουσική για το aqua aerobic. Μπορείς να έρθεις να κάνεις beatbox;' },
-      { sender: 'Δημήτρης (Purchasing)', text: 'Ήρθαν 200 κιλά λάχανα αντί για μαρούλια. Ο Chef Αντώνης κρατάει μπαλτά και με ψάχνει. Αν με ρωτήσει κανείς, είμαι στην Αθήνα.' },
-      { sender: 'Βάσω (Λογιστήριο)', text: 'Βρήκα μια απόδειξη για "ειδικά κοκτέιλ Μουστάκα" ύψους 500 ευρώ. Ποιος το ενέκρινε αυτό; Θα μας κλείσει η εφορία!' },
-      { sender: 'Γιάννα (Υποδοχή)', text: 'Ένα ζευγάρι τσακώνεται στη Reception επειδή η θέα στη θάλασσα κρύβεται από έναν φοίνικα. Θέλουν να κόψουμε τον φοίνικα τώρα!' },
-      { sender: 'Σάββας (Sous Chef)', text: 'Κάποιος έφαγε το μισό προφιτερόλ που είχαμε για τον VIP πελάτη. Αν σε πιάσω με σοκολάτα στα μούτρα, αλίμονό σου!' }
+      { sender: 'Θωμας (Purchasing)', text: 'Ήρθαν 200 κιλά λάχανα αντί για μαρούλια. Ο Chef Αντώνης κρατάει μπαλτά και με ψάχνει. Αν με ρωτήσει κανείς, είμαι στην Αθήνα.' },
+      { sender: 'Δημητρα (Λογιστήριο)', text: 'Βρήκα μια απόδειξη για "ειδικά κοκτέιλ Μουστάκα" ύψους 500 ευρώ. Ποιος το ενέκρινε αυτό; Θα μας κλείσει η εφορία!' },
+      { sender: 'Γιάνκα (Υποδοχή)', text: 'Ένα ζευγάρι τσακώνεται στη Reception επειδή η θέα στη θάλασσα κρύβεται από έναν φοίνικα. Θέλουν να κόψουμε τον φοίνικα τώρα!' },
+      { sender: 'Ρηστας (Sous Chef)', text: 'Κάποιος έφαγε το μισό προφιτερόλ που είχαμε για τον VIP πελάτη. Αν σε πιάσω με σοκολάτα στα μούτρα, αλίμονό σου!' }
     ];
     const roleFiltered = messages.filter(m => {
-      if (role === 'Ρεσεψιονίστ' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
+      if (role === 'F.O AGENT' && (m.sender.includes('Reception') || m.sender.includes('Υποδοχή'))) return false;
       if (role === 'Γ Μάγειρας' && (m.sender.includes('Chef') || m.sender.includes('Sous Chef'))) return false;
       if (role === 'Βοηθός Σερβιτόρου' && (m.sender.includes('Captain') || m.sender.includes('Μπαρ') || m.sender.includes('Pool Bar'))) return false;
       return true;
@@ -1219,7 +1223,7 @@ function App() {
   };
 
   const promoteUser = (currentRole) => {
-    const FO_LADDER = ['Ρεσεψιονίστ', 'Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'];
+    const FO_LADDER = ['F.O AGENT', 'Assistant Fom', 'F.Ο Manager', 'Op.Manager', 'General Manager'];
     const FB_LADDER = ['Βοηθός Σερβιτόρου', 'Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'];
     const KITCHEN_LADDER = ['Γ Μάγειρας', 'Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef'];
 
@@ -1256,7 +1260,8 @@ function App() {
       setGameOver(true);
       audioService.playGameOverSound();
       setIsLoading(false);
-      saveScoreToLeaderboard(currentState);
+      setGameState(currentState);
+      saveScoreToLeaderboard(currentState, true);
       return;
     }
 
@@ -1912,9 +1917,9 @@ function App() {
         )}
 
         <div className="role-cards" style={{ opacity: isKeyConfigured ? 1 : 0.5, pointerEvents: isKeyConfigured ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
-          <div className="role-card" onClick={() => startGame('Ρεσεψιονίστ')}>
+          <div className="role-card" onClick={() => startGame('F.O AGENT')}>
             <Hotel className="role-icon" color="var(--accent-color)" />
-            <div className="role-title">Ρεσεψιονίστ</div>
+            <div className="role-title">F.O AGENT</div>
             <div className="role-desc">Η πρώτη γραμμή άμυνας. Διαχειριστείτε υπερκρατήσεις, VIP πελάτες και την εταιρική ευθυγράμμιση.</div>
           </div>
 
@@ -1963,7 +1968,7 @@ function App() {
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center', lineHeight: '1.6' }}>
           {isUltimateVictory
             ? (gameState.role === 'General Manager' || gameState.role === 'Operations Manager'
-              ? "Συγχαρητήρια! Ξεκίνησες ως απλός Ρεσεψιονίστ και κατάφερες το αδιανόητο: Έγινες ο νέος General Manager της Faplantica! Ο Μουστάκας αποσύρθηκε νικημένος από το άγχος του, και πλέον εσύ κάνεις κουμάντο σε όλο το ξενοδοχείο. Η αυτοκρατορία σου ανήκει! 👑🏨"
+              ? "Συγχαρητήρια! Ξεκίνησες ως απλός F.O AGENT και κατάφερες το αδιανόητο: Έγινες ο νέος General Manager της Faplantica! Ο Μουστάκας αποσύρθηκε νικημένος από το άγχος του, και πλέον εσύ κάνεις κουμάντο σε όλο το ξενοδοχείο. Η αυτοκρατορία σου ανήκει! 👑🏨"
               : gameState.role === 'Executive Chef'
                 ? "Συγχαρητήρια! Από τις λάντζες και τις φωνές ως Γ Μάγειρας, πλέον είσαι ο Executive Chef της Faplantica! Ο Σάββας εκδιώχθηκε κακήν κακώς μετά τις τοξικές του παρασπονδίες, και πλέον εσύ ορίζεις το μενού, το προσωπικό και την κουζίνα. Η γαστρονομική δόξα είναι δική σου! 🍳👑"
                 : "Συγχαρητήρια! Ξεκίνησες ως βοηθός σερβιτόρου και έφτασες στην κορυφή. Στη 4η σεζόν αποκαλύφθηκαν όλες οι δολοπλοκίες και οι λαμογιές του Καρδάρη, ο οποίος απολύθηκε με συνοπτικές διαδικασίες από τον Τάρναβα. Πήρες πανηγυρικά τη θέση του ως F&B Manager και το παιχνίδι ολοκληρώθηκε θριαμβευτικά! 🍽️👑")
@@ -2191,7 +2196,7 @@ function App() {
 
   const getNextRole = (currentRole) => {
     const ladders = {
-      'Ρεσεψιονίστ': ['Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'],
+      'F.O AGENT': ['Assistant Fom', 'Front Office Manager', 'Operations Manager', 'General Manager'],
       'Βοηθός Σερβιτόρου': ['Σερβιτόρος Α', 'Captain', 'Maitre', 'F&B Manager'],
       'Γ Μάγειρας': ['Β Μάγειρας', 'Α Μάγειρας', 'Sous Chef', 'Executive Chef']
     };

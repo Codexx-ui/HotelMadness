@@ -2,9 +2,9 @@ export const SPECIFIC_EVENTS = {
   0: [
     // --- ΡΕΣΕΨΙΟΝΙΣΤ ΣΥΝΕΝΤΕΥΞΕΙΣ (10) ---
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
-      story_text: "Βρίσκεσαι στο γραφείο του GM Γεώργιου Μουστάκα για τη συνέντευξη εργασίας ως Ρεσεψιονίστ. Σε κοιτάζει με ένα μείγμα άγχους και αυστηρότητας: «Η ρεσεψιόν είναι η πρώτη γραμμή άμυνας. Αν σκάσει overbooking 5 δωματίων και VIP πελάτης ταυτόχρονα, πώς θα το χειριστείς;»",
+      story_text: "Βρίσκεσαι στο γραφείο του GM Γεώργιου Μουστάκα για τη συνέντευξη εργασίας ως F.O AGENT. Σε κοιτάζει με ένα μείγμα άγχους και αυστηρότητας: «Η ρεσεψιόν είναι η πρώτη γραμμή άμυνας. Αν σκάσει overbooking 5 δωματίων και VIP πελάτης ταυτόχρονα, πώς θα το χειριστείς;»",
       requires_text_input: null,
       choices: [
         { id: 1, text: "Θα εφαρμόσω Flawless Corporate Diplomacy και θα μεταφέρω τους απλούς guests σε διπλανό μοτέλ.", stress_change: 15, reputation_change: 10, cash_change: 0 },
@@ -13,7 +13,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας ακουμπάει τα χέρια του στο γραφείο: «Αν ένας εξαιρετικά αγενής VIP πελάτης σου πετάξει τα κλειδιά στο πρόσωπο ουρλιάζοντας επειδή το δωμάτιο δεν είναι έτοιμο, πώς αντιδράς;»",
       requires_text_input: null,
@@ -24,7 +24,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε κοιτάζει διερευνητικά: «Στη νυχτερινή βάρδια, αν νιώσεις ότι σε παίρνει ο ύπνος πάνω στο desk και δεν υπάρχει κανείς άλλος, τι κάνεις;»",
       requires_text_input: null,
@@ -35,7 +35,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε ρωτάει νευρικά: «Αν έρθει ο κουμπάρος του ιδιοκτήτη της Faplantica χωρίς κράτηση και απαιτεί το δωμάτιο ενός απλού πελάτη που έχει ήδη πληρώσει, τι κάνεις;»",
       requires_text_input: null,
@@ -46,7 +46,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας κουνάει το δάχτυλο: «Θέλουμε 5-αστέρια στο TripAdvisor πάση θυσία. Πώς θα πείσεις έναν εξαιρετικά δυσαρεστημένο πελάτη να γράψει καλή κριτική πριν φύγει;»",
       requires_text_input: null,
@@ -57,7 +57,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε ρωτάει με αυστηρό ύφος: «Αν στο κλείσιμο του ταμείου της βάρδιάς σου λείπουν 50€, πώς το διαχειρίζεσαι;»",
       requires_text_input: null,
@@ -68,7 +68,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας ιδρώνει: «Το σύστημα κρατήσεων κολλάει κατά τη διάρκεια check-in ενός group 40 ατόμων που περιμένουν κουρασμένοι στο lobby. Τι κάνεις;»",
       requires_text_input: null,
@@ -79,7 +79,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε ρωτάει πονηρά: «Αν μάθεις κρυφά ότι ο Area Operations Manager πρόκειται να απολύσει τον κολλητό σου Bellboy, θα του το πεις;»",
       requires_text_input: null,
@@ -90,7 +90,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας κοιτάζει την εμφάνισή σου: «Αν σου κάνω παρατήρηση επειδή η στολή σου δεν είναι τέλεια σιδερωμένη, πώς θα αντιδράσεις;»",
       requires_text_input: null,
@@ -101,7 +101,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας βάζει τα γυαλιά του: «Αν έρθει ένας VIP πελάτης στις 3 το βράδυ και απαιτεί να του βρεις οπωσδήποτε φρέσκια μπουγάτσα Θεσσαλονίκης με κρέμα, τι κάνεις;»",
       requires_text_input: null,
@@ -112,7 +112,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε ρωτάει με καχυποψία: «Αν δεις μια διάσημη influencer να βγάζει βίντεο στο lobby κατηγορώντας το ξενοδοχείο για κακό service, πώς αντιδράς;»",
       requires_text_input: null,
@@ -123,7 +123,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε ρωτάει σοβαρός: «Ένας VIP πελάτης χάνει το πανάκριβο ρολόι του στο δωμάτιο και κατηγορεί ευθέως την καμαριέρα. Πώς το χειρίζεσαι;»",
       requires_text_input: null,
@@ -134,7 +134,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε ρωτάει με σφιγμένα δόντια: «Αν ένας πελάτης κάνει check-out και παραπονεθεί ότι τον χρέωσες 2 φορές το minibar που δεν άγγιξε ποτέ, τι κάνεις;»",
       requires_text_input: null,
@@ -145,7 +145,7 @@ export const SPECIFIC_EVENTS = {
       ]
     },
     {
-      role: "Ρεσεψιονίστ",
+      role: "F.O AGENT",
       scene_title: "Συνέντευξη με τον GM Μουστάκα (Act 0)",
       story_text: "Ο Μουστάκας σε ρωτάει χαμογελώντας περίεργα: «Αν σου ζητήσω να πεις ψέματα σε έναν ελεγκτή τουρισμού ότι η πισίνα μας έχει άδεια λειτουργίας ενώ δεν έχει, τι θα κάνεις;»",
       requires_text_input: null,
@@ -484,7 +484,7 @@ export const SPECIFIC_EVENTS = {
     {
       scene_title: "Διάδρομος Προσωπικού (Act 7)",
       season: 2,
-      story_text: "Σε πλησιάζει ο ρεσεψιονίστ γελώντας πονηρά. 'Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει;' Σου στέλνει κρυφά το link: https://codexx-ui.github.io/Thesfapa/",
+      story_text: "Σε πλησιάζει ο F.O AGENT γελώντας πονηρά. 'Έμαθες για το νέο παιχνίδι που φτιάξανε για τον Τάρναβα μετά τις τόσες μαλακίες που έχει κάνει;' Σου στέλνει κρυφά το link: https://codexx-ui.github.io/Thesfapa/",
       requires_text_input: null,
       choices: [
         { id: 1, text: "Μπαίνω αμέσως να παίξω και να του σπάσω τα μούτρα!", stress_change: -15, reputation_change: 0, cash_change: 0, staff_relations_change: 15 },
@@ -773,7 +773,7 @@ export const GENERAL_EVENTS = [
   // --- ΡΕΣΕΨΙΟΝΙΣΤ EVENTS ---
   {
     scene_title: "VIP με 5 Σκυλιά",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Ένας εκκεντρικός VIP πελάτης σκάει στη ρεσεψιόν με 5 θορυβώδη σκυλιά Chihuahua, απαιτώντας να μείνουν μαζί του, παρόλο που το ξενοδοχείο απαγορεύει αυστηρά τα κατοικίδια.",
     requires_text_input: null,
     choices: [
@@ -784,7 +784,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Ο Έλεγχος του Booking.com",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Ένας μυστήριος πελάτης σου ψιθυρίζει ότι είναι κρυφός επιθεωρητής της Booking.com. Απαιτεί δωρεάν αναβάθμιση σε σουίτα, αλλιώς απειλεί να ρίξει τη βαθμολογία μας.",
     requires_text_input: null,
     choices: [
@@ -795,7 +795,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Η Κλοπή της Πετσέτας",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Μια ηλικιωμένη VIP πελάτισσα κατηγορεί την καμαριέρα ότι της έκλεψε μια «συλλεκτική» πετσέτα θαλάσσης, απειλώντας να φωνάξει την αστυνομία.",
     requires_text_input: null,
     choices: [
@@ -806,7 +806,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Το Λάθος Overbooking του Μουστάκα",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Ο Μουστάκας έκανε ο ίδιος κράτηση για τον κουμπάρο του αλλά ξέχασε να την περάσει. Τώρα το ξενοδοχείο είναι 110% γεμάτο και ο κουμπάρος απαιτεί δωμάτιο.",
     requires_text_input: null,
     choices: [
@@ -817,7 +817,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Ο Influencer με 50 Followers",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Ένας τύπος στη ρεσεψιόν απαιτεί δωρεάν διαμονή 3 ημερών δείχνοντάς σου το προφίλ του στο TikTok με... 54 followers.",
     requires_text_input: null,
     choices: [
@@ -828,7 +828,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Η Καταιγίδα και η Διαρροή",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Μια ξαφνική μπόρα πλημμυρίζει το lobby και το νερό στάζει πάνω στο πληκτρολόγιο της ρεσεψιόν, απειλώντας να κάψει το σύστημα κρατήσεων.",
     requires_text_input: null,
     choices: [
@@ -839,7 +839,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Ο Απαιτητικός Συνεδριακός",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Ένας VIP διοργανωτής συνεδρίου απαιτεί να αλλάξουμε το setup της αίθουσας 30 λεπτά πριν την έναρξη επειδή η τρέχουσα διάταξη «δεν έχει καλό φενγκ σούι».",
     requires_text_input: null,
     choices: [
@@ -850,7 +850,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Η Χαμένη Βαλίτσα",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Ένας VIP πελάτης ουρλιάζει επειδή ο bellboy έχασε τη βαλίτσα του, η οποία περιέχει «ανεκτίμητης αξίας» έγγραφα.",
     requires_text_input: null,
     choices: [
@@ -861,7 +861,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Ύποπτος Νυχτερινός Επισκέπτης",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Στη νυχτερινή βάρδια, ένας πελάτης εμφανίζεται φορώντας γυαλιά ηλίου και ζητάει δωμάτιο με ψεύτικο όνομα, προσφέροντας 200€ μετρητά χωρίς απόδειξη.",
     requires_text_input: null,
     choices: [
@@ -872,7 +872,7 @@ export const GENERAL_EVENTS = [
   },
   {
     scene_title: "Check-Out του Κακού Πληρωτή",
-    role: "Ρεσεψιονίστ",
+    role: "F.O AGENT",
     story_text: "Ένας πελάτης κάνει check-out και ισχυρίζεται ότι η πιστωτική του κάρτα μπλοκαρίστηκε. Υπόσχεται να στείλει έμβασμα μόλις γυρίσει στην πατρίδα του.",
     requires_text_input: null,
     choices: [
